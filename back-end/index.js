@@ -1,5 +1,8 @@
 const express = require("express");
 const Redis = require("ioredis");
+
+require("dotenv").config();
+
 const {
   ToadScheduler,
   SimpleIntervalJob,
