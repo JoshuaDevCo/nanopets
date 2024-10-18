@@ -8,141 +8,201 @@ import {
   Sun,
   Pill,
   VolumeX,
-  BarChart2,
+  Trophy,
   Coins,
   Wallet,
-  Youtube,
-  Twitter,
+  ArrowLeft,
 } from "lucide-react";
 import Image from "next/image";
-import Egg from "../../public/egg1.gif";
+import axios from "axios";
+import { io, Socket } from "socket.io-client";
 
 const babyPets = ["/baby1.gif"];
 
-const mockLeaderboard = [
-  { username: "TamaKing", coins: 1000 },
-  { username: "PetMaster", coins: 850 },
-  { username: "EggHatcher", coins: 720 },
-  { username: "PixelPet", coins: 650 },
-  { username: "VirtualFriend", coins: 600 },
-];
+interface Tamagotchi {
+  userId: string;
+  hunger: number;
+  happiness: number;
+  health: number;
+  discipline: number;
+  age: number;
+  poop: number;
+  isCrying: boolean;
+  isHatched: boolean;
+  coins: number;
+  pet: string;
+  hatchProgress: number;
+  light: boolean;
+}
+
+interface LeaderboardEntry {
+  userId: string;
+  coins: number;
+}
+
+interface AnimationInfo {
+  icon: React.ReactNode;
+  value: number;
+  x: number;
+  y: number;
+}
 
 export default function TamagotchiGame() {
-  const [hunger, setHunger] = useState(50);
-  const [happiness, setHappiness] = useState(50);
-  const [health, setHealth] = useState(100);
-  const [discipline, setDiscipline] = useState(50);
-  const [age, setAge] = useState(0);
-  const [light, setLight] = useState(true);
-  const [poop, setPoop] = useState(0);
-  const [isCrying, setIsCrying] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-  const [showWallet, setShowWallet] = useState(false);
-  const [coins, setCoins] = useState(0);
-  const [hatchProgress, setHatchProgress] = useState(0);
-  const [isHatched, setIsHatched] = useState(false);
-  const [pet, setPet] = useState(Egg);
-  const [showCoinAnimation, setShowCoinAnimation] = useState(false);
-  const [username, setUsername] = useState("TamaLover");
-  const [gameStarted, setGameStarted] = useState(false);
-  const [showHatchedScreen, setShowHatchedScreen] = useState(false);
+  const [tamagotchi, setTamagotchi] = useState<Tamagotchi | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [startScreenVisible, setStartScreenVisible] = useState(true);
   const [hatchedScreenVisible, setHatchedScreenVisible] = useState(false);
+  const [currentView, setCurrentView] = useState<
+    "main" | "leaderboard" | "wallet"
+  >("main");
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [animation, setAnimation] = useState<AnimationInfo | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+    const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL);
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setUserId(storedUserId);
+      fetchTamagotchi(storedUserId);
+    } else {
+      createTamagotchi();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userId && socket) {
+      socket.emit("join", userId);
+
+      socket.on("tamagotchiUpdate", (updatedTamagotchi: Tamagotchi) => {
+        setTamagotchi(updatedTamagotchi);
+      });
+
+      return () => {
+        socket.off("tamagotchiUpdate");
+      };
+    }
+  }, [userId, socket]);
 
   useEffect(() => {
     if (startScreenVisible) {
       const timer = setTimeout(() => {
         setStartScreenVisible(false);
-        setGameStarted(true);
       }, 2000);
       return () => clearTimeout(timer);
     }
   }, [startScreenVisible]);
 
   useEffect(() => {
-    if (showHatchedScreen) {
-      setHatchedScreenVisible(true);
+    if (hatchedScreenVisible) {
       const timer = setTimeout(() => {
         setHatchedScreenVisible(false);
-        setShowHatchedScreen(false);
-      }, 4000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [showHatchedScreen]);
+  }, [hatchedScreenVisible]);
 
-  useEffect(() => {
-    if (!isHatched) return;
-
-    const timer = setInterval(() => {
-      setHunger((prev) => Math.max(0, prev - 1));
-      setHappiness((prev) => Math.max(0, prev - 1));
-      setHealth((prev) => Math.max(0, prev - 0.5));
-      setAge((prev) => prev + 1);
-      setPoop((prev) => Math.min(5, prev + 0.2));
-      if (Math.random() < 0.05) setIsCrying(true);
-    }, 3000);
-
-    return () => clearInterval(timer);
-  }, [isHatched]);
-
-  const hatchEgg = () => {
-    if (isHatched) return;
-    setHatchProgress((prev) => {
-      const newProgress = prev + 1;
-      if (newProgress >= 10) {
-        setIsHatched(true);
-        setPet(babyPets[Math.floor(Math.random() * babyPets.length)]);
-        setShowHatchedScreen(true);
-      }
-      return newProgress;
-    });
-    setCoins((prev) => prev + 10);
-    setShowCoinAnimation(true);
-    setTimeout(() => setShowCoinAnimation(false), 1000);
+  const fetchTamagotchi = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
+      );
+      setTamagotchi(response.data);
+    } catch (error) {
+      console.error("Error fetching Tamagotchi:", error);
+    }
   };
 
-  const feed = () => {
-    setHunger((prev) => Math.min(100, prev + 20));
-    setPoop((prev) => Math.min(5, prev + 1));
-  };
-  const play = () => setHappiness((prev) => Math.min(100, prev + 20));
-  const clean = () => setPoop(0);
-  const toggleLight = () => setLight((prev) => !prev);
-  const giveMedicine = () => setHealth((prev) => Math.min(100, prev + 30));
-  const disciplineIt = () => {
-    setIsCrying(false);
-    setDiscipline((prev) => Math.min(100, prev + 20));
-  };
-  const toggleStats = () => {
-    setShowStats((prev) => !prev);
-    setShowWallet(false);
-  };
-  const toggleWallet = () => {
-    setShowWallet((prev) => !prev);
-    setShowStats(false);
+  const createTamagotchi = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`
+      );
+      const { userId, ...tamagotchiData } = response.data;
+      setUserId(userId);
+      setTamagotchi(tamagotchiData);
+      localStorage.setItem("userId", userId);
+    } catch (error) {
+      console.error("Error creating Tamagotchi:", error);
+    }
   };
 
-  const watchVideo = () => {
-    setTimeout(() => {
-      setCoins((prev) => prev + 50);
-      alert("You earned 50 coins for watching the video!");
-    }, 3000);
+  const performAction = async (
+    action: string,
+    icon: React.ReactNode,
+    statChange: number
+  ) => {
+    if (!userId) return;
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/${action}`
+      );
+      triggerAnimation(icon, statChange);
+    } catch (error) {
+      console.error(`Error performing action ${action}:`, error);
+    }
   };
 
-  const followOnTwitter = () => {
-    setCoins((prev) => prev + 100);
-    alert("You earned 100 coins for following on Twitter!");
+  const triggerAnimation = (icon: React.ReactNode, value: number) => {
+    const x = Math.random() * 150 + 25; // Random X position between 25 and 175
+    const y = Math.random() * 150 + 25; // Random Y position between 25 and  175
+    setAnimation({ icon, value, x, y });
+    setTimeout(() => setAnimation(null), 1000); // Remove animation after 1 second
   };
 
-  const isDisabled = !isHatched || showStats || showWallet;
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/leaderboard`
+      );
+      setLeaderboard(response.data);
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+    }
+  };
+
+  const hatchEgg = async () => {
+    if (!userId || (tamagotchi && tamagotchi.isHatched)) return;
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/hatch`
+      );
+      setHatchedScreenVisible(true);
+    } catch (error) {
+      console.error("Error hatching egg:", error);
+    }
+  };
+
+  const feed = () => performAction("feed", <Pizza className='w-4 h-4' />, 20);
+  const play = () =>
+    performAction("play", <Gamepad2 className='w-4 h-4' />, 20);
+  const clean = () =>
+    performAction("clean", <Droplets className='w-4 h-4' />, -5);
+  const toggleLight = () =>
+    performAction("toggleLight", <Sun className='w-4 h-4' />, 0);
+  const giveMedicine = () =>
+    performAction("medicine", <Pill className='w-4 h-4' />, 30);
+  const disciplineIt = () =>
+    performAction("discipline", <VolumeX className='w-4 h-4' />, 20);
+
+  if (!tamagotchi) return <div>Loading...</div>;
+
+  const isDisabled = !tamagotchi.isHatched || currentView !== "main";
 
   if (startScreenVisible) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen bg-white animate-fade-out'>
-        <h1 className='text-3xl font-bold mb-3 text-center'>
-          Welcome to Tonago `
+        <h1 className='text-4xl font-bold mb-8 text-center'>
+          Welcome to Tamagotchi
         </h1>
-        <p className='font-bold'>Click on your egg to hatch</p>
       </div>
     );
   }
@@ -150,166 +210,186 @@ export default function TamagotchiGame() {
   if (hatchedScreenVisible) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen bg-white animate-fade-in-out'>
-        <h1 className='text-2xl font-bold mb-8 text-center'>
+        <h1 className='text-4xl font-bold mb-8 text-center'>
           Your Tamagotchi has hatched!
         </h1>
-        <p className='font-bold'>Take good care and reap rewards</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50 animate-fade-in'>
-        {/* Top Buttons  */}
-        <div className='grid grid-cols-4 gap-4 p-2'>
-          <Button
-            onClick={feed}
-            icon={<Pizza className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-          <Button
-            onClick={toggleLight}
-            icon={<Sun className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-          <Button
-            onClick={play}
-            icon={<Gamepad2 className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-          <Button
-            onClick={giveMedicine}
-            icon={<Pill className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-        </div>
+    <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+      {/* Top Buttons  */}
+      <div className='grid grid-cols-4 gap-4 p-2'>
+        <Button
+          onClick={feed}
+          icon={<Pizza className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+        <Button
+          onClick={toggleLight}
+          icon={<Sun className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+        <Button
+          onClick={play}
+          icon={<Gamepad2 className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+        <Button
+          onClick={giveMedicine}
+          icon={<Pill className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+      </div>
 
-        {/* Game Screen  */}
+      {/* Game Screen  */}
+      {currentView === "main" && (
         <div
           className={`flex-grow border border-gray-600 flex flex-col items-center justify-center relative ${
-            light ? "bg-white" : "bg-gray-800"
+            tamagotchi.light ? "bg-white" : "bg-gray-800"
           }`}
         >
           <div className='absolute top-2 left-2 flex items-center text-sm'>
-            <span className='font-bold'>Age:</span> {age} days
+            <span className='font-bold'>Age:</span> {tamagotchi.age} days
           </div>
           <div className='absolute top-2 right-2 flex items-center'>
             <Coins className='w-4 h-4 mr-1' />
-            <span className='text-sm font-bold'>{coins}</span>
+            <span className='text-sm font-bold'>{tamagotchi.coins}</span>
           </div>
-          {showStats ? (
-            <div className='w-full p-4'>
-              <h2 className='text-xl font-bold mb-4'>Stats</h2>
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <Stat value={hunger} label='Hunger' />
-                <Stat value={happiness} label='Happiness' />
-                <Stat value={health} label='Health' />
-                <Stat value={discipline} label='Discipline' />
+          <div className='relative cursor-pointer' onClick={hatchEgg}>
+            <Image
+              src={tamagotchi.isHatched ? "/baby1.gif" : "/egg1.gif"}
+              alt='pet'
+              width={200}
+              height={200}
+            />
+            <p>{tamagotchi.pet} is here</p>
+            {!tamagotchi.isHatched && (
+              <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
+                <div
+                  className='h-full bg-green-500'
+                  style={{ width: `${tamagotchi.hatchProgress * 10}%` }}
+                ></div>
               </div>
-              <h3 className='text-lg font-bold mb-2'>Leaderboard</h3>
-              <ul className='space-y-2'>
-                {mockLeaderboard.map((player, index) => (
-                  <li key={index} className='flex justify-between items-center'>
-                    <span>{player.username}</span>
-                    <span>{player.coins} 🪙</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : showWallet ? (
-            <div className='w-full p-4'>
-              <h2 className='text-xl font-bold mb-4'>Wallet</h2>
-              <p className='mb-2'>
-                <strong>Username:</strong> {username}
-              </p>
-              <p className='mb-4'>
-                <strong>Balance:</strong> {coins} 🪙
-              </p>
-              <h3 className='text-lg font-bold mb-2'>Earn Bonus Coins</h3>
-              <button
-                onClick={watchVideo}
-                className='bg-red-500 text-white px-4 py-2 rounded mb-2 flex items-center'
-              >
-                <Youtube className='mr-2' /> Watch Video (+50 coins)
-              </button>
-              <button
-                onClick={followOnTwitter}
-                className='bg-blue-400 text-white px-4 py-2 rounded flex items-center'
-              >
-                <Twitter className='mr-2' /> Follow on X (+100 coins)
-              </button>
-            </div>
-          ) : (
-            <div className='relative cursor-pointer' onClick={hatchEgg}>
-              <Image src={pet} alt='pet' width={200} height={200} />
-              {!isHatched && (
-                <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
-                  <div
-                    className='h-full bg-green-500'
-                    style={{ width: `${hatchProgress * 10}%` }}
-                  ></div>
-                </div>
-              )}
-              {poop > 0 && (
-                <div className='absolute bottom-0 right-0 text-2xl'>
-                  {"💩".repeat(Math.floor(poop))}
-                </div>
-              )}
-              {isCrying && (
-                <div className='absolute top-0 left-0 text-xl'>😢</div>
-              )}
-              {showCoinAnimation && (
-                <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl animate-bounce'>
-                  +10 🪙
-                </div>
-              )}
-            </div>
+            )}
+            {tamagotchi.poop > 0 && (
+              <div className='absolute bottom-0 right-0 text-2xl'>
+                {"💩".repeat(Math.floor(tamagotchi.poop))}
+              </div>
+            )}
+            {tamagotchi.isCrying && (
+              <div className='absolute top-0 left-0 text-xl'>😢</div>
+            )}
+          </div>
+          <div className='w-full mt-4 px-4'>
+            <StatBar label='Hunger' value={tamagotchi.hunger} />
+            <StatBar label='Happiness' value={tamagotchi.happiness} />
+            <StatBar label='Health' value={tamagotchi.health} />
+            <StatBar label='Discipline' value={tamagotchi.discipline} />
+          </div>
+          {animation && (
+            <AnimatedIcon
+              icon={animation.icon}
+              value={animation.value}
+              x={animation.x}
+              y={animation.y}
+            />
           )}
         </div>
+      )}
 
-        <div className='grid grid-cols-4 gap-4 p-2'>
-          <Button
-            onClick={clean}
-            icon={<Droplets className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-          <Button
-            onClick={disciplineIt}
-            icon={<VolumeX className='w-6 h-6' />}
-            disabled={isDisabled}
-          />
-          <Button
-            onClick={toggleStats}
-            icon={<BarChart2 className='w-6 h-6' />}
-            disabled={!isHatched}
-          />
-          <Button
-            onClick={toggleWallet}
-            icon={<Wallet className='w-6 h-6' />}
-            disabled={!isHatched}
-          />
+      {currentView === "leaderboard" && (
+        <div className='flex-grow border border-gray-600 bg-white p-4 overflow-y-auto'>
+          <h2 className='text-2xl font-bold mb-4'>Leaderboard</h2>
+          <ul>
+            {leaderboard.map((entry, index) => (
+              <li
+                key={entry.userId}
+                className='flex justify-between items-center mb-2'
+              >
+                <span>
+                  {index + 1}. User {entry.userId}
+                </span>
+                <span>{entry.coins} coins</span>
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
+
+      {currentView === "wallet" && (
+        <div className='flex-grow border border-gray-600 bg-white p-4'>
+          <h2 className='text-2xl font-bold mb-4'>Wallet</h2>
+          <p>Coins: {tamagotchi.coins}</p>
+          <button
+            className='mt-4 bg-blue-500 text-white px-4 py-2 rounded'
+            onClick={() =>
+              performAction("earnCoins", <Coins className='w-4 h-4' />, 10)
+            }
+            disabled={currentView !== "wallet"}
+          >
+            Earn Coins
+          </button>
+        </div>
+      )}
+
+      <div className='grid grid-cols-4 gap-4 p-2'>
+        <Button
+          onClick={clean}
+          icon={<Droplets className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+        <Button
+          onClick={disciplineIt}
+          icon={<VolumeX className='w-6 h-6' />}
+          disabled={isDisabled}
+        />
+        <Button
+          onClick={() => {
+            if (currentView === "leaderboard") {
+              setCurrentView("main");
+            } else {
+              setCurrentView("leaderboard");
+              fetchLeaderboard();
+            }
+          }}
+          icon={
+            currentView === "leaderboard" ? (
+              <ArrowLeft className='w-6 h-6' />
+            ) : (
+              <Trophy className='w-6 h-6' />
+            )
+          }
+          disabled={false}
+        />
+        <Button
+          onClick={() =>
+            setCurrentView(currentView === "wallet" ? "main" : "wallet")
+          }
+          icon={
+            currentView === "wallet" ? (
+              <ArrowLeft className='w-6 h-6' />
+            ) : (
+              <Wallet className='w-6 h-6' />
+            )
+          }
+          disabled={false}
+        />
       </div>
     </div>
   );
 }
 
-function Stat({ value, label }) {
-  return (
-    <div className='flex flex-col items-center'>
-      <div className='mt-1 h-2 w-full bg-gray-200 rounded-full'>
-        <div
-          className='h-2 bg-blue-500 rounded-full'
-          style={{ width: `${value}%` }}
-        ></div>
-      </div>
-      <span className='text-xs mt-1'>{label}</span>
-    </div>
-  );
-}
-
-function Button({ onClick, icon, disabled }) {
+function Button({
+  onClick,
+  icon,
+  disabled,
+}: {
+  onClick: () => void;
+  icon: React.ReactNode;
+  disabled: boolean;
+}) {
   return (
     <button
       onClick={onClick}
@@ -320,5 +400,38 @@ function Button({ onClick, icon, disabled }) {
     >
       {icon}
     </button>
+  );
+}
+
+function StatBar({ label, value }: { label: string; value: number }) {
+  return (
+    <div className='mb-2'>
+      <div className='flex justify-between mb-1'>
+        <span>{label}</span>
+        <span>{value}%</span>
+      </div>
+      <div className='w-full bg-gray-200 rounded-full h-2.5'>
+        <div
+          className='bg-blue-600 h-2.5 rounded-full'
+          style={{ width: `${value}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
+function AnimatedIcon({ icon, value, x, y }: AnimationInfo) {
+  return (
+    <div
+      className='absolute animate-float-up pointer-events-none'
+      style={{ left: `${x}px`, top: `${y}px` }}
+    >
+      <div className='flex items-center bg-white rounded-full px-2 py-1 shadow-md'>
+        {icon}
+        <span className='ml-1 text-sm font-bold'>
+          {value > 0 ? `+${value}` : value}
+        </span>
+      </div>
+    </div>
   );
 }
