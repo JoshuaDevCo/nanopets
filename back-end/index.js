@@ -26,29 +26,201 @@ const scheduler = new ToadScheduler();
 app.use(cors());
 app.use(express.json());
 
+const MAX_STATS = 5;
+const CARE_MISTAKE_LIMIT = 3;
+const POOP_LIMIT = 3;
+const CALL_RESPONSE_TIME = 15 * 60 * 1000;
+
 // Helper function to get Tamagotchi data
 async function getTamagotchi(userId) {
-  const keys = await redis.keys(`tamagotchi:${userId}:*`);
-  const values = await redis.mget(keys);
-  return keys.reduce((obj, key, index) => {
-    const field = key.split(":")[2];
-    obj[field] = ["isCrying", "isHatched", "light"].includes(field)
-      ? values[index] === "true"
-      : Number(values[index]);
-    return obj;
-  }, {});
+  const tamagotchi = await redis.hgetall(`tamagotchi:${userId}`);
+  return {
+    ...tamagotchi,
+    hunger: parseInt(tamagotchi.hunger),
+    happiness: parseInt(tamagotchi.happiness),
+    discipline: parseInt(tamagotchi.discipline),
+    age: parseInt(tamagotchi.age),
+    weight: parseInt(tamagotchi.weight),
+    poop: parseInt(tamagotchi.poop),
+    careMistakes: parseInt(tamagotchi.careMistakes),
+    lifespan: parseInt(tamagotchi.lifespan),
+    isSleeping: tamagotchi.isSleeping === "true",
+    isSick: tamagotchi.isSick === "true",
+    isLightOn: tamagotchi.isLightOn === "true",
+    isHatched: tamagotchi.isHatched === "true",
+    hatchProgress: tamagotchi.hatchProgress,
+    coins: parseInt(tamagotchi.coins),
+    lastFed: parseInt(tamagotchi.lastFed),
+    lastPlayed: parseInt(tamagotchi.lastPlayed),
+    lastCleaned: parseInt(tamagotchi.lastCleaned),
+    lastCall: parseInt(tamagotchi.lastCall),
+  };
 }
 
 // Helper function to update Tamagotchi data
 async function updateTamagotchi(userId, updates) {
-  const multi = redis.multi();
-  Object.entries(updates).forEach(([key, value]) => {
-    multi.set(`tamagotchi:${userId}:${key}`, value);
-  });
-  await multi.exec();
-  const updatedTamagotchi = await getTamagotchi(userId);
-  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+  await redis.hmset(`tamagotchi:${userId}`, updates);
 }
+
+// New Tama
+app.post("/api/tamagotchi", async (req, res) => {
+  const userId = Math.random().toString(36).substring(7);
+  const newTamagotchi = {
+    hunger: MAX_STATS,
+    happiness: MAX_STATS,
+    discipline: MAX_STATS,
+    age: 1,
+    weight: 5,
+    poop: 0,
+    careMistakes: 0,
+    lifespan: 100,
+    isSleeping: false,
+    isSick: false,
+    isLightOn: true,
+    isHatched: true,
+    hatchProgress: 10,
+    coins: 20,
+    lastFed: Date.now(),
+    lastPlayed: Date.now(),
+    lastCleaned: Date.now(),
+    lastCall: Date.now(),
+  };
+  await updateTamagotchi(userId, newTamagotchi);
+  await redis.sadd("tamagotchi:users", userId);
+  res.json({ userId, ...newTamagotchi });
+});
+
+// Get Tamagotchi data
+app.get("/api/tamagotchi/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const tamagotchi = await getTamagotchi(userId);
+  res.json(tamagotchi);
+});
+
+app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
+  const { userId, action } = req.params;
+  const tamagotchi = await getTamagotchi(userId);
+  const updates = {};
+
+  switch (action) {
+    case "feed":
+      const { foodType } = req.body;
+      if (foodType === "rice") {
+        updates.hunger = Math.min(tamagotchi.hunger + 1, MAX_STATS);
+        updates.weight = tamagotchi.weight + 1;
+      } else if (foodType === "candy") {
+        updates.happiness = Math.min(tamagotchi.happiness + 1, MAX_STATS);
+        updates.weight = tamagotchi.weight + 1;
+      }
+      updates.lastFed = Date.now();
+      break;
+    case "play":
+      const won = Math.random() < 0.5; // 50% chance of winning
+      updates.happiness = Math.min(
+        tamagotchi.happiness + (won ? 1 : 0),
+        MAX_STATS
+      );
+      updates.weight = Math.max(tamagotchi.weight - 1, 1);
+      updates.lastPlayed = Date.now();
+      await updateTamagotchi(userId, updates);
+      const updatedTamagotchi = await getTamagotchi(userId);
+      res.json({ ...updatedTamagotchi, won });
+      io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+      return;
+    case "clean":
+      updates.poop = 0;
+      updates.lastCleaned = Date.now();
+      break;
+    case "toggleLight":
+      updates.isLightOn = !tamagotchi.isLightOn;
+      break;
+    case "discipline":
+      updates.discipline = Math.min(tamagotchi.discipline + 1, MAX_STATS);
+      break;
+    case "medicine":
+      if (tamagotchi.isSick) {
+        updates.isSick = false;
+        updates.health = Math.min(tamagotchi.health + 1, MAX_STATS);
+      } else {
+        updates.isSick = false;
+      }
+      break;
+    case "answerCall":
+      if (Date.now() - tamagotchi.lastCall <= CALL_RESPONSE_TIME) {
+        updates.happiness = Math.min(tamagotchi.happiness + 1, MAX_STATS);
+      }
+      updates.lastCall = Date.now();
+      break;
+  }
+
+  await updateTamagotchi(userId, updates);
+  const updatedTamagotchi = await getTamagotchi(userId);
+  res.json(updatedTamagotchi);
+  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+});
+
+// Periodic updates
+const updateTask = new AsyncTask(
+  "update-tamagotchis",
+  async () => {
+    const userIds = await redis.smembers("tamagotchi:users");
+    for (const userId of userIds) {
+      const tamagotchi = await getTamagotchi(userId);
+      const updates = {};
+      const now = Date.now();
+
+      // Stat decay
+      updates.hunger = Math.max(tamagotchi.hunger - 1, 0);
+      updates.happiness = Math.max(tamagotchi.happiness - 1, 0);
+      updates.discipline = Math.max(tamagotchi.discipline - 1, 0);
+
+      // Age increase
+      updates.age = tamagotchi.age + 1;
+
+      // Random events
+      if (Math.random() < 0.1) updates.isSick = true;
+      if (Math.random() < 0.2) updates.isSleeping = !tamagotchi.isSleeping;
+      if (Math.random() < 0.3) updates.poop = tamagotchi.poop + 1;
+
+      // Care mistakes
+      if (tamagotchi.hunger === 0 || tamagotchi.happiness === 0) {
+        updates.careMistakes = tamagotchi.careMistakes + 1;
+      }
+      if (tamagotchi.isSleeping && tamagotchi.isLightOn) {
+        updates.careMistakes = tamagotchi.careMistakes + 1;
+      }
+      if (tamagotchi.isSick && now - tamagotchi.lastCall > 2 * 60 * 60 * 1000) {
+        updates.careMistakes = tamagotchi.careMistakes + 1;
+      }
+      if (tamagotchi.poop >= POOP_LIMIT) {
+        updates.careMistakes = tamagotchi.careMistakes + 1;
+        updates.poop = 0;
+      }
+
+      // Lifespan calculation
+      updates.lifespan = Math.max(
+        tamagotchi.lifespan -
+          updates.careMistakes -
+          Math.max(tamagotchi.weight - 10, 0),
+        0
+      );
+
+      await updateTamagotchi(userId, updates);
+      const updatedTamagotchi = await getTamagotchi(userId);
+      io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+    }
+  },
+  (err) => {
+    console.error("Error in update task:", err);
+  }
+);
+
+const updateJob = new SimpleIntervalJob(
+  { minutes: 15, runImmediately: true },
+  updateTask
+);
+
+scheduler.addSimpleIntervalJob(updateJob);
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
@@ -64,78 +236,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// Get Tamagotchi data
-app.get("/api/tamagotchi/:userId", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  res.json(tamagotchi);
-});
-
-// Feed Tamagotchi
-app.post("/api/tamagotchi/:userId/feed", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = {
-    hunger: Math.max(0, Math.min(100, tamagotchi.hunger + 20)),
-    poop: Math.min(5, tamagotchi.poop + 1),
-  };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
-// Play with Tamagotchi
-app.post("/api/tamagotchi/:userId/play", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = {
-    happiness: Math.min(100, tamagotchi.happiness + 20),
-  };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
-// Clean Tamagotchi
-app.post("/api/tamagotchi/:userId/clean", async (req, res) => {
-  const { userId } = req.params;
-  const updates = { poop: 0 };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
-// Toggle light
-app.post("/api/tamagotchi/:userId/toggleLight", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = { light: !tamagotchi.light };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
-// Give medicine
-app.post("/api/tamagotchi/:userId/medicine", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = {
-    health: Math.min(100, tamagotchi.health + 30),
-  };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
-// Discipline Tamagotchi
-app.post("/api/tamagotchi/:userId/discipline", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = {
-    isCrying: false,
-    discipline: Math.min(100, tamagotchi.discipline + 20),
-  };
-  await updateTamagotchi(userId, updates);
-  res.json(await getTamagotchi(userId));
-});
-
 // Hatch egg
-app.post("/api/tamagotchi/:userId/hatch", async (req, res) => {
+/* app.post("/api/tamagotchi/:userId/hatch", async (req, res) => {
   const { userId } = req.params;
   const tamagotchi = await getTamagotchi(userId);
   if (tamagotchi.isHatched) {
@@ -153,45 +255,10 @@ app.post("/api/tamagotchi/:userId/hatch", async (req, res) => {
   }
   await updateTamagotchi(userId, updates);
   res.json(await getTamagotchi(userId));
-});
-
-// Create new Tamagotchi
-app.post("/api/tamagotchi", async (req, res) => {
-  const userId = Math.random().toString(36).substring(7);
-  const newTamagotchi = {
-    hunger: 50,
-    happiness: 50,
-    health: 100,
-    discipline: 50,
-    age: 0,
-    poop: 0,
-    isCrying: false,
-    isHatched: false,
-    coins: 0,
-    pet: "egg",
-    hatchProgress: 0,
-    light: true,
-  };
-  await updateTamagotchi(userId, newTamagotchi);
-  await redis.sadd("tamagotchi:users", userId);
-  res.json({ userId, ...newTamagotchi });
-});
-
-// Get leaderboard
-app.get("/api/leaderboard", async (req, res) => {
-  const userIds = await redis.smembers("tamagotchi:users");
-  const leaderboard = await Promise.all(
-    userIds.map(async (userId) => {
-      const coins = await redis.get(`tamagotchi:${userId}:coins`);
-      return { userId, coins: Number(coins) };
-    })
-  );
-  leaderboard.sort((a, b) => b.coins - a.coins);
-  res.json(leaderboard.slice(0, 10)); // Return top 10
-});
+}); */
 
 // Earn coins (simple implementation)
-app.post("/api/tamagotchi/:userId/earnCoins", async (req, res) => {
+/* app.post("/api/tamagotchi/:userId/earnCoins", async (req, res) => {
   const { userId } = req.params;
   const tamagotchi = await getTamagotchi(userId);
   const earnedCoins = Math.floor(Math.random() * 10) + 1; // Earn 1-10 coins randomly
@@ -201,43 +268,7 @@ app.post("/api/tamagotchi/:userId/earnCoins", async (req, res) => {
   await updateTamagotchi(userId, updates);
   res.json(await getTamagotchi(userId));
 });
-
-// Toad Scheduler for periodic updates
-const updateTask = new AsyncTask(
-  "update tamagotchis",
-  async () => {
-    const userIds = await redis.smembers("tamagotchi:users");
-    for (const userId of userIds) {
-      await updateTamagotchiState(userId);
-    }
-  },
-  (err) => {
-    console.error("Error updating tamagotchis:", err);
-  }
-);
-
-const job = new SimpleIntervalJob(
-  { minutes: 3, runImmediately: true },
-  updateTask
-);
-scheduler.addSimpleIntervalJob(job);
-
-async function updateTamagotchiState(userId) {
-  const tamagotchi = await getTamagotchi(userId);
-  if (tamagotchi.isHatched) {
-    const updates = {
-      hunger: Math.max(0, tamagotchi.hunger - 1),
-      happiness: Math.max(0, tamagotchi.happiness - 1),
-      health: Math.max(0, tamagotchi.health - 0.5),
-      discipline: Math.max(0, tamagotchi.discipline - 0.5),
-      age: tamagotchi.age + 1,
-      poop: Math.min(5, tamagotchi.poop + 0.2),
-      isCrying: Math.random() < 0.05,
-    };
-    await updateTamagotchi(userId, updates);
-  }
-}
-
+ */
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`Server running on port ${port}`));
 

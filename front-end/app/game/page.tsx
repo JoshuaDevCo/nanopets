@@ -12,6 +12,7 @@ import {
   Coins,
   Wallet,
   ArrowLeft,
+  Candy,
 } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
@@ -23,22 +24,28 @@ interface Tamagotchi {
   userId: string;
   hunger: number;
   happiness: number;
-  health: number;
   discipline: number;
   age: number;
+  weight: number;
   poop: number;
-  isCrying: boolean;
+  careMistakes: number;
+  lifespan: number;
+  isSleeping: boolean;
+  isSick: boolean;
+  isLightOn: boolean;
   isHatched: boolean;
   coins: number;
-  pet: string;
   hatchProgress: number;
-  light: boolean;
+  lastFed: number;
+  lastPlayed: number;
+  lastCleaned: number;
+  lastCall: number;
 }
 
-interface LeaderboardEntry {
+/* interface LeaderboardEntry {
   userId: string;
   coins: number;
-}
+} */
 
 interface AnimationInfo {
   icon: React.ReactNode;
@@ -53,11 +60,12 @@ export default function TamagotchiGame() {
   const [startScreenVisible, setStartScreenVisible] = useState(true);
   const [hatchedScreenVisible, setHatchedScreenVisible] = useState(false);
   const [currentView, setCurrentView] = useState<
-    "main" | "leaderboard" | "wallet"
+    "main" | "leaderboard" | "wallet" | "minigame"
   >("main");
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  // const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [animation, setAnimation] = useState<AnimationInfo | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [gameResult, setGameResult] = useState<string | null>(null);
 
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL);
@@ -138,13 +146,24 @@ export default function TamagotchiGame() {
   const performAction = async (
     action: string,
     icon: React.ReactNode,
-    statChange: number
+    statChange: number,
+    foodType?: string
   ) => {
     if (!userId) return;
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/${action}`
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/${action}`,
+        { foodType }
       );
+      if (action === "play") {
+        setGameResult(response.data.won ? "You won!" : "You lost.");
+        setCurrentView("minigame");
+        setTimeout(() => {
+          setCurrentView("main");
+          setGameResult(null);
+        }, 2000);
+      }
+      setTamagotchi(response.data);
       triggerAnimation(icon, statChange);
     } catch (error) {
       console.error(`Error performing action ${action}:`, error);
@@ -158,7 +177,7 @@ export default function TamagotchiGame() {
     setTimeout(() => setAnimation(null), 1000); // Remove animation after 1 second
   };
 
-  const fetchLeaderboard = async () => {
+  /*  const fetchLeaderboard = async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/leaderboard`
@@ -167,9 +186,9 @@ export default function TamagotchiGame() {
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
     }
-  };
+  }; */
 
-  const hatchEgg = async () => {
+  /* const hatchEgg = async () => {
     if (!userId || (tamagotchi && tamagotchi.isHatched)) return;
     try {
       await axios.post(
@@ -179,19 +198,23 @@ export default function TamagotchiGame() {
     } catch (error) {
       console.error("Error hatching egg:", error);
     }
-  };
+  }; */
 
-  const feed = () => performAction("feed", <Pizza className='w-4 h-4' />, 20);
-  const play = () =>
-    performAction("play", <Gamepad2 className='w-4 h-4' />, 20);
+  const feed = () =>
+    performAction("feed", <Pizza className='w-4 h-4' />, 1, "rice");
+  const feedCandy = () =>
+    performAction("feed", <Candy className='w-4 h-4' />, 1, "candy");
+  const play = () => performAction("play", <Gamepad2 className='w-4 h-4' />, 1);
   const clean = () =>
-    performAction("clean", <Droplets className='w-4 h-4' />, -5);
+    performAction("clean", <Droplets className='w-4 h-4' />, -tamagotchi!.poop);
   const toggleLight = () =>
     performAction("toggleLight", <Sun className='w-4 h-4' />, 0);
   const giveMedicine = () =>
-    performAction("medicine", <Pill className='w-4 h-4' />, 30);
+    performAction("medicine", <Pill className='w-4 h-4' />, 1);
   const disciplineIt = () =>
-    performAction("discipline", <VolumeX className='w-4 h-4' />, 20);
+    performAction("discipline", <VolumeX className='w-4 h-4' />, 1);
+  const answerCall = () =>
+    performAction("answerCall", <VolumeX className='w-4 h-4' />, 1);
 
   if (!tamagotchi) return <div>Loading...</div>;
 
@@ -247,7 +270,7 @@ export default function TamagotchiGame() {
       {currentView === "main" && (
         <div
           className={`flex-grow border border-gray-600 flex flex-col items-center justify-center relative ${
-            tamagotchi.light ? "bg-white" : "bg-gray-800"
+            tamagotchi.isLightOn ? "bg-white" : "bg-gray-800"
           }`}
         >
           <div className='absolute top-2 left-2 flex items-center text-sm'>
@@ -257,14 +280,14 @@ export default function TamagotchiGame() {
             <Coins className='w-4 h-4 mr-1' />
             <span className='text-sm font-bold'>{tamagotchi.coins}</span>
           </div>
-          <div className='relative cursor-pointer' onClick={hatchEgg}>
+          <div className='relative cursor-pointer'>
             <Image
               src={tamagotchi.isHatched ? "/baby1.gif" : "/egg1.gif"}
               alt='pet'
               width={200}
               height={200}
             />
-            <p>{tamagotchi.pet} is here</p>
+
             {!tamagotchi.isHatched && (
               <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
                 <div
@@ -278,14 +301,11 @@ export default function TamagotchiGame() {
                 {"💩".repeat(Math.floor(tamagotchi.poop))}
               </div>
             )}
-            {tamagotchi.isCrying && (
-              <div className='absolute top-0 left-0 text-xl'>😢</div>
-            )}
           </div>
           <div className='w-full mt-4 px-4'>
             <StatBar label='Hunger' value={tamagotchi.hunger} />
             <StatBar label='Happiness' value={tamagotchi.happiness} />
-            <StatBar label='Health' value={tamagotchi.health} />
+
             <StatBar label='Discipline' value={tamagotchi.discipline} />
           </div>
           {animation && (
@@ -299,7 +319,7 @@ export default function TamagotchiGame() {
         </div>
       )}
 
-      {currentView === "leaderboard" && (
+      {/* {currentView === "leaderboard" && (
         <div className='flex-grow border border-gray-600 bg-white p-4 overflow-y-auto'>
           <h2 className='text-2xl font-bold mb-4'>Leaderboard</h2>
           <ul>
@@ -316,7 +336,7 @@ export default function TamagotchiGame() {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
 
       {currentView === "wallet" && (
         <div className='flex-grow border border-gray-600 bg-white p-4'>
@@ -351,7 +371,7 @@ export default function TamagotchiGame() {
               setCurrentView("main");
             } else {
               setCurrentView("leaderboard");
-              fetchLeaderboard();
+              // fetchLeaderboard();
             }
           }}
           icon={
