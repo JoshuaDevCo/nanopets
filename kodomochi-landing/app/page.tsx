@@ -4,8 +4,8 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className='min-h-screen flex flex-col bg-gray-100 text-black'>
-      <header className='p-4 flex justify-between items-center'>
-        <div className='flex space-x-4'>
+      <header className='p-4 flex justify-between items-center '>
+        <div className='flex gap-2'>
           <Link
             href='https://twitter.com'
             target='_blank'
@@ -25,6 +25,7 @@ export default function Home() {
             </button>
           </Link>
         </div>
+
         <button className='bg-black text-white p-2 px-4 text-4xl'>Deck</button>
       </header>
 
@@ -39,8 +40,11 @@ export default function Home() {
           items, complete adventures, invite friends and more.
         </p>
         <button className='bg-black text-white p-2 px-4 text-4xl'>
-          Play Now
+          Play Beta Now
         </button>
+        <p className='bg-red-500 px-2 text-xl mt-10'>
+          TOKEN CURRENTLY ONLY ON THE TON TESTNET AND IS NOT TRADEABLE!!
+        </p>
       </main>
 
       <section className='py-16 px-4 mt-20 bg-white relative'>
