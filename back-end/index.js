@@ -30,7 +30,6 @@ const START_STATS = 2;
 const MAX_STATS = 5;
 const CARE_MISTAKE_LIMIT = 10;
 const POOP_LIMIT = 3;
-const CALL_RESPONSE_TIME = 15 * 60 * 1000;
 const MIN_WEIGHT = 1;
 const MAX_WEIGHT = 10;
 
@@ -41,7 +40,6 @@ async function getTamagotchi(userId) {
     ...tamagotchi,
     hunger: parseInt(tamagotchi.hunger),
     happiness: parseInt(tamagotchi.happiness),
-    discipline: parseInt(tamagotchi.discipline),
     age: parseInt(tamagotchi.age),
     weight: parseInt(tamagotchi.weight),
     poop: parseInt(tamagotchi.poop),
@@ -50,15 +48,11 @@ async function getTamagotchi(userId) {
     isSick: tamagotchi.isSick === "true",
     isLightOn: tamagotchi.isLightOn === "true",
     coins: parseInt(tamagotchi.coins),
-    lastFed: parseInt(tamagotchi.lastFed),
-    lastPlayed: parseInt(tamagotchi.lastPlayed),
-    lastCleaned: parseInt(tamagotchi.lastCleaned),
-    lastCall: parseInt(tamagotchi.lastCall),
-    lastCoinDrop: parseInt(tamagotchi.lastCoinDrop),
-    clockTime: parseInt(tamagotchi.clockTime),
+    clockTime: parseFloat(tamagotchi.clockTime),
+    timeSet: tamagotchi.timeSet === "true",
+    lastUpdateTime: parseInt(tamagotchi.lastUpdateTime),
   };
 }
-
 // Helper function to update Tamagotchi data
 async function updateTamagotchi(userId, updates) {
   await redis.hmset(`tamagotchi:${userId}`, updates);
@@ -70,7 +64,6 @@ app.post("/api/tamagotchi", async (req, res) => {
   const newTamagotchi = {
     hunger: START_STATS,
     happiness: START_STATS,
-    discipline: 0,
     age: 1,
     weight: 5,
     poop: 0,
@@ -79,32 +72,13 @@ app.post("/api/tamagotchi", async (req, res) => {
     isSick: false,
     isLightOn: true,
     coins: 0,
-    lastFed: Date.now(),
-    lastPlayed: Date.now(),
-    lastCleaned: Date.now(),
-    lastCall: Date.now(),
-    lastCoinDrop: Date.now() - 15 * 60 * 1000,
     clockTime: 12,
+    timeSet: false,
+    lastUpdateTime: Date.now(),
   };
   await updateTamagotchi(userId, newTamagotchi);
   await redis.sadd("tamagotchi:users", userId);
   res.json({ userId, ...newTamagotchi });
-});
-
-app.post("/api/tamagotchi/:userId/collectCoin", async (req, res) => {
-  const { userId } = req.params;
-  const tamagotchi = await getTamagotchi(userId);
-  const updates = {};
-
-  if (Date.now() - tamagotchi.lastCoinDrop >= 15 * 60 * 1000) {
-    // 15 minutes
-    updates.coins = tamagotchi.coins + 10;
-    updates.lastCoinDrop = Date.now();
-    await updateTamagotchi(userId, updates);
-    res.json({ success: true, coins: updates.coins });
-  } else {
-    res.json({ success: false, message: "No coin available yet" });
-  }
 });
 
 // Get Tamagotchi data
@@ -116,25 +90,29 @@ app.get("/api/tamagotchi/:userId", async (req, res) => {
 
 app.post("/api/tamagotchi/:userId/setTime", async (req, res) => {
   const { userId } = req.params;
-  const { time } = req.body;
+  const { hours, minutes } = req.body;
   const tamagotchi = await getTamagotchi(userId);
-  const updates = { clockTime: time };
+
+  if (tamagotchi.timeSet) {
+    return res.status(400).json({ error: "Time has already been set" });
+  }
+
+  const clockTime = hours + minutes / 60; // Store time as a decimal (e.g., 14.5 for 2:30 PM)
+  const updates = {
+    clockTime: clockTime,
+    timeSet: true,
+    lastUpdateTime: Date.now(),
+  };
 
   // Check if it's sleep time (9 PM to 9 AM)
-  const isSleepTime = time >= 21 || time < 9;
+  const isSleepTime = clockTime >= 21 || clockTime < 9;
 
   if (isSleepTime) {
     updates.isSleeping = true;
-    // Turn off lights if they were on
-    if (tamagotchi.isLightOn) {
-      updates.isLightOn = false;
-    }
+    updates.isLightOn = false;
   } else {
     updates.isSleeping = false;
-    // Turn on lights if they were off
-    if (!tamagotchi.isLightOn) {
-      updates.isLightOn = true;
-    }
+    updates.isLightOn = true;
   }
 
   await updateTamagotchi(userId, updates);
@@ -149,7 +127,21 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   const updates = {};
 
   if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
-    return res.status(400).json({ error: "Tamagotchi has passed away" });
+    if (action == "revive") {
+      const cost = 10;
+      if (tamagotchi.coins < cost) {
+        return res.status(400).json({ error: "Not enough coins" });
+      }
+      updates.careMistakes = 0;
+      updates.coins = tamagotchi.coins - cost;
+      updates.age = 1;
+      updates.weight = 5;
+      updates.poop = 0;
+      updates.careMistakes = 0;
+      updates.hunger = START_STATS;
+      updates.happiness = START_STATS;
+      updates.timeSet = false;
+    } else return res.status(400).json({ error: "Tamagotchi has passed away" });
   }
 
   switch (action) {
@@ -163,10 +155,10 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
 
       if (foodType === "rice") {
         updates.hunger = Math.min(tamagotchi.hunger + 1, MAX_STATS);
-        (updates.weight = tamagotchi.weight + 1), MAX_WEIGHT;
+        updates.weight = Math.min(tamagotchi.weight + 1, MAX_WEIGHT);
       } else if (foodType === "candy") {
         updates.happiness = Math.min(tamagotchi.happiness + 1, MAX_STATS);
-        (updates.weight = tamagotchi.weight + 2), MAX_WEIGHT;
+        updates.weight = Math.min(tamagotchi.weight + 1, MAX_WEIGHT);
       }
 
       if (updates.weight >= MAX_WEIGHT) {
@@ -174,7 +166,6 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
       }
 
       updates.coins = tamagotchi.coins - cost;
-      updates.lastFed = Date.now();
       break;
     case "play":
       if (tamagotchi.weight <= MIN_WEIGHT) {
@@ -186,18 +177,16 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
         updates.happiness = Math.min(tamagotchi.happiness + 1, MAX_STATS);
       }
       updates.weight = Math.max(tamagotchi.weight - 1, MIN_WEIGHT);
-      updates.lastPlayed = Date.now();
       await updateTamagotchi(userId, updates);
       const updatedTamagotchi = await getTamagotchi(userId);
       res.json({ ...updatedTamagotchi, won });
       io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
       return;
     case "clean":
-      if ((tamagotchi.poop = 0)) {
+      if (tamagotchi.poop == 0) {
         return res.status(400).json({ error: "No coins to collect" });
       }
       updates.poop = 0;
-      updates.lastCleaned = Date.now();
       updates.coins = tamagotchi.coins + 5;
       break;
     case "toggleLight":
@@ -220,22 +209,8 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
 
       break;
     case "revive":
-      if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
-        const cost = 10;
-        if (tamagotchi.coins < cost) {
-          return res.status(400).json({ error: "Not enough coins" });
-        }
-        updates.careMistakes = 0;
-        updates.coins = tamagotchi.coins - cost;
-        updates.hunger = START_STATS;
-        updates.happiness = START_STATS;
-      }
-      break;
-
-    case "attention":
-      if (tamagotchi.hunger <= 1 || tamagotchi.happiness <= 1) {
-        updates.discipline = tamagotchi.discipline + 1;
-        updates.lastCall = Date.now();
+      if (tamagotchi.careMistakes < CARE_MISTAKE_LIMIT) {
+        return res.status(400).json({ error: "Still alive" });
       }
       break;
   }
@@ -251,56 +226,72 @@ const updateTask = new AsyncTask(
   "update-tamagotchis",
   async () => {
     const userIds = await redis.smembers("tamagotchi:users");
+    const currentTime = Date.now();
     for (const userId of userIds) {
       const tamagotchi = await getTamagotchi(userId);
-      const updates = {};
-      const now = Date.now();
 
-      // Sleep mechanics
-      const currentTime = tamagotchi.clockTime;
-      const isSleepTime = currentTime >= 21 || currentTime < 9;
-
-      if (isSleepTime && !tamagotchi.isSleeping) {
-        updates.isSleeping = true;
-      } else if (!isSleepTime && tamagotchi.isSleeping) {
-        updates.isSleeping = false;
-        updates.isLightOn = true; // Turn light on when waking up
-        // Age increase
-        updates.age = tamagotchi.age + 1;
+      if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
+        continue; // Skip this Tamagotchi and move to the next one
       }
 
-      if (!isSleepTime) {
-        // Stat decay
-        if (Math.random() < 0.3)
-          updates.hunger = Math.max(tamagotchi.hunger - 1, 0);
-        if (Math.random() < 0.3)
-          updates.happiness = Math.max(tamagotchi.happiness - 1, 0);
+      const updates = {};
 
-        // Random events
-        if (Math.random() < 0.1) updates.isSick = true;
-        if (Math.random() < 0.3) updates.poop = tamagotchi.poop + 1;
+      // Calculate elapsed time in minutes
+      const elapsedMinutes =
+        (currentTime - tamagotchi.lastUpdateTime) / (60 * 1000);
 
+      // Update clock time
+      updates.clockTime = (tamagotchi.clockTime + elapsedMinutes / 60) % 24;
+
+      // Sleep mechanics
+      const isSleepTime = updates.clockTime >= 21 || updates.clockTime < 9;
+
+      if (!tamagotchi.isSleeping) {
         // Care mistakes
         if (tamagotchi.hunger === 0 || tamagotchi.happiness === 0) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
         }
-        if (tamagotchi.isSleeping && tamagotchi.isLightOn) {
-          updates.careMistakes = tamagotchi.careMistakes + 1;
-        }
-        if (
-          tamagotchi.isSick &&
-          now - tamagotchi.lastCall > 2 * 60 * 60 * 1000
-        ) {
+        if (tamagotchi.isSick) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
         }
         if (tamagotchi.poop >= POOP_LIMIT) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
           updates.poop = 0;
         }
+
+        // Give coins via poop if user has no coins left.
+        if (tamagotchi.coins == 0) {
+          if (tamagotchi.poop <= POOP_LIMIT) {
+            updates.poop = tamagotchi.poop + 1;
+          }
+        }
+
+        // Stat decay
+        if (Math.random() < 0.25)
+          updates.hunger = Math.max(tamagotchi.hunger - 1, 0);
+        if (Math.random() < 0.25)
+          updates.happiness = Math.max(tamagotchi.happiness - 1, 0);
+
+        // Random events
+        if (Math.random() < 0.1) updates.isSick = true;
+        if (tamagotchi.poop < POOP_LIMIT) {
+          if (Math.random() < 0.1) updates.poop = tamagotchi.poop + 1;
+        }
+      }
+
+      if (isSleepTime && !tamagotchi.isSleeping) {
+        updates.isSleeping = true;
+      } else if (!isSleepTime && tamagotchi.isSleeping) {
+        updates.isSleeping = false;
+        updates.isLightOn = true; // Turn light on when waking up
+        updates.careMistakes = 0; // Reset care mistakes
+        // Age increase
+        updates.age = tamagotchi.age + 1;
+        updates.poop = tamagotchi.poop + 1;
       }
 
       // Increment time
-      updates.clockTime = (currentTime + 1) % 24;
+      updates.lastUpdateTime = currentTime;
 
       await updateTamagotchi(userId, updates);
       const updatedTamagotchi = await getTamagotchi(userId);
@@ -313,7 +304,7 @@ const updateTask = new AsyncTask(
 );
 
 const updateJob = new SimpleIntervalJob(
-  { minutes: 15, runImmediately: true },
+  { minutes: 5, runImmediately: true },
   updateTask
 );
 

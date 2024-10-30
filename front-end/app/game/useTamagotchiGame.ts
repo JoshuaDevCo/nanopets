@@ -9,26 +9,18 @@ import Candy from "../svgs/candy.png";
 import Console from "../svgs/console.png";
 import Flask from "../svgs/flask.png";
 import Sun from "../svgs/sun.png";
-import Coin from "../svgs/coin.png";
-import HappyEmpty from "../svgs/happyempty.png";
-import HappyEmptyWhite from "../svgs/happyemptywhite.png";
-import Happy from "../svgs/happy.png";
-import HappyWhite from "../svgs/happywhite.png";
-import Hungry from "../svgs/hungry.png";
-import HungryWhite from "../svgs/hungrywhite.png";
-import HungryEmpty from "../svgs/hungryempty.png";
-import HungryEmptyWhite from "../svgs/hungryemptywhite.png";
 import WaterDrop from "../svgs/waterdrop.png";
 import Speaker from "../svgs/speaker.png";
-import MoneyBag from "../svgs/money-bag.png";
 import Trophy from "../svgs/trophy.png";
-import BackArrow from "../svgs/backarrow.png";
+import Happy from "../svgs/happy.png";
+import Scale from "../svgs/scale1.png";
+import Hungry from "../svgs/hungry.png";
+import Coin from "../svgs/coin.png";
 
 interface Tamagotchi {
   userId: string;
   hunger: number;
   happiness: number;
-  discipline: number;
   age: number;
   weight: number;
   poop: number;
@@ -38,7 +30,8 @@ interface Tamagotchi {
   isLightOn: boolean;
   coins: number;
   clockTime: number;
-  lastCoinDrop: number;
+  timeSet: boolean;
+  lastUpdateTime: number;
 }
 
 interface AnimationInfo {
@@ -52,12 +45,14 @@ export function useTamagotchiGame() {
   const [tamagotchi, setTamagotchi] = useState<Tamagotchi | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<
-    "main" | "stats" | "minigame" | "clock" | "wallet"
+    "main" | "stats" | "minigame" | "clock" | "wallet" | "shop"
   >("clock");
   const [animation, setAnimation] = useState<AnimationInfo | null>(null);
+  const [animation2, setAnimation2] = useState<AnimationInfo | null>(null);
+  const [animation3, setAnimation3] = useState<AnimationInfo | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameResult, setGameResult] = useState<string | null>(null);
-  const [clockTime, setClockTime] = useState<number>(0);
+  const [clockTime, setClockTime] = useState<number>(12);
   const [error, setError] = useState<string | null>(null);
   const [isGameInProgress, setIsGameInProgress] = useState<boolean>(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
@@ -96,6 +91,7 @@ export function useTamagotchiGame() {
 
       socket.on("tamagotchiUpdate", (updatedTamagotchi: Tamagotchi) => {
         setTamagotchi(updatedTamagotchi);
+        setClockTime(updatedTamagotchi.clockTime);
       });
 
       return () => {
@@ -110,7 +106,7 @@ export function useTamagotchiGame() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
       );
       setTamagotchi(response.data);
-      setClockTime(response.data.clockTime || 0);
+      setClockTime(response.data.clockTime);
     } catch (error) {
       console.error("Error fetching Tamagotchi:", error);
     }
@@ -124,7 +120,7 @@ export function useTamagotchiGame() {
       const { userId, ...tamagotchiData } = response.data;
       setUserId(userId);
       setTamagotchi(tamagotchiData);
-      setClockTime(tamagotchiData.clockTime || 0);
+      setClockTime(tamagotchiData.clockTime);
       localStorage.setItem("userId", userId);
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
@@ -149,21 +145,67 @@ export function useTamagotchiGame() {
         const isWin = winProbability > 0.7;
         setGameResult(isWin ? "You won!" : "You lost.");
         setIsGameInProgress(false);
-
+        if (isWin) {
+          triggerAnimation(Happy, statChange);
+          triggerAnimation2(Scale, -statChange);
+        } else {
+          triggerAnimation(Scale, -statChange);
+        }
         setTimeout(() => {
           setCurrentView("main");
           setGameResult(null);
         }, 3000);
       }
       setTamagotchi(response.data);
-      if (action !== "toggleLight") {
-        triggerAnimation(icon, statChange);
+      setClockTime(response.data.clockTime);
+
+      if (action == "feed") {
+        if (foodType == "rice") {
+          triggerAnimation(Hungry, statChange);
+          triggerAnimation2(Scale, statChange);
+          triggerAnimation3(Coin, -1);
+        }
+        if (foodType == "candy") {
+          triggerAnimation(Happy, 1);
+          triggerAnimation2(Scale, 2);
+          triggerAnimation3(Coin, -2);
+        }
+      }
+      if (action == "medicine") {
+        // triggerAnimation()
+      }
+      if (action == "toggleLight") {
+        // triggerAnimation(icon, statChange);
+      }
+      if (action == "clean") {
+        triggerAnimation(Coin, 5);
       }
       setLastAction(action);
       setError(null);
       setIsBusyAction(false);
     } catch (error) {
       console.error(`Error performing action ${action}:`, error);
+      setCurrentView("main");
+      displayError(error.response?.data?.error || "An error occurred");
+      setIsBusyAction(false);
+    }
+  };
+
+  const purchaseItem = async (itemId: string) => {
+    if (!userId) return;
+    try {
+      setIsBusyAction(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/purchase`,
+        { itemId }
+      );
+      setTamagotchi(response.data);
+      setClockTime(response.data.clockTime);
+      setLastAction(`purchase_${itemId}`);
+      setError(null);
+      setIsBusyAction(false);
+    } catch (error) {
+      console.error(`Error purchasing item ${itemId}:`, error);
       displayError(error.response?.data?.error || "An error occurred");
       setIsBusyAction(false);
     }
@@ -176,62 +218,43 @@ export function useTamagotchiGame() {
     setTimeout(() => setAnimation(null), 1000);
   };
 
-  const setTime = async () => {
+  const triggerAnimation2 = (icon: StaticImageData, value: number) => {
+    const x = Math.random() * 150 + 25;
+    const y = Math.random() * 150 + 25;
+    setAnimation2({ icon, value, x, y });
+    setTimeout(() => setAnimation2(null), 1000);
+  };
+
+  const triggerAnimation3 = (icon: StaticImageData, value: number) => {
+    const x = Math.random() * 150 + 35;
+    const y = Math.random() * 150 + 35;
+    setAnimation3({ icon, value, x, y });
+    setTimeout(() => setAnimation3(null), 1000);
+  };
+
+  const setTime = async (hours: number, minutes: number) => {
     if (!userId) return;
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/setTime`,
-        { time: clockTime }
+        { hours, minutes }
       );
-      setTamagotchi(response.data);
       setCurrentView("main");
+      setTamagotchi(response.data);
+      setClockTime(response.data.clockTime);
     } catch (error) {
       console.error("Error setting time:", error);
-    }
-  };
-
-  const collectCoin = async () => {
-    if (!userId) return;
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/collectCoin`
+      displayError(
+        error.response?.data?.error || "An error occurred while setting time"
       );
-      if (response.data.success) {
-        setTamagotchi((prevState) => ({
-          ...prevState,
-          coins: response.data.coins,
-        }));
-        triggerAnimation("coin", 1);
-      } else {
-        displayError(response.data.message);
-      }
-    } catch (error) {
-      console.error("Error collecting coin:", error);
-      displayError("Failed to collect coin");
-    }
-  };
-
-  const resetTamagotchi = async () => {
-    if (!userId) return;
-    try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}`
-      );
-      localStorage.removeItem("userId");
-      setUserId(null);
-      setTamagotchi(null);
-      setCurrentView("clock");
-      createTamagotchi();
-    } catch (error) {
-      console.error("Error resetting Tamagotchi:", error);
     }
   };
 
   const feed = (foodType: "rice" | "candy") =>
-    performAction("feed", foodType == "rice" ? Rice : Candy, 1, foodType);
+    performAction("feed", foodType === "rice" ? Rice : Candy, 1, foodType);
   const play = () => {
     if (isGameInProgress) {
-      performAction("play", Console, 1);
+      performAction("play", Happy, 1);
     } else {
       setCurrentView("minigame");
       setIsGameInProgress(true);
@@ -240,7 +263,7 @@ export function useTamagotchiGame() {
   const clean = () => performAction("clean", WaterDrop, -tamagotchi!.poop);
   const toggleLight = () => performAction("toggleLight", Sun, 0);
   const giveMedicine = () => performAction("medicine", Flask, 1);
-  const disciplineIt = () => performAction("discipline", Speaker, 1);
+
   const revive = () => performAction("revive", Trophy, 0);
 
   return {
@@ -248,22 +271,21 @@ export function useTamagotchiGame() {
     currentView,
     setCurrentView,
     animation,
+    animation2,
+    animation3,
     gameResult,
     clockTime,
-    setClockTime,
     error,
     isGameInProgress,
     lastAction,
     isBusyAction,
     setTime,
-    collectCoin,
-    resetTamagotchi,
     feed,
     play,
     clean,
     toggleLight,
     giveMedicine,
-    disciplineIt,
+    purchaseItem,
     revive,
   };
 }

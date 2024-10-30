@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import PlayingCard from "../svgs/gambling.png";
+
 interface MinigameViewProps {
   isGameInProgress: boolean;
   gameResult: string | null;
@@ -14,7 +16,7 @@ export default function MinigameView({
   return (
     <div className='p-4 w-full flex flex-col items-center justify-center'>
       <Image
-        src='/svgs/gambling.png'
+        src={PlayingCard}
         alt='Playing Card'
         width={200}
         height={300}
@@ -22,17 +24,17 @@ export default function MinigameView({
       />
       {isGameInProgress ? (
         <>
-          <h2 className='text-2xl font-bold mb-4'>Guess the next card!</h2>
-          <div className='flex gap-4'>
+          <h2 className='text-3xl font-bold mb-4'>Guess the next card!</h2>
+          <div className='flex gap-4 text-2xl'>
             <button
               onClick={play}
-              className='bg-blue-500 hover:bg-blue-600 text-white'
+              className='bg-blue-500 hover:bg-blue-600 text-white p-2 px-4'
             >
               Higher
             </button>
             <button
               onClick={play}
-              className='bg-red-500 hover:bg-red-600 text-white'
+              className='bg-red-500 hover:bg-red-600 text-white p-2 px-4'
             >
               Lower
             </button>

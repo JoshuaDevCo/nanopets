@@ -2,7 +2,6 @@ interface WalletViewProps {
   coins: number;
   weight: number;
   careMistakes: number;
-  collectCoin: () => void;
   resetTamagotchi: () => void;
 }
 
@@ -10,7 +9,6 @@ export default function WalletView({
   coins,
   weight,
   careMistakes,
-  collectCoin,
   resetTamagotchi,
 }: WalletViewProps) {
   return (
@@ -18,12 +16,6 @@ export default function WalletView({
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
       <p className='mb-4 text-2xl'>Coins: {coins}</p>
       <div className='flex gap-2 mb-4'>
-        <button
-          onClick={collectCoin}
-          className='bg-blue-500 hover:bg-blue-600 text-white'
-        >
-          Collect Coin
-        </button>
         <button
           onClick={resetTamagotchi}
           className='bg-red-500 hover:bg-red-600 text-white'

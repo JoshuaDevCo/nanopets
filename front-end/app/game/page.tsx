@@ -8,6 +8,8 @@ import ClockView from "./ClockView";
 import WalletView from "./WalletView";
 import MinigameView from "./MiniGameView";
 import AIChat from "./ai";
+import Loading from "./Loading";
+import ShopView from "./ShopView";
 import { useTamagotchiGame } from "./useTamagotchiGame";
 
 // Import SVG icons
@@ -26,10 +28,13 @@ import HungryWhite from "../svgs/hungrywhite.png";
 import HungryEmpty from "../svgs/hungryempty.png";
 import HungryEmptyWhite from "../svgs/hungryemptywhite.png";
 import WaterDrop from "../svgs/waterdrop.png";
+import GiftBox from "../svgs/gift-box.png";
 import Speaker from "../svgs/speaker.png";
 import MoneyBag from "../svgs/money-bag.png";
 import Trophy from "../svgs/trophy.png";
 import BackArrow from "../svgs/backarrow.png";
+import Scale from "../svgs/scale1.png";
+import Moon from "../svgs/moon.png";
 
 export default function TamagotchiGame() {
   const {
@@ -37,30 +42,24 @@ export default function TamagotchiGame() {
     currentView,
     setCurrentView,
     animation,
+    animation2,
+    animation3,
     gameResult,
     clockTime,
-    setClockTime,
     error,
     isGameInProgress,
     lastAction,
     isBusyAction,
     setTime,
-    collectCoin,
-    resetTamagotchi,
     feed,
     play,
     clean,
     toggleLight,
     giveMedicine,
-    disciplineIt,
+    purchaseItem,
+
     revive,
   } = useTamagotchiGame();
-
-  if (!tamagotchi) return <div>Loading...</div>;
-
-  const isSleepTime = clockTime >= 21 || clockTime < 9;
-  const isDisabled = currentView !== "main" || tamagotchi.careMistakes >= 10;
-  const isDead = tamagotchi.careMistakes >= 10;
 
   const icons = {
     Rice,
@@ -69,48 +68,63 @@ export default function TamagotchiGame() {
     Console,
     Flask,
     WaterDrop,
+    GiftBox,
     Speaker,
     MoneyBag,
     Trophy,
     BackArrow,
   };
 
+  if (!tamagotchi)
+    return (
+      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+        <Loading icons={icons} />
+      </div>
+    );
+
+  const isDisabled = currentView !== "main" || tamagotchi.careMistakes >= 10;
+  const isDead = tamagotchi.careMistakes >= 10;
+
+  const formatTime = (clockTime: number) => {
+    const hours = Math.floor(clockTime);
+    const minutes = Math.round((clockTime % 1) * 60);
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   return (
     <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
       {currentView === "clock" ? (
-        <ClockView
-          clockTime={clockTime}
-          setClockTime={setClockTime}
-          setTime={setTime}
-          icons={icons}
-        />
+        <ClockView icons={icons} setTime={setTime} />
       ) : (
         <>
           <div className='grid grid-cols-5 gap-4 p-2'>
             <Button
               onClick={() => feed("rice")}
               icon={Rice}
-              disabled={isDisabled || isBusyAction}
+              disabled={isDisabled || isBusyAction || tamagotchi.coins == 0}
             />
             <Button
               onClick={() => feed("candy")}
               icon={Candy}
-              disabled={isDisabled || isBusyAction}
+              disabled={isDisabled || isBusyAction || tamagotchi.coins < 2}
             />
-            <Button
-              onClick={toggleLight}
-              icon={Sun}
-              disabled={isDisabled || isBusyAction}
-            />
+
             <Button
               onClick={play}
               icon={Console}
-              disabled={isDisabled || isBusyAction}
+              disabled={isDisabled || isBusyAction || tamagotchi.weight == 1}
             />
             <Button
               onClick={giveMedicine}
               icon={Flask}
-              disabled={isDisabled || isBusyAction}
+              disabled={isDisabled || isBusyAction || !tamagotchi.isSick}
+            />
+            <Button
+              onClick={clean}
+              icon={WaterDrop}
+              disabled={isDisabled || isBusyAction || tamagotchi.poop == 0}
             />
           </div>
 
@@ -123,8 +137,21 @@ export default function TamagotchiGame() {
           >
             {currentView === "main" && (
               <>
-                <div className='absolute top-2 left-2 flex items-center text-2xl'>
-                  <span className='font-bold'>Age:</span> {tamagotchi.age} days
+                <div className='absolute top-2 left-2 flex flex-col items-center text-2xl'>
+                  <div className='flex gap-2'>
+                    <span className='font-bold text-xl'>
+                      <Image width={24} height={24} src={Scale} alt='scale' />
+                    </span>{" "}
+                    {tamagotchi.weight}/10
+                  </div>
+                  <div>
+                    <span className='font-bold'>Age:</span> {tamagotchi.age}{" "}
+                    days
+                  </div>
+                </div>
+                <div className='absolute top-2 flex items-center text-2xl'>
+                  <span className='font-bold'>Care Mistakes:</span>{" "}
+                  {tamagotchi.careMistakes}/10
                 </div>
                 <div className='absolute top-2 right-2 flex items-center text-2xl'>
                   <Image
@@ -140,7 +167,7 @@ export default function TamagotchiGame() {
                   <Image
                     src={
                       isDead
-                        ? "/dead.gif"
+                        ? "/dead1.png"
                         : tamagotchi.isSleeping
                         ? "/sleeping.gif"
                         : "/baby1.gif"
@@ -160,14 +187,29 @@ export default function TamagotchiGame() {
                     />
                   )}
                   {tamagotchi.isSick && (
-                    <div className='absolute top-0 left-0 text-xl'>🤒</div>
+                    <Image
+                      src='/sick1.gif'
+                      alt='pet'
+                      width={300}
+                      height={300}
+                      className='absolute top-0'
+                    />
                   )}
-                  {tamagotchi.poop > 0 && (
-                    <div className='absolute bottom-0 right-0 text-2xl'>
-                      {"💩".repeat(tamagotchi.poop)}
-                    </div>
-                  )}
+                  {tamagotchi.poop > 0 &&
+                    [...Array(tamagotchi.poop)].map((_, i) => (
+                      <Image
+                        key={i}
+                        src={Moon}
+                        alt='moon poop'
+                        width={30}
+                        height={30}
+                        className=' absolute bottom-0 right-0 '
+                      />
+                    ))}
                 </div>
+                <p className='mt-2 text-lg font-bold'>
+                  Time: {formatTime(clockTime)} <br />
+                </p>
                 {tamagotchi && lastAction && (
                   <AIChat
                     tamagotchi={tamagotchi}
@@ -176,14 +218,7 @@ export default function TamagotchiGame() {
                   />
                 )}
                 <div className='absolute bottom-2 left-2 flex items-center'>
-                  <StatIcons
-                    label='Happiness'
-                    value={tamagotchi.happiness}
-                    icon={tamagotchi.isLightOn ? Happy : HappyWhite}
-                    icon2={tamagotchi.isLightOn ? HappyEmpty : HappyEmptyWhite}
-                  />
-                </div>
-                <div className='absolute bottom-2 right-2 flex items-center'>
+                  {" "}
                   <StatIcons
                     label='Hunger'
                     value={tamagotchi.hunger}
@@ -193,6 +228,14 @@ export default function TamagotchiGame() {
                     }
                   />
                 </div>
+                <div className='absolute bottom-2 right-2 flex items-center'>
+                  <StatIcons
+                    label='Happiness'
+                    value={tamagotchi.happiness}
+                    icon={tamagotchi.isLightOn ? Happy : HappyWhite}
+                    icon2={tamagotchi.isLightOn ? HappyEmpty : HappyEmptyWhite}
+                  />
+                </div>
               </>
             )}
             {currentView === "wallet" && (
@@ -200,11 +243,13 @@ export default function TamagotchiGame() {
                 coins={tamagotchi.coins}
                 weight={tamagotchi.weight}
                 careMistakes={tamagotchi.careMistakes}
-                collectCoin={collectCoin}
-                resetTamagotchi={resetTamagotchi}
+                resetTamagotchi={revive}
               />
             )}
             {currentView === "stats" && <div className='p-4 w-full'></div>}
+            {currentView === "shop" && (
+              <ShopView coins={tamagotchi.coins} onPurchase={purchaseItem} />
+            )}
             {currentView === "minigame" && (
               <MinigameView
                 isGameInProgress={isGameInProgress}
@@ -220,6 +265,22 @@ export default function TamagotchiGame() {
                 y={animation.y}
               />
             )}
+            {animation2 && (
+              <AnimatedIcon
+                icon={animation2.icon}
+                value={animation2.value}
+                x={animation2.x}
+                y={animation2.y}
+              />
+            )}
+            {animation3 && (
+              <AnimatedIcon
+                icon={animation3.icon}
+                value={animation3.value}
+                x={animation3.x}
+                y={animation3.y}
+              />
+            )}
             {error && (
               <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
                 {error}
@@ -229,36 +290,81 @@ export default function TamagotchiGame() {
 
           <div className='grid grid-cols-4 gap-4 p-2'>
             <Button
-              onClick={clean}
-              icon={WaterDrop}
-              disabled={isDisabled || isBusyAction}
-            />
-            <Button
-              onClick={disciplineIt}
-              icon={Speaker}
-              disabled={isDisabled || isBusyAction}
+              onClick={toggleLight}
+              icon={Sun}
+              disabled={isDisabled || isBusyAction || !tamagotchi.isSleeping}
             />
             {currentView === "main" || currentView === "minigame" ? (
               <>
-                <Button
-                  onClick={() => setCurrentView("wallet")}
-                  icon={MoneyBag}
-                  disabled={isBusyAction}
-                />
                 <Button
                   onClick={() => setCurrentView("stats")}
                   icon={Trophy}
                   disabled={isBusyAction}
                 />
+                <Button
+                  onClick={() => setCurrentView("shop")}
+                  icon={GiftBox}
+                  disabled={isBusyAction}
+                />
+                <Button
+                  onClick={() => setCurrentView("wallet")}
+                  icon={MoneyBag}
+                  disabled={isBusyAction}
+                />
               </>
             ) : (
               <>
-                {currentView === "stats" && <div />}
+                {currentView === "wallet" && (
+                  <>
+                    <Button
+                      onClick={() => setCurrentView("stats")}
+                      icon={Trophy}
+                      disabled={true}
+                    />
+                    <Button
+                      onClick={() => setCurrentView("shop")}
+                      icon={GiftBox}
+                      disabled={true}
+                    />
+                  </>
+                )}
+                {currentView === "shop" && (
+                  <>
+                    <Button
+                      onClick={() => setCurrentView("stats")}
+                      icon={Trophy}
+                      disabled={true}
+                    />
+                  </>
+                )}
                 <Button
                   onClick={() => setCurrentView("main")}
                   icon={BackArrow}
                   disabled={false}
                 />
+                {currentView === "shop" && (
+                  <>
+                    <Button
+                      onClick={() => setCurrentView("wallet")}
+                      icon={MoneyBag}
+                      disabled={true}
+                    />
+                  </>
+                )}
+                {currentView === "stats" && (
+                  <>
+                    <Button
+                      onClick={() => setCurrentView("shop")}
+                      icon={GiftBox}
+                      disabled={true}
+                    />
+                    <Button
+                      onClick={() => setCurrentView("wallet")}
+                      icon={MoneyBag}
+                      disabled={true}
+                    />
+                  </>
+                )}
               </>
             )}
           </div>
