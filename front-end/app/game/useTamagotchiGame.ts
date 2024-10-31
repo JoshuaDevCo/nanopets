@@ -16,7 +16,6 @@ import Hungry from "../svgs/hungry.png";
 import Coin from "../svgs/coin.png";
 
 import { WebApp } from "@twa-dev/types";
-import { useRouter } from "next/router";
 
 declare global {
   interface Window {
@@ -69,8 +68,6 @@ export function useTamagotchiGame() {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const router = useRouter();
-
   const checkAuth = async () => {
     const response = await fetch("/api/session");
     if (response.ok) {
@@ -79,7 +76,7 @@ export function useTamagotchiGame() {
       setUserId(session.telegramId);
       fetchTamagotchi(session.telegramId);
     } else {
-      router.push("/");
+      console.log("not authenticated");
     }
   };
 
