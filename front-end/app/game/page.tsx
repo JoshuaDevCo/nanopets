@@ -35,6 +35,7 @@ import Trophy from "../svgs/trophy.png";
 import BackArrow from "../svgs/backarrow.png";
 import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
+import NotOpenTelegram from "./NotOpenInTelegram";
 
 export default function TamagotchiGame() {
   const {
@@ -74,6 +75,16 @@ export default function TamagotchiGame() {
     Trophy,
     BackArrow,
   };
+
+  if (currentView == "nottelegram") {
+    return (
+      <>
+        <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+          <NotOpenTelegram icons={icons} />
+        </div>
+      </>
+    );
+  }
 
   if (!tamagotchi)
     return (

@@ -58,9 +58,17 @@ async function updateTamagotchi(userId, updates) {
   await redis.hmset(`tamagotchi:${userId}`, updates);
 }
 
-// New Tama
+// New Tamagotchi
 app.post("/api/tamagotchi", async (req, res) => {
-  const userId = Math.random().toString(36).substring(7);
+  const { userId } = req.body;
+
+  // Check if a Tamagotchi already exists for this user
+  const existingTamagotchi = await redis.exists(`tamagotchi:${userId}`);
+  if (existingTamagotchi) {
+    const tamagotchi = await getTamagotchi(userId);
+    return res.json({ userId, ...tamagotchi });
+  }
+
   const newTamagotchi = {
     hunger: START_STATS,
     happiness: START_STATS,

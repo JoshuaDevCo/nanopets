@@ -16,7 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={micro.className}>{children}</body>
+      <body className={`${micro.className} flex justify-center bg-blue-50`}>
+        {children}
+      </body>
     </html>
   );
 }
