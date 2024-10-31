@@ -82,7 +82,7 @@ export function useTamagotchiGame() {
 
   useEffect(() => {
     checkAuth();
-  }, [isAuthenticated]);
+  }, []);
 
   const displayError = (error: any) => {
     setError(error);
