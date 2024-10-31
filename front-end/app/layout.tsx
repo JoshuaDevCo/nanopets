@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Micro_5 } from "next/font/google";
 import "./globals.css";
 
-const micro = Micro_5({ subsets: ["latin"], weight: ["400"] });
+const micro = Micro_5({ subsets: ["latin"], weight: ["400"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
