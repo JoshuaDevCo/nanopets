@@ -71,10 +71,6 @@ export function useTamagotchiGame() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     const response = await fetch("/api/session");
     if (response.ok) {
@@ -86,6 +82,10 @@ export function useTamagotchiGame() {
       router.push("/");
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const displayError = (error: any) => {
     setError(error);
@@ -140,7 +140,7 @@ export function useTamagotchiGame() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
         { userId: id }
       );
-      const { userId, ...tamagotchiData } = response.data;
+      const { tamagotchiData } = response.data;
       setTamagotchi(tamagotchiData);
       setClockTime(tamagotchiData.clockTime);
       setCurrentView("main");

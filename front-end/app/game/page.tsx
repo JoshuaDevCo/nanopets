@@ -35,7 +35,6 @@ import Trophy from "../svgs/trophy.png";
 import BackArrow from "../svgs/backarrow.png";
 import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
-import NotOpenTelegram from "./NotOpenInTelegram";
 import TelegramAuth from "@/components/TelegramAuth";
 
 export default function TamagotchiGame() {
