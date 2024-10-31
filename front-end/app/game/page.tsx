@@ -36,6 +36,7 @@ import BackArrow from "../svgs/backarrow.png";
 import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
 import NotOpenTelegram from "./NotOpenInTelegram";
+import TelegramAuth from "@/components/TelegramAuth";
 
 export default function TamagotchiGame() {
   const {
@@ -58,7 +59,7 @@ export default function TamagotchiGame() {
     toggleLight,
     giveMedicine,
     purchaseItem,
-
+    isAuthenticated,
     revive,
   } = useTamagotchiGame();
 
@@ -76,14 +77,8 @@ export default function TamagotchiGame() {
     BackArrow,
   };
 
-  if (currentView == "nottelegram") {
-    return (
-      <>
-        <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-          <NotOpenTelegram />
-        </div>
-      </>
-    );
+  if (!isAuthenticated) {
+    return <TelegramAuth />;
   }
 
   if (!tamagotchi)
