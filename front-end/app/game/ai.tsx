@@ -47,10 +47,10 @@ export default function TamagotchiResponse({
   );
 }
 
-function getStateChanges(prevState, currentState): any {
+function getStateChanges(prevState: any, currentState: any) {
   if (!prevState) return {};
 
-  const changes = {};
+  const changes: any = {};
   for (const [key, value] of Object.entries(currentState)) {
     if (prevState[key] !== value) {
       changes[key] = { from: prevState[key], to: value };

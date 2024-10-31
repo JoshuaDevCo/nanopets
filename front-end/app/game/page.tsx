@@ -80,7 +80,7 @@ export default function TamagotchiGame() {
     return (
       <>
         <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-          <NotOpenTelegram icons={icons} />
+          <NotOpenTelegram />
         </div>
       </>
     );

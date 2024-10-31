@@ -42,8 +42,8 @@ export default function ClockView({ setTime, icons }: ClockViewProps) {
           <Image src='/egg1.gif' alt='pet' width={200} height={200} />
         </div>
         <p className='mb-4 p-2 text-center text-sm font-bold'>
-          Tama's sleep between 9pm and 9am and do not require attention during
-          those times.*
+          Tama&apos;s sleep between 9pm and 9am and do not require attention
+          during those times.*
         </p>
         <div className='flex gap-4 mb-4'>
           <label className='flex flex-col items-center'>

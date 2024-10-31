@@ -6,11 +6,9 @@ import { StaticImageData } from "next/image";
 // Import SVG icons
 import Rice from "../svgs/yakisoba.png";
 import Candy from "../svgs/candy.png";
-import Console from "../svgs/console.png";
 import Flask from "../svgs/flask.png";
 import Sun from "../svgs/sun.png";
 import WaterDrop from "../svgs/waterdrop.png";
-import Speaker from "../svgs/speaker.png";
 import Trophy from "../svgs/trophy.png";
 import Happy from "../svgs/happy.png";
 import Scale from "../svgs/scale1.png";
@@ -53,7 +51,6 @@ interface AnimationInfo {
 
 export function useTamagotchiGame() {
   const [tamagotchi, setTamagotchi] = useState<Tamagotchi | null>(null);
-  const [user, setUser] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<
     "main" | "stats" | "minigame" | "clock" | "wallet" | "shop" | "nottelegram"
@@ -90,7 +87,6 @@ export function useTamagotchiGame() {
       const tg = window.Telegram.WebApp;
       tg.ready();
 
-      const initData = tg.initData || "";
       const initDataUnsafe = tg.initDataUnsafe || {};
 
       if (initDataUnsafe.user) {
@@ -201,7 +197,7 @@ export function useTamagotchiGame() {
       setLastAction(action);
       setError(null);
       setIsBusyAction(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error performing action ${action}:`, error);
       setCurrentView("main");
       displayError(error.response?.data?.error || "An error occurred");
@@ -222,7 +218,7 @@ export function useTamagotchiGame() {
       setLastAction(`purchase_${itemId}`);
       setError(null);
       setIsBusyAction(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error purchasing item ${itemId}:`, error);
       displayError(error.response?.data?.error || "An error occurred");
       setIsBusyAction(false);
@@ -260,7 +256,7 @@ export function useTamagotchiGame() {
       setCurrentView("main");
       setTamagotchi(response.data);
       setClockTime(response.data.clockTime);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error setting time:", error);
       displayError(
         error.response?.data?.error || "An error occurred while setting time"

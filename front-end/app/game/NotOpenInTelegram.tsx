@@ -1,25 +1,8 @@
-import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import Image, { StaticImageData } from "next/image";
-import Button from "./Button";
+import Image from "next/image";
 
 import Heart from "../svgs/heart.png";
 
-interface LoadingProps {
-  icons: {
-    Rice: StaticImageData;
-    Candy: StaticImageData;
-    Sun: StaticImageData;
-    Console: StaticImageData;
-    Flask: StaticImageData;
-    WaterDrop: StaticImageData;
-    Speaker: StaticImageData;
-    MoneyBag: StaticImageData;
-    Trophy: StaticImageData;
-  };
-}
-
-export default function NotOpenTelegram({ icons }: LoadingProps) {
+export default function NotOpenTelegram() {
   return (
     <>
       <div className='flex-grow   flex flex-col items-center justify-center relative'>

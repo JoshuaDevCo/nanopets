@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 
-import { ShoppingCart } from "lucide-react";
 import Coin from "../svgs/coin.png";
 import Robot from "../svgs/robot.png";
 import Pill from "../svgs/pill.png";

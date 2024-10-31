@@ -1,4 +1,4 @@
-import { convertToCoreMessages, streamText } from "ai";
+import { streamText } from "ai";
 import { createOpenAI as createGroq } from "@ai-sdk/openai";
 
 const groq = createGroq({
