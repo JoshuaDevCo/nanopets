@@ -51,8 +51,8 @@ interface AnimationInfo {
 
 export function useTamagotchiGame() {
   const [tamagotchi, setTamagotchi] = useState<Tamagotchi | null>(null);
-  // const [userId, setUserId] = useState<string | null>(null);
-  const userId = 24242;
+  const [userId, setUserId] = useState<string | null>(null);
+
   const [currentView, setCurrentView] = useState<
     "main" | "stats" | "minigame" | "clock" | "wallet" | "shop" | "nottelegram"
   >("clock");
@@ -72,19 +72,14 @@ export function useTamagotchiGame() {
   const checkAuth = async () => {
     const response = await fetch("/api/session");
     if (response.ok) {
-      const session = await response.json();
-
       setIsAuthenticated(true);
-      const WebApp = (await import("@twa-dev/sdk")).default;
+      const WebApp: any = (await import("@twa-dev/sdk")).default;
       WebApp.ready();
-      const initData = WebApp.initData;
-      displayError(
-        "session is here: " + session + "initData is here: " + initData ||
-          "session"
-      );
+      const initData: any = WebApp.initData.user.id;
+      displayError(initData || "session");
       setCurrentView("clock");
-      // setUserId(session.telegramId);
-      // fetchTamagotchi(session.telegramId);
+      setUserId(initData.toString());
+      fetchTamagotchi(initData.toString());
     } else {
       console.log("not authenticated");
       authenticateUser();
@@ -127,9 +122,9 @@ export function useTamagotchiGame() {
 
   const displayError = (error: any) => {
     setError(error);
-    /* setTimeout(() => {
+    setTimeout(() => {
       setError(null);
-    }, 2000); */
+    }, 4000);
   };
 
   useEffect(() => {
@@ -158,7 +153,7 @@ export function useTamagotchiGame() {
     }
   }, [userId, socket]);
 
-  /* const fetchTamagotchi = async (id: string) => {
+  const fetchTamagotchi = async (id: string) => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
@@ -171,9 +166,9 @@ export function useTamagotchiGame() {
       createTamagotchi(id);
       setCurrentView("clock");
     }
-  }; */
+  };
 
-  /* const createTamagotchi = async (id: string) => {
+  const createTamagotchi = async (id: string) => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
@@ -186,7 +181,7 @@ export function useTamagotchiGame() {
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
     }
-  }; */
+  };
 
   const performAction = async (
     action: string,
