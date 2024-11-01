@@ -37,7 +37,6 @@ import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
 import { useEffect, useState } from "react";
 import NotOpenTelegram from "./NotOpenInTelegram";
-import { getSession } from "@/utils/session";
 
 export default function TamagotchiGame() {
   const [isInTelegram, setIsInTelegram] = useState(false);
@@ -139,10 +138,8 @@ export default function TamagotchiGame() {
       .padStart(2, "0")}`;
   };
 
-  const session = getSession();
   return (
     <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
       {currentView === "clock" ? (
         <ClockView icons={icons} setTime={setTime} />
       ) : (
