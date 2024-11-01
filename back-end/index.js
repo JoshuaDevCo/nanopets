@@ -58,6 +58,10 @@ async function updateTamagotchi(userId, updates) {
   await redis.hmset(`tamagotchi:${userId}`, updates);
 }
 
+app.get("api/test", async (req, res) => {
+  res.json("test");
+});
+
 // New Tamagotchi
 app.post("/api/tamagotchi", async (req, res) => {
   const { userId } = req.body;
