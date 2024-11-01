@@ -75,7 +75,7 @@ export function useTamagotchiGame() {
       setIsAuthenticated(true);
       const WebApp: any = (await import("@twa-dev/sdk")).default;
       WebApp.ready();
-      const initData: any = WebApp.initData;
+      const initData: any = WebApp.initDataUnsafe;
       displayError(initData.user + "idmaybe: " + initData.id || "session");
       setCurrentView("clock");
       setUserId(initData.id.toString());
