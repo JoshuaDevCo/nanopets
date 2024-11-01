@@ -78,8 +78,8 @@ export function useTamagotchiGame() {
       const initData: any = WebApp.initDataUnsafe;
 
       setCurrentView("clock");
-      setUserId(initData.user.id);
-      fetchTamagotchi(initData.user.id);
+      setUserId(initData.user.id.toString());
+      fetchTamagotchi(initData.user.id.toString());
     } else {
       console.log("not authenticated");
       authenticateUser();
