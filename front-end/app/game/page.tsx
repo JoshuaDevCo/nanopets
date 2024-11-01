@@ -101,6 +101,11 @@ export default function TamagotchiGame() {
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
         <p>Cant get passed checkTelegram Environment</p>
+        {error && (
+          <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
+            {error}
+          </div>
+        )}
       </div>
     );
   }
@@ -114,6 +119,11 @@ export default function TamagotchiGame() {
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
         <p>Not Authed</p>
+        {error && (
+          <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
+            {error}
+          </div>
+        )}
       </div>
     );
   }
@@ -123,6 +133,11 @@ export default function TamagotchiGame() {
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
         <p>No Tama but authenticated</p>
+        {error && (
+          <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
+            {error}
+          </div>
+        )}
       </div>
     );
   }
