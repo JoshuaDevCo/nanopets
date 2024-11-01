@@ -79,7 +79,7 @@ export function useTamagotchiGame() {
       displayError(initData.user + "idmaybe: " + initData.user.id || "session");
       setCurrentView("clock");
       setUserId(initData.user.id);
-      fetchTamagotchi(initData.user.id);
+      fetchTamagotchi(initData.user.id.toString());
     } else {
       console.log("not authenticated");
       authenticateUser();
