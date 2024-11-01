@@ -100,6 +100,7 @@ export default function TamagotchiGame() {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
+        <p>Cant get passed checkTelegram Environment</p>
       </div>
     );
   }
@@ -108,10 +109,20 @@ export default function TamagotchiGame() {
     return <NotOpenTelegram />;
   }
 
-  if (!isAuthenticated || !tamagotchi) {
+  if (!isAuthenticated) {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
+        <p>Not Authed</p>
+      </div>
+    );
+  }
+
+  if (!tamagotchi) {
+    return (
+      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+        <Loading icons={icons} />
+        <p>No Tama but authenticated</p>
       </div>
     );
   }
