@@ -88,8 +88,8 @@ app.post("/api/tamagotchi", async (req, res) => {
   }
 
   const newTamagotchi = {
-    hunger: START_STATS,
-    happiness: START_STATS,
+    hunger: 3,
+    happiness: 3,
     age: 1,
     weight: 5,
     poop: 0,
@@ -102,6 +102,8 @@ app.post("/api/tamagotchi", async (req, res) => {
     timeSet: false,
     lastUpdateTime: Date.now(),
   };
+  console.log(newTamagotchi);
+
   await updateTamagotchi(userId, newTamagotchi);
   await redis.sadd("tamagotchi:users", userId);
   res.json({ userId, ...newTamagotchi });
