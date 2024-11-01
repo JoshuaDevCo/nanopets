@@ -72,6 +72,8 @@ export function useTamagotchiGame() {
     const response = await fetch("/api/session");
     if (response.ok) {
       const session = await response.json();
+      console.log("checking auth.... ");
+      console.log(session);
       setIsAuthenticated(true);
       setUserId(session.telegramId);
       fetchTamagotchi(session.telegramId);
@@ -83,7 +85,7 @@ export function useTamagotchiGame() {
 
   useEffect(() => {
     checkAuth();
-  }, [isAuthenticated]);
+  }, []);
 
   const authenticateUser = async () => {
     const WebApp = (await import("@twa-dev/sdk")).default;
@@ -101,6 +103,9 @@ export function useTamagotchiGame() {
 
         if (response.ok) {
           setIsAuthenticated(true);
+          console.log("Authenticated user ");
+          const r = await response.json();
+          console.log(r);
         } else {
           console.error("Authentication failed");
           setIsAuthenticated(false);
