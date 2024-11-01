@@ -51,7 +51,8 @@ interface AnimationInfo {
 
 export function useTamagotchiGame() {
   const [tamagotchi, setTamagotchi] = useState<Tamagotchi | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
+  const userId = 24242;
   const [currentView, setCurrentView] = useState<
     "main" | "stats" | "minigame" | "clock" | "wallet" | "shop" | "nottelegram"
   >("clock");
@@ -78,6 +79,7 @@ export function useTamagotchiGame() {
       WebApp.ready();
       const initData = WebApp.initData;
       displayError(initData || "session");
+      setCurrentView("clock");
       // setUserId(session.telegramId);
       // fetchTamagotchi(session.telegramId);
     } else {
@@ -153,7 +155,7 @@ export function useTamagotchiGame() {
     }
   }, [userId, socket]);
 
-  const fetchTamagotchi = async (id: string) => {
+  /* const fetchTamagotchi = async (id: string) => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
@@ -166,9 +168,9 @@ export function useTamagotchiGame() {
       createTamagotchi(id);
       setCurrentView("clock");
     }
-  };
+  }; */
 
-  const createTamagotchi = async (id: string) => {
+  /* const createTamagotchi = async (id: string) => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
@@ -181,7 +183,7 @@ export function useTamagotchiGame() {
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
     }
-  };
+  }; */
 
   const performAction = async (
     action: string,
