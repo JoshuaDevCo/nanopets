@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
 import { StaticImageData } from "next/image";
@@ -127,9 +127,34 @@ export function useTamagotchiGame() {
     }, 4000); */
   };
 
-  useEffect(() => {
-    if (userId) {
-      const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL);
+  const initializeSocket = useCallback(() => {
+    if (userId && !socket) {
+      const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, {
+        query: { userId },
+        transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+
+      newSocket.on("connect", () => {
+        console.log("Socket connected");
+        newSocket.emit("join", userId);
+      });
+
+      newSocket.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
+
+      newSocket.on("error", (error) => {
+        console.error("Socket error:", error);
+      });
+
+      newSocket.on("tamagotchiUpdate", (updatedTamagotchi: Tamagotchi) => {
+        setTamagotchi(updatedTamagotchi);
+        setClockTime(updatedTamagotchi.clockTime);
+      });
+
       setSocket(newSocket);
 
       return () => {
@@ -139,19 +164,8 @@ export function useTamagotchiGame() {
   }, [userId]);
 
   useEffect(() => {
-    if (userId && socket) {
-      socket.emit("join", userId);
-
-      socket.on("tamagotchiUpdate", (updatedTamagotchi: Tamagotchi) => {
-        setTamagotchi(updatedTamagotchi);
-        setClockTime(updatedTamagotchi.clockTime);
-      });
-
-      return () => {
-        socket.off("tamagotchiUpdate");
-      };
-    }
-  }, [userId, socket]);
+    initializeSocket();
+  }, [userId, initializeSocket]);
 
   const fetchTamagotchi = async (id: string) => {
     try {
