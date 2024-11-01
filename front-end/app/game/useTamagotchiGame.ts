@@ -72,11 +72,14 @@ export function useTamagotchiGame() {
     const response = await fetch("/api/session");
     if (response.ok) {
       const session = await response.json();
-      console.log("checking auth.... ");
-      console.log(session);
+      displayError(session || "session");
       setIsAuthenticated(true);
-      setUserId(session.telegramId);
-      fetchTamagotchi(session.telegramId);
+      const WebApp = (await import("@twa-dev/sdk")).default;
+      WebApp.ready();
+      const initData = WebApp.initData;
+      displayError(initData || "session");
+      // setUserId(session.telegramId);
+      // fetchTamagotchi(session.telegramId);
     } else {
       console.log("not authenticated");
       authenticateUser();
