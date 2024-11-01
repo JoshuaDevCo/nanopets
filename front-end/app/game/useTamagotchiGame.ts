@@ -79,8 +79,7 @@ export function useTamagotchiGame() {
 
       setCurrentView("clock");
       setUserId(initData.user.id);
-
-      // fetchTamagotchi(initData.user.id);
+      fetchTamagotchi(initData.user.id);
     } else {
       console.log("not authenticated");
       authenticateUser();
@@ -154,35 +153,40 @@ export function useTamagotchiGame() {
     }
   }, [userId, socket]);
 
-  const fetchTamagotchi = async (id: any) => {
-    displayError("Trying to fetchTama" + id || "session");
+  const fetchTamagotchi = async (id: string) => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
       );
-      setTamagotchi(response.data);
-      setClockTime(response.data.clockTime);
-      setCurrentView("main");
+
+      if (response.data.error === "Doesn't exist") {
+        // Tamagotchi doesn't exist, create a new one
+        await createTamagotchi(id);
+      } else {
+        // Tamagotchi exists, update the state
+        setTamagotchi(response.data);
+        setClockTime(response.data.clockTime);
+        setCurrentView("main");
+      }
     } catch (error) {
       console.error("Error fetching Tamagotchi:", error);
-      displayError("Trying to createTama" + id || "session");
-      createTamagotchi(id);
-      setCurrentView("clock");
+      displayError("Error fetching Tamagotchi. Please try again.");
     }
   };
 
-  const createTamagotchi = async (id: any) => {
+  const createTamagotchi = async (id: string) => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
         { userId: id }
       );
-      const { tamagotchiData } = response.data;
-      setTamagotchi(tamagotchiData);
-      setClockTime(tamagotchiData.clockTime);
-      setCurrentView("main");
+      const newTamagotchi = response.data;
+      setTamagotchi(newTamagotchi);
+      setClockTime(newTamagotchi.clockTime);
+      setCurrentView("clock");
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
+      displayError("Error creating Tamagotchi. Please try again.");
     }
   };
 
@@ -294,18 +298,11 @@ export function useTamagotchiGame() {
   const setTime = async (hours: number, minutes: number) => {
     if (!userId) return;
     try {
-      createTamagotchi(userId);
-    } catch (error: any) {
-      displayError(
-        error.response?.data?.error || "An error occurred while setting time"
-      );
-    }
-    try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/setTime`,
         { hours, minutes }
       );
-      // setCurrentView("main");
+      setCurrentView("main");
       setTamagotchi(response.data);
       setClockTime(response.data.clockTime);
     } catch (error: any) {

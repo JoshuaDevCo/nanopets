@@ -112,6 +112,10 @@ app.post("/api/tamagotchi", async (req, res) => {
 // Get Tamagotchi data
 app.get("/api/tamagotchi/:userId", async (req, res) => {
   const { userId } = req.params;
+  const existingTamagotchi = await redis.exists(`tamagotchi:${userId}`);
+  if (!existingTamagotchi) {
+    return res.json({ error: "Doesn't exist" });
+  }
   const tamagotchi = await getTamagotchi(userId);
   res.json(tamagotchi);
 });
