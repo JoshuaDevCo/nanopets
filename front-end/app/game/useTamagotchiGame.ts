@@ -180,7 +180,7 @@ export function useTamagotchiGame() {
       const { tamagotchiData } = response.data;
       setTamagotchi(tamagotchiData);
       setClockTime(tamagotchiData.clockTime);
-      setCurrentView("clock");
+      setCurrentView("main");
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
     }
@@ -294,7 +294,7 @@ export function useTamagotchiGame() {
   const setTime = async (hours: number, minutes: number) => {
     if (!userId) return;
     try {
-      fetchTamagotchi(userId);
+      createTamagotchi(userId);
     } catch (error: any) {
       displayError(
         error.response?.data?.error || "An error occurred while setting time"
