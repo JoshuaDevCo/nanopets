@@ -300,12 +300,12 @@ export function useTamagotchiGame() {
         error.response?.data?.error || "An error occurred while setting time"
       );
     }
-    /*   try {
+    try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/setTime`,
         { hours, minutes }
       );
-      setCurrentView("main");
+      // setCurrentView("main");
       setTamagotchi(response.data);
       setClockTime(response.data.clockTime);
     } catch (error: any) {
@@ -313,7 +313,7 @@ export function useTamagotchiGame() {
       displayError(
         error.response?.data?.error || "An error occurred while setting time"
       );
-    } */
+    }
   };
 
   const feed = (foodType: "rice" | "candy") =>
