@@ -58,8 +58,22 @@ async function updateTamagotchi(userId, updates) {
   await redis.hmset(`tamagotchi:${userId}`, updates);
 }
 
-app.get("api/test", async (req, res) => {
-  res.json("test");
+// Test endpoints
+app.get("/", async (req, res) => {
+  res.json({ message: "Server is running" });
+});
+
+app.get("/api/test", async (req, res) => {
+  res.json({ message: "API test endpoint working" });
+});
+
+app.get("/health", async (req, res) => {
+  const redisStatus = redis.status === "ready" ? "connected" : "disconnected";
+  res.json({
+    status: "healthy",
+    redis: redisStatus,
+    port: process.env.PORT || 3000,
+  });
 });
 
 // New Tamagotchi
