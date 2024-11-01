@@ -85,7 +85,7 @@ export function useTamagotchiGame() {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [isAuthenticated]);
 
   const authenticateUser = async () => {
     const WebApp = (await import("@twa-dev/sdk")).default;
