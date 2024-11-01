@@ -170,7 +170,7 @@ export function useTamagotchiGame() {
     }
   };
 
-  const createTamagotchi = async (id: string) => {
+  const createTamagotchi = async (id: any) => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
