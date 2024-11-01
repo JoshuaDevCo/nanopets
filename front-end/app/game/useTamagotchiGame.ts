@@ -78,8 +78,8 @@ export function useTamagotchiGame() {
       const initData: any = WebApp.initDataUnsafe;
       displayError(initData.user + "idmaybe: " + initData.user.id || "session");
       setCurrentView("clock");
-      setUserId(initData.user.id.toString());
-      fetchTamagotchi(initData.user.id.toString());
+      setUserId(initData.user.id);
+      fetchTamagotchi(initData.user.id);
     } else {
       console.log("not authenticated");
       authenticateUser();
@@ -177,7 +177,7 @@ export function useTamagotchiGame() {
       const { tamagotchiData } = response.data;
       setTamagotchi(tamagotchiData);
       setClockTime(tamagotchiData.clockTime);
-      setCurrentView("main");
+      setCurrentView("clock");
     } catch (error) {
       console.error("Error creating Tamagotchi:", error);
     }
