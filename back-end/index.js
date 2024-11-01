@@ -327,6 +327,7 @@ const updateTask = new AsyncTask(
 
       await updateTamagotchi(userId, updates);
       const updatedTamagotchi = await getTamagotchi(userId);
+      console.log("emitting tamagotchiUpdate" + updatedTamagotchi);
       io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
     }
   },
