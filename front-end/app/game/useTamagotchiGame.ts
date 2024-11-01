@@ -73,12 +73,15 @@ export function useTamagotchiGame() {
     const response = await fetch("/api/session");
     if (response.ok) {
       const session = await response.json();
-      displayError(session || "session");
+
       setIsAuthenticated(true);
       const WebApp = (await import("@twa-dev/sdk")).default;
       WebApp.ready();
       const initData = WebApp.initData;
-      displayError(initData || "session");
+      displayError(
+        "session is here: " + session + "initData is here: " + initData ||
+          "session"
+      );
       setCurrentView("clock");
       // setUserId(session.telegramId);
       // fetchTamagotchi(session.telegramId);
@@ -124,9 +127,9 @@ export function useTamagotchiGame() {
 
   const displayError = (error: any) => {
     setError(error);
-    setTimeout(() => {
+    /* setTimeout(() => {
       setError(null);
-    }, 2000);
+    }, 2000); */
   };
 
   useEffect(() => {
