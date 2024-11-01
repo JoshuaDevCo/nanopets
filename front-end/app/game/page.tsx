@@ -131,13 +131,7 @@ export default function TamagotchiGame() {
   if (!tamagotchi) {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-        <Loading icons={icons} />
-        <p>No Tama but authenticated</p>
-        {error && (
-          <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
-            {error}
-          </div>
-        )}
+        <ClockView icons={icons} setTime={setTime} />
       </div>
     );
   }
