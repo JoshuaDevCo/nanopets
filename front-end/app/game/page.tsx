@@ -35,9 +35,13 @@ import Trophy from "../svgs/trophy.png";
 import BackArrow from "../svgs/backarrow.png";
 import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
-import TelegramAuth from "@/components/TelegramAuth";
+import { useEffect, useState } from "react";
+import NotOpenTelegram from "./NotOpenInTelegram";
 
 export default function TamagotchiGame() {
+  const [isInTelegram, setIsInTelegram] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const {
     tamagotchi,
     currentView,
@@ -76,16 +80,41 @@ export default function TamagotchiGame() {
     BackArrow,
   };
 
-  if (!isAuthenticated) {
-    return <TelegramAuth />;
-  }
+  useEffect(() => {
+    const checkTelegramEnvironment = async () => {
+      try {
+        const WebApp = (await import("@twa-dev/sdk")).default;
+        WebApp.ready();
+        setIsInTelegram(true);
+      } catch (error) {
+        console.error("Not in Telegram environment:", error);
+        setIsInTelegram(false);
+      }
+      setIsLoading(false);
+    };
 
-  if (!tamagotchi)
+    checkTelegramEnvironment();
+  }, []);
+
+  if (isLoading) {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
       </div>
     );
+  }
+
+  if (!isInTelegram) {
+    return <NotOpenTelegram />;
+  }
+
+  if (!isAuthenticated || !tamagotchi) {
+    return (
+      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+        <Loading icons={icons} />
+      </div>
+    );
+  }
 
   const isDisabled = currentView !== "main" || tamagotchi.careMistakes >= 10;
   const isDead = tamagotchi.careMistakes >= 10;
