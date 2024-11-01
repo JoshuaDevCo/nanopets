@@ -78,8 +78,8 @@ export function useTamagotchiGame() {
       const initData: any = WebApp.initData.user.id;
       displayError(initData || "session");
       setCurrentView("clock");
-      setUserId(initData.toString());
-      fetchTamagotchi(initData.toString());
+      setUserId(initData);
+      fetchTamagotchi(initData);
     } else {
       console.log("not authenticated");
       authenticateUser();
@@ -122,9 +122,9 @@ export function useTamagotchiGame() {
 
   const displayError = (error: any) => {
     setError(error);
-    setTimeout(() => {
+    /* setTimeout(() => {
       setError(null);
-    }, 4000);
+    }, 4000); */
   };
 
   useEffect(() => {
