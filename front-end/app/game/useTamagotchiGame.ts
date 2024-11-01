@@ -76,10 +76,10 @@ export function useTamagotchiGame() {
       const WebApp: any = (await import("@twa-dev/sdk")).default;
       WebApp.ready();
       const initData: any = WebApp.initDataUnsafe;
-      displayError(initData.user + "idmaybe: " + initData.user.id || "session");
+
       setCurrentView("clock");
       setUserId(initData.user.id);
-      fetchTamagotchi(initData.user.id.toString());
+      fetchTamagotchi(initData.user.id);
     } else {
       console.log("not authenticated");
       authenticateUser();
@@ -153,7 +153,8 @@ export function useTamagotchiGame() {
     }
   }, [userId, socket]);
 
-  const fetchTamagotchi = async (id: string) => {
+  const fetchTamagotchi = async (id: any) => {
+    displayError("Trying to fetchTama" + id || "session");
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${id}`
@@ -163,6 +164,7 @@ export function useTamagotchiGame() {
       setCurrentView("main");
     } catch (error) {
       console.error("Error fetching Tamagotchi:", error);
+      displayError("Trying to createTama" + id || "session");
       createTamagotchi(id);
       setCurrentView("clock");
     }
