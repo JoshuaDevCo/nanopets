@@ -130,36 +130,35 @@ export default function WalletView({
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
       <div className='flex gap-2'>
         <Image className='mr-2' width={20} height={20} alt='coin' src={Coin} />
-        <p className='mb-4 text-2xl'>Coins: {coins}</p>
+        <p className='text-2xl'>Coins: {coins}</p>
       </div>
       {isLoading ? (
         <>...Loading</>
       ) : (
         <>
           {tonWalletAddress ? (
-            <div className='flex flex-col gap-2'>
-              <p className='mb-4'>
-                Connected: {formatAddress(tonWalletAddress)}
-              </p>
+            <div className='flex flex-col'>
               <button
                 onClick={handleWalletAction}
                 className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
               >
-                Disconnect Wallet
+                Disconnect {formatAddress(tonWalletAddress)}
               </button>
             </div>
           ) : (
-            <button
-              onClick={handleWalletAction}
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-            >
-              Connect TON Wallet
-            </button>
+            <div className='flex flex-col'>
+              <button
+                onClick={handleWalletAction}
+                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+              >
+                Connect TON Wallet
+              </button>
+            </div>
           )}
         </>
       )}
 
-      <div className=' mb-4'>
+      <div className='flex flex-col mb-4'>
         <h2 className='text-4xl font-bold mb-4'>Tasks</h2>
         <button
           onClick={handleWatchVideo}
@@ -171,7 +170,7 @@ export default function WalletView({
           ) : (
             <>
               <div className='flex gap-2'>
-                <p>Watch Video +5</p>
+                <p>Watch Video +10</p>
                 <Image
                   className='mr-2'
                   width={20}
@@ -213,7 +212,7 @@ export default function WalletView({
         </div>
       )}
 
-      <div>
+      <div className='flex flex-col mb-4'>
         <button
           onClick={resetTamagotchi}
           className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'
