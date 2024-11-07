@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^0.0.68",
     "@ton/core": "^0.59.0",
+    "@ton/crypto": "^3.3.0",
     "@tonconnect/sdk": "^3.0.5",
     "@tonconnect/ui-react": "^2.0.9",
     "@twa-dev/sdk": "^7.10.1",
