@@ -64,6 +64,7 @@ export default function TamagotchiGame() {
     purchaseItem,
     isAuthenticated,
     revive,
+    watchVideo,
   } = useTamagotchiGame();
 
   const icons = {
@@ -298,6 +299,7 @@ export default function TamagotchiGame() {
                 weight={tamagotchi.weight}
                 careMistakes={tamagotchi.careMistakes}
                 resetTamagotchi={revive}
+                watchVideo={watchVideo}
               />
             )}
             {currentView === "stats" && <div className='p-4 w-full'></div>}

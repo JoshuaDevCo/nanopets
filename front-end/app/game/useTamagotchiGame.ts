@@ -268,6 +268,24 @@ export function useTamagotchiGame() {
     }
   };
 
+  const watchVideo = async () => {
+    const response = await fetch(`/api/tamagotchi/${userId}/watchVideo`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+
+    const data = await response.json();
+
+    return {
+      earnedCoins: data.earnedCoins,
+      nextAvailableTime: data.nextAvailableTime,
+    };
+  };
+
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
     try {
@@ -365,5 +383,6 @@ export function useTamagotchiGame() {
     giveMedicine,
     purchaseItem,
     revive,
+    watchVideo,
   };
 }

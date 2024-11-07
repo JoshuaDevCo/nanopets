@@ -32,6 +32,7 @@ const CARE_MISTAKE_LIMIT = 10;
 const POOP_LIMIT = 3;
 const MIN_WEIGHT = 1;
 const MAX_WEIGHT = 10;
+const VIDEO_REWARD_COOLDOWN = 24 * 60 * 60 * 1000;
 
 // Helper function to get Tamagotchi data
 async function getTamagotchi(userId) {
@@ -51,6 +52,7 @@ async function getTamagotchi(userId) {
     clockTime: parseFloat(tamagotchi.clockTime),
     timeSet: tamagotchi.timeSet === "true",
     lastUpdateTime: parseInt(tamagotchi.lastUpdateTime),
+    lastVideoWatchTime: parseInt(tamagotchi.lastVideoWatchTime),
   };
 }
 // Helper function to update Tamagotchi data
@@ -101,6 +103,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     clockTime: 12,
     timeSet: false,
     lastUpdateTime: Date.now(),
+    lastVideoWatchTime: Date.now() - 1000 * 60 * 60 * 24,
   };
   console.log(newTamagotchi);
 
@@ -250,6 +253,43 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   await updateTamagotchi(userId, updates);
   const updatedTamagotchi = await getTamagotchi(userId);
   res.json(updatedTamagotchi);
+  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+});
+
+app.post("/api/tamagotchi/:userId/watchVideo", async (req, res) => {
+  const { userId } = req.params;
+  const tamagotchi = await getTamagotchi(userId);
+
+  const now = Date.now();
+  const lastVideoWatchTime = parseInt(tamagotchi.lastVideoWatchTime) || 0;
+
+  if (now - lastVideoWatchTime < VIDEO_REWARD_COOLDOWN) {
+    const nextAvailableTime = lastVideoWatchTime + VIDEO_REWARD_COOLDOWN;
+    return res.status(400).json({
+      error: "Video reward not available yet",
+      nextAvailableTime,
+    });
+  }
+
+  // Reward coins for watching the video
+  const earnedCoins = 10; // Fixed reward for watching the entire video
+
+  const updates = {
+    coins: tamagotchi.coins + earnedCoins,
+    lastVideoWatchTime: now,
+  };
+
+  await updateTamagotchi(userId, updates);
+  const updatedTamagotchi = await getTamagotchi(userId);
+
+  const nextAvailableTime = now + VIDEO_REWARD_COOLDOWN;
+
+  res.json({
+    earnedCoins,
+    nextAvailableTime,
+    ...updatedTamagotchi,
+  });
+
   io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
 });
 
