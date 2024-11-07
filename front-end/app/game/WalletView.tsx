@@ -12,7 +12,7 @@ interface WalletViewProps {
   coins: number;
   userId: any;
   lastVideoWatchTime: number;
-  referallCount: number;
+  referralCount: number;
   resetTamagotchi: () => void;
   watchVideo: () => void;
 }
@@ -21,7 +21,7 @@ export default function WalletView({
   coins,
   userId,
   lastVideoWatchTime,
-  referallCount,
+  referralCount,
   resetTamagotchi,
   watchVideo,
 }: WalletViewProps) {
@@ -188,7 +188,7 @@ export default function WalletView({
       </div>
 
       <InviteFriendTask userId={userId} />
-      <p>Your have referred: {referallCount} people.</p>
+      <p>Your have referred: {referralCount} people.</p>
 
       {nextVideoAvailableTime && (
         <p className=' mb-4'>
