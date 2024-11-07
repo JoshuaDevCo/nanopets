@@ -248,13 +248,12 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
       const lastVideoWatchTime = parseInt(tamagotchi.lastVideoWatchTime) || 0;
 
       if (now - lastVideoWatchTime < VIDEO_REWARD_COOLDOWN) {
-        const nextAvailableTime = lastVideoWatchTime + VIDEO_REWARD_COOLDOWN;
         return res.status(400).json({
           error: "Video reward not available yet",
-          nextAvailableTime,
         });
       } else {
         updates.coins = tamagotchi.coins + 5;
+        updates.lastVideoWatchTime = now;
       }
 
       break;
