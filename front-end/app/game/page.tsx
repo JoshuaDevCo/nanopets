@@ -298,6 +298,7 @@ export default function TamagotchiGame() {
                 coins={tamagotchi.coins}
                 weight={tamagotchi.weight}
                 careMistakes={tamagotchi.careMistakes}
+                lastVideoWatchTime={tamagotchi.lastVideoWatchTime}
                 resetTamagotchi={revive}
                 watchVideo={watchVideo}
               />

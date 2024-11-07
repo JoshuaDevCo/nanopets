@@ -40,6 +40,7 @@ interface Tamagotchi {
   clockTime: number;
   timeSet: boolean;
   lastUpdateTime: number;
+  lastVideoWatchTime: number;
 }
 
 interface AnimationInfo {
