@@ -168,7 +168,7 @@ export default function WalletView({
       {isWatchingVideo && (
         <div className='mb-4'>
           <YouTube
-            videoId='dQw4w9WgXcQ' // Example: Rick Astley - Never Gonna Give You Up
+            videoId='QNXvE1BZu8g' // Example: Rick Astley - Never Gonna Give You Up
             opts={{
               height: "390",
               width: "640",
