@@ -9,8 +9,9 @@ interface WalletViewProps {
   coins: number;
   weight: number;
   careMistakes: number;
+
   resetTamagotchi: () => void;
-  watchVideo: () => Promise<{ earnedCoins: number; nextAvailableTime: number }>;
+  watchVideo: () => void;
 }
 
 export default function WalletView({
@@ -25,9 +26,7 @@ export default function WalletView({
   const [isLoading, setIsLoading] = useState(true);
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
   const [videoCompleted, setVideoCompleted] = useState(false);
-  const [nextAvailableTime, setNextAvailableTime] = useState<number | null>(
-    null
-  );
+
   const playerRef = useRef<YouTube>(null);
 
   const handleWalletConnection = useCallback((address: string) => {
@@ -88,11 +87,9 @@ export default function WalletView({
   const handleVideoEnd = async () => {
     setVideoCompleted(true);
     try {
-      const { earnedCoins, nextAvailableTime } = await watchVideo();
-      setNextAvailableTime(nextAvailableTime);
-      alert(
-        `You earned ${earnedCoins} coins! You can watch another video in 24 hours.`
-      );
+      await watchVideo();
+
+      alert(`You earned 5 coins! You can watch another video in 24 hours.`);
     } catch (error) {
       console.error("Error watching video:", error);
       alert("Failed to process video reward. Please try again.");
@@ -101,7 +98,7 @@ export default function WalletView({
     }
   };
 
-  const formatTimeRemaining = (nextAvailableTime: number) => {
+  /*  const formatTimeRemaining = (nextAvailableTime: number) => {
     const now = Date.now();
     const remainingTime = Math.max(0, nextAvailableTime - now);
     const hours = Math.floor(remainingTime / (1000 * 60 * 60));
@@ -110,9 +107,7 @@ export default function WalletView({
     );
     return `${hours}h ${minutes}m`;
   };
-
-  const isVideoAvailable =
-    !nextAvailableTime || Date.now() >= nextAvailableTime;
+ */
 
   return (
     <div className='p-4 w-full'>
@@ -148,7 +143,7 @@ export default function WalletView({
       <div className='flex gap-2 mb-4'>
         <button
           onClick={handleWatchVideo}
-          disabled={isWatchingVideo || !isVideoAvailable}
+          disabled={isWatchingVideo}
           className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50'
         >
           {isWatchingVideo ? "Watching Video..." : "Watch Video for Coins"}
@@ -160,11 +155,7 @@ export default function WalletView({
           Reset Tamagotchi
         </button>
       </div>
-      {!isVideoAvailable && nextAvailableTime && (
-        <p className='text-yellow-500 mb-4'>
-          Next video available in: {formatTimeRemaining(nextAvailableTime)}
-        </p>
-      )}
+
       {isWatchingVideo && (
         <div className='mb-4'>
           <YouTube

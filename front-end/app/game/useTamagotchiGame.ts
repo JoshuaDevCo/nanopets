@@ -257,6 +257,9 @@ export function useTamagotchiGame() {
       if (action == "clean") {
         triggerAnimation(Coin, 5);
       }
+      if (action == "watchVideo") {
+        triggerAnimation(Coin, 5);
+      }
       setLastAction(action);
       setError(null);
       setIsBusyAction(false);
@@ -266,24 +269,6 @@ export function useTamagotchiGame() {
       displayError(error.response?.data?.error || "An error occurred");
       setIsBusyAction(false);
     }
-  };
-
-  const watchVideo = async () => {
-    const response = await fetch(`/api/tamagotchi/${userId}/watchVideo`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
-    }
-
-    const data = await response.json();
-
-    return {
-      earnedCoins: data.earnedCoins,
-      nextAvailableTime: data.nextAvailableTime,
-    };
   };
 
   const purchaseItem = async (itemId: string) => {
@@ -358,7 +343,7 @@ export function useTamagotchiGame() {
   const clean = () => performAction("clean", WaterDrop, -tamagotchi!.poop);
   const toggleLight = () => performAction("toggleLight", Sun, 0);
   const giveMedicine = () => performAction("medicine", Flask, 1);
-
+  const watchVideo = () => performAction("watchVideo", Coin, 0);
   const revive = () => performAction("revive", Trophy, 0);
 
   return {
@@ -382,7 +367,7 @@ export function useTamagotchiGame() {
     toggleLight,
     giveMedicine,
     purchaseItem,
-    revive,
     watchVideo,
+    revive,
   };
 }
