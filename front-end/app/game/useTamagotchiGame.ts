@@ -41,6 +41,7 @@ interface Tamagotchi {
   timeSet: boolean;
   lastUpdateTime: number;
   lastVideoWatchTime: number;
+  referralCount: number;
 }
 
 interface AnimationInfo {
@@ -191,9 +192,12 @@ export function useTamagotchiGame() {
 
   const createTamagotchi = async (id: string) => {
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralCode = urlParams.get("start");
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi`,
-        { userId: id }
+        { userId: id, referralCode }
       );
       const newTamagotchi = response.data;
       setTamagotchi(newTamagotchi);

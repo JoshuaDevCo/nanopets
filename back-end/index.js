@@ -53,6 +53,7 @@ async function getTamagotchi(userId) {
     timeSet: tamagotchi.timeSet === "true",
     lastUpdateTime: parseInt(tamagotchi.lastUpdateTime),
     lastVideoWatchTime: parseInt(tamagotchi.lastVideoWatchTime),
+    referralCount: parseInt(tamagotchi.referralCount) || 0,
   };
 }
 // Helper function to update Tamagotchi data
@@ -80,7 +81,7 @@ app.get("/health", async (req, res) => {
 
 // New Tamagotchi
 app.post("/api/tamagotchi", async (req, res) => {
-  const { userId } = req.body;
+  const { userId, referralCode } = req.body;
 
   // Check if a Tamagotchi already exists for this user
   const existingTamagotchi = await redis.exists(`tamagotchi:${userId}`);
@@ -104,7 +105,20 @@ app.post("/api/tamagotchi", async (req, res) => {
     timeSet: false,
     lastUpdateTime: Date.now(),
     lastVideoWatchTime: 0,
+    referralCount: 0,
   };
+
+  if (referralCode && referralCode !== userId) {
+    const referrerTamagotchi = await getTamagotchi(referralCode);
+    if (referrerTamagotchi) {
+      await updateTamagotchi(referralCode, {
+        coins: parseInt(referrerTamagotchi.coins) + 5,
+        referralCount: parseInt(referrerTamagotchi.referralCount) + 1,
+      });
+      newTamagotchi.coins += 5; // Also reward the new user
+    }
+  }
+
   console.log(newTamagotchi);
 
   await updateTamagotchi(userId, newTamagotchi);

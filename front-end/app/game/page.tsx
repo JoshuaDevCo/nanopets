@@ -299,6 +299,8 @@ export default function TamagotchiGame() {
                 lastVideoWatchTime={tamagotchi.lastVideoWatchTime}
                 resetTamagotchi={revive}
                 watchVideo={watchVideo}
+                userId={tamagotchi.userId}
+                referralCount={tamagotchi.referralCount}
               />
             )}
             {currentView === "stats" && <div className='p-4 w-full'></div>}

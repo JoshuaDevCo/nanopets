@@ -6,19 +6,22 @@ import { Address } from "@ton/core";
 import YouTube from "react-youtube";
 import Image from "next/image";
 import Coin from "../svgs/coin.png";
+import InviteFriendTask from "./InviteFriendTask";
 
 interface WalletViewProps {
   coins: number;
-
+  userId: any;
   lastVideoWatchTime: number;
+  referallCount: number;
   resetTamagotchi: () => void;
   watchVideo: () => void;
 }
 
 export default function WalletView({
   coins,
-
+  userId,
   lastVideoWatchTime,
+  referallCount,
   resetTamagotchi,
   watchVideo,
 }: WalletViewProps) {
@@ -128,8 +131,8 @@ export default function WalletView({
   return (
     <div className='p-4 w-full'>
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
-      <div className='flex gap-2'>
-        <Image className='mr-2' width={20} height={20} alt='coin' src={Coin} />
+      <div className='flex gap-2 mb-2'>
+        <Image className='mr-2' width={30} height={30} alt='coin' src={Coin} />
         <p className='text-2xl'>Coins: {coins}</p>
       </div>
       {isLoading ? (
@@ -140,7 +143,7 @@ export default function WalletView({
             <div className='flex flex-col'>
               <button
                 onClick={handleWalletAction}
-                className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 '
               >
                 Disconnect {formatAddress(tonWalletAddress)}
               </button>
@@ -149,7 +152,7 @@ export default function WalletView({
             <div className='flex flex-col'>
               <button
                 onClick={handleWalletAction}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
               >
                 Connect TON Wallet
               </button>
@@ -158,12 +161,12 @@ export default function WalletView({
         </>
       )}
 
-      <div className='flex flex-col mb-4'>
+      <div className='flex flex-col mb-4 mt-3'>
         <h2 className='text-4xl font-bold mb-4'>Tasks</h2>
         <button
           onClick={handleWatchVideo}
           disabled={isVideoButtonDisabled}
-          className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50'
+          className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
         >
           {isWatchingVideo ? (
             "Watching Video..."
@@ -184,8 +187,11 @@ export default function WalletView({
         </button>
       </div>
 
+      <InviteFriendTask userId={userId} />
+      <p>Your have referred: {referallCount} people.</p>
+
       {nextVideoAvailableTime && (
-        <p className='text-yellow-500 mb-4'>
+        <p className=' mb-4'>
           Next video available in: {formatTimeRemaining(nextVideoAvailableTime)}
         </p>
       )}
@@ -213,9 +219,10 @@ export default function WalletView({
       )}
 
       <div className='flex flex-col mb-4'>
+        <p className=' mb-4'>WARNING CANNOT BE UNDONE</p>
         <button
           onClick={resetTamagotchi}
-          className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'
+          className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
         >
           Reset Tamagotchi
         </button>
