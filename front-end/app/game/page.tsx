@@ -296,8 +296,6 @@ export default function TamagotchiGame() {
             {currentView === "wallet" && (
               <WalletView
                 coins={tamagotchi.coins}
-                weight={tamagotchi.weight}
-                careMistakes={tamagotchi.careMistakes}
                 lastVideoWatchTime={tamagotchi.lastVideoWatchTime}
                 resetTamagotchi={revive}
                 watchVideo={watchVideo}

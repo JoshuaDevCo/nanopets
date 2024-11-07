@@ -252,7 +252,7 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
           error: "Video reward not available yet",
         });
       } else {
-        updates.coins = tamagotchi.coins + 5;
+        updates.coins = tamagotchi.coins + 10;
         updates.lastVideoWatchTime = now;
       }
 

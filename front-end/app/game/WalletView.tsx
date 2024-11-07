@@ -4,11 +4,12 @@ import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Address } from "@ton/core";
 import YouTube from "react-youtube";
+import Image from "next/image";
+import Coin from "../svgs/coin.png";
 
 interface WalletViewProps {
   coins: number;
-  weight: number;
-  careMistakes: number;
+
   lastVideoWatchTime: number;
   resetTamagotchi: () => void;
   watchVideo: () => void;
@@ -16,8 +17,7 @@ interface WalletViewProps {
 
 export default function WalletView({
   coins,
-  weight,
-  careMistakes,
+
   lastVideoWatchTime,
   resetTamagotchi,
   watchVideo,
@@ -128,12 +128,16 @@ export default function WalletView({
   return (
     <div className='p-4 w-full'>
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
+      <div className='flex gap-2'>
+        <Image className='mr-2' width={20} height={20} alt='coin' src={Coin} />
+        <p className='mb-4 text-2xl'>Coins: {coins}</p>
+      </div>
       {isLoading ? (
         <>...Loading</>
       ) : (
         <>
           {tonWalletAddress ? (
-            <div className='flex flex-col items-center'>
+            <div className='flex flex-col gap-2'>
               <p className='mb-4'>
                 Connected: {formatAddress(tonWalletAddress)}
               </p>
@@ -155,20 +159,29 @@ export default function WalletView({
         </>
       )}
 
-      <p className='mb-4 text-2xl'>Coins: {coins}</p>
-      <div className='flex gap-2 mb-4'>
+      <div className=' mb-4'>
+        <h2 className='text-4xl font-bold mb-4'>Tasks</h2>
         <button
           onClick={handleWatchVideo}
           disabled={isVideoButtonDisabled}
           className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50'
         >
-          {isWatchingVideo ? "Watching Video..." : "Watch Video for Coins"}
-        </button>
-        <button
-          onClick={resetTamagotchi}
-          className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'
-        >
-          Reset Tamagotchi
+          {isWatchingVideo ? (
+            "Watching Video..."
+          ) : (
+            <>
+              <div className='flex gap-2'>
+                <p>Watch Video +5</p>
+                <Image
+                  className='mr-2'
+                  width={20}
+                  height={20}
+                  alt='coin'
+                  src={Coin}
+                />
+              </div>
+            </>
+          )}
         </button>
       </div>
 
@@ -183,8 +196,6 @@ export default function WalletView({
           <YouTube
             videoId='QNXvE1BZu8g' // Example: Rick Astley - Never Gonna Give You Up
             opts={{
-              height: "390",
-              width: "640",
               playerVars: {
                 autoplay: 1,
                 controls: 0,
@@ -201,9 +212,15 @@ export default function WalletView({
           )}
         </div>
       )}
-      <h2 className='text-4xl font-bold my-4'>Stats</h2>
-      <p className='text-lg'>Weight: {weight}</p>
-      <p className='text-lg'>Care Mistakes: {careMistakes}</p>
+
+      <div>
+        <button
+          onClick={resetTamagotchi}
+          className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'
+        >
+          Reset Tamagotchi
+        </button>
+      </div>
     </div>
   );
 }
