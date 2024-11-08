@@ -29,7 +29,7 @@ export default function WalletView({
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
-  const [videoCompleted, setVideoCompleted] = useState(false);
+
   const [nextVideoAvailableTime, setNextVideoAvailableTime] = useState<
     number | null
   >(null);
@@ -99,11 +99,9 @@ export default function WalletView({
 
   const handleWatchVideo = async () => {
     setIsWatchingVideo(true);
-    setVideoCompleted(false);
   };
 
   const handleVideoEnd = async () => {
-    setVideoCompleted(true);
     try {
       await watchVideo();
       setNextVideoAvailableTime(Date.now() + 24 * 60 * 60 * 1000); // Set next available time to 24 hours from now
@@ -142,6 +140,8 @@ export default function WalletView({
                 fs: 1,
               },
             }}
+            onEnd={handleVideoEnd}
+            ref={playerRef}
             className='w-fit'
           />
         </div>
