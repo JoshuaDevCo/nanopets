@@ -219,9 +219,9 @@ export default function TamagotchiGame() {
                 <div className='absolute top-2 right-2 flex flex-col items-center text-2xl'>
                   <div className='flex'>
                     <Image
-                      className='mr-2'
+                      className='mr-2 aspect-square'
                       width={20}
-                      height={20}
+                      height={15}
                       alt='coin'
                       src={Coin}
                     />
@@ -234,7 +234,7 @@ export default function TamagotchiGame() {
                     </p>
                   </div>
                 </div>
-                <div className='relative mt-52'>
+                <div className='relative mt-20'>
                   <Image
                     src={
                       isDead

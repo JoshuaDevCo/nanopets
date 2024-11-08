@@ -266,6 +266,13 @@ export function useTamagotchiGame() {
       if (action == "watchVideo") {
         triggerAnimation(Coin, 10);
       }
+      if (action == "revive") {
+        triggerAnimation(Coin, -10);
+        setCurrentView("main");
+      }
+      if (action == "watchVideo") {
+        triggerAnimation(Coin, 10);
+      }
       setLastAction(action);
       setError(null);
       setIsBusyAction(false);

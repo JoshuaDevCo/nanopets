@@ -129,102 +129,8 @@ export default function WalletView({
     nextVideoAvailableTime !== null || isWatchingVideo;
 
   return (
-    <div className='p-4 w-full'>
-      <h2 className='text-6xl font-bold mb-2'>Wallet</h2>
-      <div className='flex justify-between items-center mb-2'>
-        <div className='flex gap-2 items-start'>
-          <Image
-            className='mr-2 aspect-square'
-            width={30}
-            height={25}
-            alt='coin'
-            src={Coin}
-          />
-          <p className='text-2xl'>Coins: {coins}</p>
-        </div>
-        <div>
-          <button
-            onClick={() => alert("NEED AEON API KEY TO INTEGRATE THIS HERE")}
-            className='bg-green-500  text-white font-bold py-2 px-4 '
-          >
-            <div className='flex gap-2'>
-              <Image
-                className='mr-2'
-                width={20}
-                height={15}
-                alt='coin'
-                src={Coin}
-              />
-              <p className='text-xl'>Buy Coins</p>
-            </div>
-          </button>
-        </div>
-      </div>
-      {isLoading ? (
-        <>...Loading</>
-      ) : (
-        <>
-          {tonWalletAddress ? (
-            <div className='flex flex-col'>
-              <button
-                onClick={handleWalletAction}
-                className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 '
-              >
-                Disconnect {formatAddress(tonWalletAddress)}
-              </button>
-              <p className='text-green-500'>
-                Your are currently eligible for $KODO Season 1.
-              </p>
-            </div>
-          ) : (
-            <div className='flex flex-col'>
-              <button
-                onClick={handleWalletAction}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
-              >
-                Connect TON Wallet For Airdrop Season 1
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      <div className='flex flex-col mb-4 mt-3'>
-        <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
-        <button
-          onClick={handleWatchVideo}
-          disabled={isVideoButtonDisabled}
-          className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
-        >
-          {isWatchingVideo ? (
-            "Watching Video..."
-          ) : (
-            <>
-              <div className='flex gap-2'>
-                <p>Watch Video +10</p>
-                <Image
-                  className='mr-2'
-                  width={15}
-                  height={20}
-                  alt='coin'
-                  src={Coin}
-                />
-              </div>
-            </>
-          )}
-        </button>
-        {nextVideoAvailableTime && (
-          <p className=' '>
-            Next video available in:{" "}
-            {formatTimeRemaining(nextVideoAvailableTime)}
-          </p>
-        )}
-      </div>
-
-      <InviteFriendTask userId={userId} />
-      <p>Your have referred: {referralCount} people.</p>
-
-      {isWatchingVideo && (
+    <>
+      {isWatchingVideo ? (
         <div className='absolute w-screen h-screen bg-black flex justify-center items-center'>
           <YouTube
             videoId='QNXvE1BZu8g' // Example: Rick Astley - Never Gonna Give You Up
@@ -233,28 +139,121 @@ export default function WalletView({
                 autoplay: 1,
                 controls: 0,
                 disablekb: 1,
+                fs: 1,
               },
             }}
-            onEnd={handleVideoEnd}
-            ref={playerRef}
+            className='w-fit'
           />
-          {videoCompleted && (
-            <p className='text-green-500 mt-2'>
-              Video completed! Coins added to your wallet.
-            </p>
+        </div>
+      ) : (
+        <div className='p-4 w-full'>
+          <h2 className='text-6xl font-bold mb-2'>Wallet</h2>
+          <div className='flex justify-between items-center mb-2'>
+            <div className='flex gap-2 items-start'>
+              <Image
+                className='mr-2 aspect-square'
+                width={30}
+                height={25}
+                alt='coin'
+                src={Coin}
+              />
+              <p className='text-2xl'>Coins: {coins}</p>
+            </div>
+            <div>
+              <button
+                onClick={() =>
+                  alert("NEED AEON API KEY TO INTEGRATE THIS HERE")
+                }
+                className='bg-green-500  text-white font-bold py-2 px-4 '
+              >
+                <div className='flex gap-2'>
+                  <Image
+                    className='mr-2 aspect-square'
+                    width={20}
+                    height={15}
+                    alt='coin'
+                    src={Coin}
+                  />
+                  <p className='text-xl'>Buy Coins</p>
+                </div>
+              </button>
+            </div>
+          </div>
+          {isLoading ? (
+            <>...Loading</>
+          ) : (
+            <>
+              {tonWalletAddress ? (
+                <div className='flex flex-col'>
+                  <button
+                    onClick={handleWalletAction}
+                    className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 '
+                  >
+                    Disconnect {formatAddress(tonWalletAddress)}
+                  </button>
+                  <p className='text-green-500'>
+                    Your are currently eligible for $KODO Season 1.
+                  </p>
+                </div>
+              ) : (
+                <div className='flex flex-col'>
+                  <button
+                    onClick={handleWalletAction}
+                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
+                  >
+                    Connect TON Wallet For Airdrop Season 1
+                  </button>
+                </div>
+              )}
+            </>
           )}
+
+          <div className='flex flex-col mb-4 mt-3'>
+            <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
+            <button
+              onClick={handleWatchVideo}
+              disabled={isVideoButtonDisabled}
+              className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
+            >
+              {isWatchingVideo ? (
+                "Watching Video..."
+              ) : (
+                <>
+                  <div className='flex gap-2'>
+                    <p>Watch Video +10</p>
+                    <Image
+                      className='mr-2 aspect-square'
+                      width={15}
+                      height={20}
+                      alt='coin'
+                      src={Coin}
+                    />
+                  </div>
+                </>
+              )}
+            </button>
+            {nextVideoAvailableTime && (
+              <p className=' '>
+                Next video available in:{" "}
+                {formatTimeRemaining(nextVideoAvailableTime)}
+              </p>
+            )}
+          </div>
+
+          <InviteFriendTask userId={userId} />
+          <p>Your have referred: {referralCount} people.</p>
+
+          <div className='flex flex-col my-2 '>
+            <button
+              onClick={resetTamagotchi}
+              className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
+            >
+              Reset Kodomochi
+            </button>
+            <p className=' mb-4'>RESETTING KODOMOCHI COSTS 10 COINS</p>
+          </div>
         </div>
       )}
-
-      <div className='flex flex-col my-2 '>
-        <button
-          onClick={resetTamagotchi}
-          className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
-        >
-          Reset Kodomochi
-        </button>
-        <p className=' mb-4'>RESETTING KODOMOCHI COSTS 10 COINS</p>
-      </div>
-    </div>
+    </>
   );
 }
