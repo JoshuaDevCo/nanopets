@@ -115,6 +115,8 @@ app.post("/api/tamagotchi", async (req, res) => {
         coins: parseInt(referrerTamagotchi.coins) + 5,
         referralCount: parseInt(referrerTamagotchi.referralCount) + 1,
       });
+      const updatedTamagotchi = await getTamagotchi(referrerTamagotchi);
+      io.to(referralCode).emit("tamagotchiUpdate", updatedTamagotchi);
       newTamagotchi.coins += 5; // Also reward the new user
     }
   }

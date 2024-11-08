@@ -1,6 +1,8 @@
 "use client";
 
 import { initUtils } from "@telegram-apps/sdk";
+import Image from "next/image";
+import Coin from "../svgs/coin.png";
 
 interface InviteFriendTaskProps {
   userId: string;
@@ -33,13 +35,31 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
           onClick={handleInviteFriend}
           className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
         >
-          Invite Friend
+          <div className='flex gap-2'>
+            <p>Invite friend +5</p>
+            <Image
+              className='mr-2'
+              width={20}
+              height={20}
+              alt='coin'
+              src={Coin}
+            />
+          </div>
         </button>
         <button
           onClick={handleCopyLink}
           className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 '
         >
-          Copy Invite Link
+          <div className='flex gap-2'>
+            <p>Copy Invite Link</p>
+            <Image
+              className='mr-2'
+              width={20}
+              height={20}
+              alt='coin'
+              src={Coin}
+            />
+          </div>
         </button>
       </div>
     </>

@@ -131,9 +131,34 @@ export default function WalletView({
   return (
     <div className='p-4 w-full'>
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
-      <div className='flex gap-2 mb-2'>
-        <Image className='mr-2' width={30} height={30} alt='coin' src={Coin} />
-        <p className='text-2xl'>Coins: {coins}</p>
+      <div className='flex justify-between'>
+        <div className='flex gap-2 mb-2'>
+          <Image
+            className='mr-2'
+            width={30}
+            height={30}
+            alt='coin'
+            src={Coin}
+          />
+          <p className='text-2xl'>Coins: {coins}</p>
+        </div>
+        <div>
+          <button
+            onClick={() => alert("NEED AEON API KEY TO INTEGRATE THIS HERE")}
+            className='bg-green-500  text-white font-bold py-2 px-4 '
+          >
+            <div className='flex gap-2 mb-2'>
+              <Image
+                className='mr-2'
+                width={30}
+                height={30}
+                alt='coin'
+                src={Coin}
+              />
+              <p className='text-2xl'>Coins: {coins}</p>
+            </div>
+          </button>
+        </div>
       </div>
       {isLoading ? (
         <>...Loading</>
@@ -187,14 +212,14 @@ export default function WalletView({
         </button>
       </div>
 
-      <InviteFriendTask userId={userId} />
-      <p>Your have referred: {referralCount} people.</p>
-
       {nextVideoAvailableTime && (
         <p className=' mb-4'>
           Next video available in: {formatTimeRemaining(nextVideoAvailableTime)}
         </p>
       )}
+
+      <InviteFriendTask userId={userId} />
+      <p>Your have referred: {referralCount} people.</p>
 
       {isWatchingVideo && (
         <div className='mb-4'>
@@ -219,13 +244,13 @@ export default function WalletView({
       )}
 
       <div className='flex flex-col mb-4'>
-        <p className=' mb-4'>WARNING CANNOT BE UNDONE</p>
         <button
           onClick={resetTamagotchi}
           className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
         >
-          Reset Tamagotchi
+          Reset Kodomochi
         </button>
+        <p className=' mb-4'>RESETTING KODOMOCHI COSTS 10 COINS</p>
       </div>
     </div>
   );
