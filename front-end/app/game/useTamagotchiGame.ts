@@ -125,9 +125,9 @@ export function useTamagotchiGame() {
 
   const displayError = (error: any) => {
     setError(error);
-    /* setTimeout(() => {
+    setTimeout(() => {
       setError(null);
-    }, 4000); */
+    }, 4000);
   };
 
   const initializeSocket = useCallback(() => {
