@@ -42,6 +42,7 @@ interface Tamagotchi {
   lastUpdateTime: number;
   lastVideoWatchTime: number;
   referralCount: number;
+  tamahue: number;
 }
 
 interface AnimationInfo {

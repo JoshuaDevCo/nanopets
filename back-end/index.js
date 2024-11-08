@@ -54,6 +54,7 @@ async function getTamagotchi(userId) {
     lastUpdateTime: parseInt(tamagotchi.lastUpdateTime),
     lastVideoWatchTime: parseInt(tamagotchi.lastVideoWatchTime),
     referralCount: parseInt(tamagotchi.referralCount) || 0,
+    tamahue: parseInt(tamagotchi.tamahue) || 0,
   };
 }
 // Helper function to update Tamagotchi data
@@ -90,6 +91,8 @@ app.post("/api/tamagotchi", async (req, res) => {
     return res.json({ userId, ...tamagotchi });
   }
 
+  const randhue = Math.floor(Math.random() * 721 - 360);
+
   const newTamagotchi = {
     hunger: 3,
     happiness: 3,
@@ -106,6 +109,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     lastUpdateTime: Date.now(),
     lastVideoWatchTime: 0,
     referralCount: 0,
+    tamahue: randhue,
   };
 
   if (referralCode && referralCode !== userId) {

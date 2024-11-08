@@ -118,11 +118,27 @@ export default function TamagotchiGame() {
   }
 
   if (!userId || !tamagotchi) {
-    return (
-      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-        <ClockView icons={icons} setTime={setTime} />
-      </div>
-    );
+    if (tamagotchi) {
+      return (
+        <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+          <ClockView
+            icons={icons}
+            setTime={setTime}
+            tamahue={tamagotchi.tamahue}
+          />
+        </div>
+      );
+    } else
+      return (
+        <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
+          <Loading icons={icons} />
+          {error && (
+            <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
+              {error}
+            </div>
+          )}
+        </div>
+      );
   }
 
   const isDisabled = currentView !== "main" || tamagotchi.careMistakes >= 10;
@@ -188,8 +204,8 @@ export default function TamagotchiGame() {
                     {tamagotchi.weight}/10
                   </div>
                   <div>
-                    <span className='font-bold'>Age:</span> {tamagotchi.age}{" "}
-                    days
+                    <span className='font-bold ml-2'>Age:</span>{" "}
+                    {tamagotchi.age} days
                   </div>
                 </div>
                 <div className='absolute top-2 flex items-center text-2xl'>
@@ -205,6 +221,11 @@ export default function TamagotchiGame() {
                     src={Coin}
                   />
                   <span className='font-bold'>{tamagotchi.coins}</span>
+                  <div>
+                    <p className='mt-2 text-lg font-bold'>
+                      Time: {formatTime(clockTime)} <br />
+                    </p>
+                  </div>
                 </div>
                 <div className='relative'>
                   <Image
@@ -218,7 +239,7 @@ export default function TamagotchiGame() {
                     alt='pet'
                     width={300}
                     height={300}
-                    className='hue-rotate-90'
+                    className={`hue-rotate-[${tamagotchi.tamahue}deg]`}
                   />
                   {tamagotchi.isSleeping && (
                     <Image
@@ -250,9 +271,7 @@ export default function TamagotchiGame() {
                       />
                     ))}
                 </div>
-                <p className='mt-2 text-lg font-bold'>
-                  Time: {formatTime(clockTime)} <br />
-                </p>
+
                 {tamagotchi && lastAction && (
                   <AIChat
                     tamagotchi={tamagotchi}
