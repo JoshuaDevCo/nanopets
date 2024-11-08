@@ -37,6 +37,7 @@ import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
 import { useEffect, useState } from "react";
 import NotOpenTelegram from "./NotOpenInTelegram";
+import StatsView from "./StatsView";
 
 export default function TamagotchiGame() {
   const [isInTelegram, setIsInTelegram] = useState(false);
@@ -317,7 +318,11 @@ export default function TamagotchiGame() {
                 referralCount={tamagotchi.referralCount}
               />
             )}
-            {currentView === "stats" && <div className='p-4 w-full'></div>}
+            {currentView === "stats" && (
+              <div className='p-4 w-full'>
+                <StatsView />
+              </div>
+            )}
             {currentView === "shop" && (
               <ShopView coins={tamagotchi.coins} onPurchase={purchaseItem} />
             )}

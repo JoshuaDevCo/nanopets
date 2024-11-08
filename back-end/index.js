@@ -57,9 +57,18 @@ async function getTamagotchi(userId) {
     tamahue: parseInt(tamagotchi.tamahue) || 0,
   };
 }
+
+// Helper function to update the leaderboard when a user's coins change
+async function updateLeaderboard(userId, coins) {
+  await redis.zadd("tamagotchi:leaderboard", coins, userId);
+}
+
 // Helper function to update Tamagotchi data
 async function updateTamagotchi(userId, updates) {
   await redis.hmset(`tamagotchi:${userId}`, updates);
+  if (updates.coins !== undefined) {
+    await updateLeaderboard(userId, updates.coins);
+  }
 }
 
 // Test endpoints
@@ -291,6 +300,42 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   const updatedTamagotchi = await getTamagotchi(userId);
   res.json(updatedTamagotchi);
   io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+});
+
+// Get Leaderboard
+app.get("/api/leaderboard", async (req, res) => {
+  try {
+    // Get the top 20 user IDs sorted by coins
+    const leaderboardIds = await redis.zrevrange(
+      "tamagotchi:leaderboard",
+      0,
+      19,
+      "WITHSCORES"
+    );
+
+    // Fetch Tamagotchi data for these top 20 users
+    const leaderboard = await Promise.all(
+      leaderboardIds
+        .map(async (userId, index) => {
+          if (index % 2 === 0) {
+            // Even indices are user IDs, odd indices are scores
+            const tamagotchi = await getTamagotchi(userId);
+            return {
+              userId,
+
+              coins: parseInt(leaderboardIds[index + 1]), // Use the score from ZREVRANGE
+              age: tamagotchi.age,
+            };
+          }
+        })
+        .filter(Boolean) // Remove undefined entries (from odd indices)
+    );
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Periodic updates
