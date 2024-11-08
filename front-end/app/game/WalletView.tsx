@@ -132,7 +132,7 @@ export default function WalletView({
     <div className='p-4 w-full'>
       <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
       <div className='flex justify-between'>
-        <div className='flex gap-2 mb-2'>
+        <div className='flex gap-2'>
           <Image
             className='mr-2'
             width={30}
@@ -147,15 +147,15 @@ export default function WalletView({
             onClick={() => alert("NEED AEON API KEY TO INTEGRATE THIS HERE")}
             className='bg-green-500  text-white font-bold py-2 px-4 '
           >
-            <div className='flex gap-2 mb-2'>
+            <div className='flex gap-2'>
               <Image
                 className='mr-2'
-                width={30}
-                height={30}
+                width={20}
+                height={20}
                 alt='coin'
                 src={Coin}
               />
-              <p className='text-2xl'>Coins: {coins}</p>
+              <p className='text-xl'>Buy Coins</p>
             </div>
           </button>
         </div>
@@ -187,7 +187,7 @@ export default function WalletView({
       )}
 
       <div className='flex flex-col mb-4 mt-3'>
-        <h2 className='text-4xl font-bold mb-4'>Tasks</h2>
+        <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
         <button
           onClick={handleWatchVideo}
           disabled={isVideoButtonDisabled}
@@ -201,8 +201,8 @@ export default function WalletView({
                 <p>Watch Video +10</p>
                 <Image
                   className='mr-2'
-                  width={20}
-                  height={20}
+                  width={15}
+                  height={15}
                   alt='coin'
                   src={Coin}
                 />
@@ -222,7 +222,7 @@ export default function WalletView({
       <p>Your have referred: {referralCount} people.</p>
 
       {isWatchingVideo && (
-        <div className='mb-4'>
+        <div className='absolute w-screen h-screen bg-black flex justify-center items-center'>
           <YouTube
             videoId='QNXvE1BZu8g' // Example: Rick Astley - Never Gonna Give You Up
             opts={{
@@ -243,7 +243,7 @@ export default function WalletView({
         </div>
       )}
 
-      <div className='flex flex-col mb-4'>
+      <div className='flex flex-col my-2 '>
         <button
           onClick={resetTamagotchi}
           className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
