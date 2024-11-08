@@ -172,7 +172,7 @@ export default function TamagotchiGame() {
           </div>
 
           <div
-            className={`flex-grow border border-gray-600 flex flex-col items-center justify-center relative ${
+            className={` border border-gray-600 flex flex-col items-center  relative h-[calc(100vh-150px)] overflow-y-scroll ${
               tamagotchi.isLightOn
                 ? "bg-white text-black"
                 : "bg-gray-800 text-white"

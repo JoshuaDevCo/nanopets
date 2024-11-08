@@ -36,7 +36,7 @@ export default function ClockView({ setTime, icons }: ClockViewProps) {
         <Button onClick={() => {}} icon={icons.WaterDrop} disabled={true} />
       </div>
 
-      <div className='flex-grow border border-gray-600 flex flex-col items-center justify-center relative'>
+      <div className=' border border-gray-600 flex flex-col items-center  relative h-[calc(100vh-150px)] overflow-y-scroll'>
         <h2 className='text-2xl font-bold mb-4'>Hatch your Tama</h2>
         <div className='relative'>
           <Image src='/egg1.gif' alt='pet' width={200} height={200} />
