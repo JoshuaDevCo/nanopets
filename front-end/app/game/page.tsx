@@ -102,7 +102,6 @@ export default function TamagotchiGame() {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <Loading icons={icons} />
-        <p>Cant get passed checkTelegram Environment</p>
         {error && (
           <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
             {error}
@@ -112,25 +111,11 @@ export default function TamagotchiGame() {
     );
   }
 
-  if (!isInTelegram) {
+  if (!isAuthenticated || !isInTelegram) {
     return <NotOpenTelegram />;
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
-        <Loading icons={icons} />
-        <p>Not Authed</p>
-        {error && (
-          <div className='absolute top-10 left-0 right-0 text-center text-red-500'>
-            {error}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (!tamagotchi) {
+  if (!userId || !tamagotchi) {
     return (
       <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
         <ClockView icons={icons} setTime={setTime} />
@@ -189,7 +174,7 @@ export default function TamagotchiGame() {
               tamagotchi.isLightOn
                 ? "bg-white text-black"
                 : "bg-gray-800 text-white"
-            }`}
+            } h-[calc()]`}
           >
             {currentView === "main" && (
               <>

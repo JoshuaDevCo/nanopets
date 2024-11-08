@@ -131,7 +131,7 @@ export default function WalletView({
   return (
     <div className='p-4 w-full'>
       <h2 className='text-6xl font-bold mb-2'>Wallet</h2>
-      <div className='flex justify-between mb-2'>
+      <div className='flex justify-between items-center mb-2'>
         <div className='flex gap-2 items-start'>
           <Image
             className='mr-2 aspect-square'
@@ -151,7 +151,7 @@ export default function WalletView({
               <Image
                 className='mr-2'
                 width={20}
-                height={20}
+                height={15}
                 alt='coin'
                 src={Coin}
               />
@@ -194,7 +194,7 @@ export default function WalletView({
         <button
           onClick={handleWatchVideo}
           disabled={isVideoButtonDisabled}
-          className='bg-green-500 hover:bg-green-600 text-white font-bold  px-4  disabled:opacity-50'
+          className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
         >
           {isWatchingVideo ? (
             "Watching Video..."
@@ -205,7 +205,7 @@ export default function WalletView({
                 <Image
                   className='mr-2'
                   width={15}
-                  height={15}
+                  height={20}
                   alt='coin'
                   src={Coin}
                 />
