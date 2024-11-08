@@ -216,22 +216,25 @@ export default function TamagotchiGame() {
                   <span className='font-bold'>Care Mistakes:</span>{" "}
                   {tamagotchi.careMistakes}/10
                 </div>
-                <div className='absolute top-2 right-2 flex items-center text-2xl'>
-                  <Image
-                    className='mr-2'
-                    width={20}
-                    height={20}
-                    alt='coin'
-                    src={Coin}
-                  />
-                  <span className='font-bold'>{tamagotchi.coins}</span>
+                <div className='absolute top-2 right-2 flex flex-col items-center text-2xl'>
+                  <div className='flex'>
+                    <Image
+                      className='mr-2'
+                      width={20}
+                      height={20}
+                      alt='coin'
+                      src={Coin}
+                    />
+                    <span className='font-bold'>{tamagotchi.coins}</span>
+                  </div>
+
                   <div>
                     <p className='mt-2 text-lg font-bold'>
                       Time: {formatTime(clockTime)} <br />
                     </p>
                   </div>
                 </div>
-                <div className='relative'>
+                <div className='relative mt-52'>
                   <Image
                     src={
                       isDead
