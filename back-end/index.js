@@ -210,7 +210,11 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
       updates.hunger = START_STATS;
       updates.happiness = START_STATS;
       updates.timeSet = false;
-    } else return res.status(400).json({ error: "Tamagotchi has passed away" });
+    }
+
+    if (action !== "revive" || action !== "watchVideo") {
+      return res.status(400).json({ error: "Tamagotchi has passed away" });
+    }
   }
 
   switch (action) {

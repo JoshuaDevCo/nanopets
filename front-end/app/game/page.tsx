@@ -220,8 +220,8 @@ export default function TamagotchiGame() {
                   <div className='flex'>
                     <Image
                       className='mr-2 aspect-square'
-                      width={15}
-                      height={15}
+                      width={25}
+                      height={25}
                       alt='coin'
                       src={Coin}
                     />

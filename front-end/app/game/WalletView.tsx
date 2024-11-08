@@ -142,7 +142,7 @@ export default function WalletView({
             }}
             onEnd={handleVideoEnd}
             ref={playerRef}
-            className='w-fit'
+            className='w-full'
           />
         </div>
       ) : (
@@ -169,8 +169,8 @@ export default function WalletView({
                 <div className='flex gap-2'>
                   <Image
                     className='mr-2 aspect-square'
-                    width={15}
-                    height={15}
+                    width={25}
+                    height={25}
                     alt='coin'
                     src={Coin}
                   />
@@ -222,8 +222,8 @@ export default function WalletView({
                   <p>Watch Video +10</p>
                   <Image
                     className='mr-2 aspect-square'
-                    width={15}
-                    height={15}
+                    width={25}
+                    height={25}
                     alt='coin'
                     src={Coin}
                   />

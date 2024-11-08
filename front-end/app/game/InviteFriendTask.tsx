@@ -38,8 +38,8 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
             <p>Invite friend +5</p>
             <Image
               className='mr-2 aspect-square'
-              width={15}
-              height={15}
+              width={25}
+              height={25}
               alt='coin'
               src={Coin}
             />
@@ -53,8 +53,8 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
             <p>Copy Invite Link +5</p>
             <Image
               className='mr-2 aspect-square'
-              width={15}
-              height={15}
+              width={25}
+              height={25}
               alt='coin'
               src={Coin}
             />
