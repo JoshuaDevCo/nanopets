@@ -10,7 +10,7 @@ const groq = createGroq({
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { tamagotchiData, lastAction, gameResult, stateChanges, prevState } =
+  const { tamagotchiData, lastAction, gameResult, prevState } =
     await req.json();
 
   /*  const stateChangeDescriptions = Object.entries(stateChanges)
