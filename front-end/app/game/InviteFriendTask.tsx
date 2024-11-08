@@ -38,7 +38,7 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
             <p>Invite friend +5</p>
             <Image
               className='mr-2 aspect-square'
-              width={20}
+              width={15}
               height={15}
               alt='coin'
               src={Coin}
@@ -47,13 +47,13 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
         </button>
         <button
           onClick={handleCopyLink}
-          className='bg-blue-500  text-white font-bold py-2 px-4 '
+          className='bg-blue-500  text-white font-bold py-2 px-4 flex justify-center'
         >
           <div className='flex gap-2'>
             <p>Copy Invite Link +5</p>
             <Image
               className='mr-2 aspect-square'
-              width={20}
+              width={15}
               height={15}
               alt='coin'
               src={Coin}

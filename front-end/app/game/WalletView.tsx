@@ -169,7 +169,7 @@ export default function WalletView({
                 <div className='flex gap-2'>
                   <Image
                     className='mr-2 aspect-square'
-                    width={20}
+                    width={15}
                     height={15}
                     alt='coin'
                     src={Coin}
@@ -223,7 +223,7 @@ export default function WalletView({
                   <Image
                     className='mr-2 aspect-square'
                     width={15}
-                    height={20}
+                    height={15}
                     alt='coin'
                     src={Coin}
                   />

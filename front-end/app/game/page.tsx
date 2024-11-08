@@ -220,7 +220,7 @@ export default function TamagotchiGame() {
                   <div className='flex'>
                     <Image
                       className='mr-2 aspect-square'
-                      width={20}
+                      width={15}
                       height={15}
                       alt='coin'
                       src={Coin}
@@ -229,7 +229,7 @@ export default function TamagotchiGame() {
                   </div>
 
                   <div>
-                    <p className='mt-2 text-lg font-bold'>
+                    <p className='mt-1 mr-2 text-lg font-bold'>
                       Time: {formatTime(clockTime)} <br />
                     </p>
                   </div>
