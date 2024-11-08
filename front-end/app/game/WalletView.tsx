@@ -130,13 +130,13 @@ export default function WalletView({
 
   return (
     <div className='p-4 w-full'>
-      <h2 className='text-6xl font-bold mb-4'>Wallet</h2>
-      <div className='flex justify-between'>
-        <div className='flex gap-2'>
+      <h2 className='text-6xl font-bold mb-2'>Wallet</h2>
+      <div className='flex justify-between mb-2'>
+        <div className='flex gap-2 items-start'>
           <Image
-            className='mr-2'
+            className='mr-2 aspect-square'
             width={30}
-            height={30}
+            height={25}
             alt='coin'
             src={Coin}
           />
@@ -172,6 +172,9 @@ export default function WalletView({
               >
                 Disconnect {formatAddress(tonWalletAddress)}
               </button>
+              <p className='text-green-500'>
+                Your are currently eligible for $KODO Season 1.
+              </p>
             </div>
           ) : (
             <div className='flex flex-col'>
@@ -179,7 +182,7 @@ export default function WalletView({
                 onClick={handleWalletAction}
                 className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
               >
-                Connect TON Wallet
+                Connect TON Wallet For Airdrop Season 1
               </button>
             </div>
           )}
@@ -191,7 +194,7 @@ export default function WalletView({
         <button
           onClick={handleWatchVideo}
           disabled={isVideoButtonDisabled}
-          className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
+          className='bg-green-500 hover:bg-green-600 text-white font-bold  px-4  disabled:opacity-50'
         >
           {isWatchingVideo ? (
             "Watching Video..."
@@ -210,13 +213,13 @@ export default function WalletView({
             </>
           )}
         </button>
+        {nextVideoAvailableTime && (
+          <p className=' '>
+            Next video available in:{" "}
+            {formatTimeRemaining(nextVideoAvailableTime)}
+          </p>
+        )}
       </div>
-
-      {nextVideoAvailableTime && (
-        <p className=' mb-4'>
-          Next video available in: {formatTimeRemaining(nextVideoAvailableTime)}
-        </p>
-      )}
 
       <InviteFriendTask userId={userId} />
       <p>Your have referred: {referralCount} people.</p>
