@@ -32,7 +32,7 @@ export default function InviteFriendTask({ userId }: InviteFriendTaskProps) {
       <div className='flex flex-col space-y-4'>
         <button
           onClick={handleInviteFriend}
-          className='bg-blue-500  text-white font-bold py-2 px-4 '
+          className='bg-blue-500  text-white font-bold py-2 px-4  flex justify-center'
         >
           <div className='flex gap-2'>
             <p>Invite friend +5</p>

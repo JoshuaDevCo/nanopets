@@ -187,7 +187,7 @@ export default function WalletView({
                 <div className='flex flex-col'>
                   <button
                     onClick={handleWalletAction}
-                    className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 '
+                    className='bg-red-500  text-white font-bold py-2 px-4 '
                   >
                     Disconnect {formatAddress(tonWalletAddress)}
                   </button>
@@ -213,23 +213,21 @@ export default function WalletView({
             <button
               onClick={handleWatchVideo}
               disabled={isVideoButtonDisabled}
-              className='bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  disabled:opacity-50'
+              className='bg-green-500  text-white font-bold py-2 px-4  disabled:opacity-50 flex justify-center'
             >
               {isWatchingVideo ? (
                 "Watching Video..."
               ) : (
-                <>
-                  <div className='flex gap-2'>
-                    <p>Watch Video +10</p>
-                    <Image
-                      className='mr-2 aspect-square'
-                      width={15}
-                      height={20}
-                      alt='coin'
-                      src={Coin}
-                    />
-                  </div>
-                </>
+                <div className='flex gap-2'>
+                  <p>Watch Video +10</p>
+                  <Image
+                    className='mr-2 aspect-square'
+                    width={15}
+                    height={20}
+                    alt='coin'
+                    src={Coin}
+                  />
+                </div>
               )}
             </button>
             {nextVideoAvailableTime && (
