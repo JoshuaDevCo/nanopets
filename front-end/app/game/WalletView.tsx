@@ -167,13 +167,6 @@ export default function WalletView({
                 className='bg-green-500  text-white font-bold py-2 px-4 '
               >
                 <div className='flex gap-2'>
-                  <Image
-                    className='mr-2 aspect-square'
-                    width={25}
-                    height={25}
-                    alt='coin'
-                    src={Coin}
-                  />
                   <p className='text-xl'>Buy Coins</p>
                 </div>
               </button>

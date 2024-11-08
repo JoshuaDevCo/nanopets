@@ -182,38 +182,36 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   const updates = {};
 
   if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
-    if (action == "watchVideo") {
-      const now = Date.now();
-      const lastVideoWatchTime = parseInt(tamagotchi.lastVideoWatchTime) || 0;
-
-      if (now - lastVideoWatchTime < VIDEO_REWARD_COOLDOWN) {
-        return res.status(400).json({
-          error: "Video reward not available yet",
-        });
-      } else {
-        updates.coins = tamagotchi.coins + 10;
-        updates.lastVideoWatchTime = now;
-      }
-    }
-
-    if (action == "revive") {
-      const cost = 10;
-      if (tamagotchi.coins < cost) {
-        return res.status(400).json({ error: "Not enough coins" });
-      }
-      updates.careMistakes = 0;
-      updates.coins = tamagotchi.coins - cost;
-      updates.age = 1;
-      updates.weight = 5;
-      updates.poop = 0;
-      updates.careMistakes = 0;
-      updates.hunger = START_STATS;
-      updates.happiness = START_STATS;
-      updates.timeSet = false;
-    }
-
-    if (action !== "revive" || action !== "watchVideo") {
-      return res.status(400).json({ error: "Tamagotchi has passed away" });
+    switch (action) {
+      case "watchVideo":
+        const now = Date.now();
+        const lastVideoWatchTime = parseInt(tamagotchi.lastVideoWatchTime) || 0;
+        if (now - lastVideoWatchTime < VIDEO_REWARD_COOLDOWN) {
+          return res.status(400).json({
+            error: "Video reward not available yet",
+          });
+        } else {
+          updates.coins = tamagotchi.coins + 10;
+          updates.lastVideoWatchTime = now;
+        }
+        break;
+      case "revive":
+        const cost = 10;
+        if (tamagotchi.coins < cost) {
+          return res.status(400).json({ error: "Not enough coins" });
+        }
+        updates.careMistakes = 0;
+        updates.coins = tamagotchi.coins - cost;
+        updates.age = 1;
+        updates.weight = 5;
+        updates.poop = 0;
+        updates.careMistakes = 0;
+        updates.hunger = START_STATS;
+        updates.happiness = START_STATS;
+        updates.timeSet = false;
+        break;
+      default:
+        return res.status(400).json({ error: "Tamagotchi has passed away" });
     }
   }
 
