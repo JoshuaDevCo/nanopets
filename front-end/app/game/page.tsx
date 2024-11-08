@@ -155,7 +155,11 @@ export default function TamagotchiGame() {
   return (
     <div className='w-full max-w-md flex flex-col min-h-screen justify-between bg-blue-50'>
       {currentView === "clock" ? (
-        <ClockView icons={icons} setTime={setTime} />
+        <ClockView
+          icons={icons}
+          setTime={setTime}
+          tamahue={tamagotchi.tamahue}
+        />
       ) : (
         <>
           <div className='grid grid-cols-5 gap-4 p-2'>
