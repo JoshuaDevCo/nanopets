@@ -92,7 +92,9 @@ export default function TamagotchiGame() {
         console.error("Not in Telegram environment:", error);
         setIsInTelegram(false);
       }
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
     };
 
     checkTelegramEnvironment();
