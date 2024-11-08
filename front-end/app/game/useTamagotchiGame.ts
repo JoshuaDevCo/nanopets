@@ -352,6 +352,7 @@ export function useTamagotchiGame() {
   const revive = () => performAction("revive", Trophy, 0);
 
   return {
+    userId,
     tamagotchi,
     currentView,
     setCurrentView,

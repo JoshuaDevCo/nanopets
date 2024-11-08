@@ -43,6 +43,7 @@ export default function TamagotchiGame() {
   const [isLoading, setIsLoading] = useState(true);
 
   const {
+    userId,
     tamagotchi,
     currentView,
     setCurrentView,
@@ -299,7 +300,7 @@ export default function TamagotchiGame() {
                 lastVideoWatchTime={tamagotchi.lastVideoWatchTime}
                 resetTamagotchi={revive}
                 watchVideo={watchVideo}
-                userId={tamagotchi.userId}
+                userId={userId}
                 referralCount={tamagotchi.referralCount}
               />
             )}
