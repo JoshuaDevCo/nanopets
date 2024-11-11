@@ -10,15 +10,15 @@ const groq = createGroq({
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { tamagotchiData, lastAction, gameResult, prevState } =
+  const { tamagotchiData, lastAction, gameResult, stateChanges, prevState } =
     await req.json();
 
-  /*  const stateChangeDescriptions = Object.entries(stateChanges)
+  const stateChangeDescriptions = Object.entries(stateChanges)
     .map(
       ([key, change]: any) =>
         `${key}: changed from ${change.from} to ${change.to}`
     )
-    .join(", "); */
+    .join(", ");
 
   const systemPrompt = `You are a cute and quirky Kodomochi character in a virtual pet game. Your personality is a mix of playful, sometimes sassy, and always endearing. You have your own unique way of expressing yourself that might include made-up words or sound effects.
 
@@ -34,7 +34,7 @@ You have ${tamagotchiData.coins} coins.
 
 The user just performed the action: ${lastAction}.
 ${gameResult ? `Game result: ${gameResult}` : ""}
-
+${stateChangeDescriptions ? `State changes: ${stateChangeDescriptions}` : ""}
 
 Previous state: ${JSON.stringify(prevState)}
 
