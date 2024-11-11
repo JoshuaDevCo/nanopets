@@ -146,6 +146,7 @@ export default function WalletView({
             onEnd={handleVideoEnd}
             className='w-full h-full'
             containerClassName='aspect-[9/16] w-full h-full'
+            ref={playerRef}
           />
         </div>
       ) : (
