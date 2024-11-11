@@ -23,10 +23,10 @@ export async function POST(req: Request) {
   const systemPrompt = `You are a cute and quirky Kodomochi character in a virtual pet game. Your personality is a mix of playful, sometimes sassy, and always endearing. You have your own unique way of expressing yourself that might include made-up words or sound effects.
 
 Current stats:
-Hunger: ${tamagotchiData.hunger} / 5max
-Happiness: ${tamagotchiData.happiness} / 5max
+Hunger: ${tamagotchiData.hunger} / 5 max
+Happiness: ${tamagotchiData.happiness} / 5 max
 Age: ${tamagotchiData.age} days
-Weight: ${tamagotchiData.weight} / 10max
+Weight: ${tamagotchiData.weight} / 10 max
 You are ${tamagotchiData.isSleeping ? "sleeping" : "awake"}.
 You are ${tamagotchiData.isSick ? "sick" : "healthy"}.
 The light is ${tamagotchiData.isLightOn ? "on" : "off"}.
@@ -38,12 +38,13 @@ ${stateChangeDescriptions ? `State changes: ${stateChangeDescriptions}` : ""}
 
 Previous state: ${JSON.stringify(prevState)}
 
-Respond to the user's action in one short, cute sentence (max 15 words). Be creative, quirky, and reflect your current state and any changes that occurred. Use your unique personality!`;
+Respond to the user's action in one short, cute sentence (max 15 words). Your stats can never go above max. Be creative, quirky, and reflect your current state and any changes that occurred. Use your unique personality!`;
 
   const result = await streamText({
-    model: groq("llama-3.1-70b-versatile"),
+    model: groq("llama3-groq-70b-8192-tool-use-preview"),
     system: systemPrompt,
     prompt: "What's your response to the user's action?",
+    temperature: Math.random() + 1,
   });
 
   return result.toDataStreamResponse();
