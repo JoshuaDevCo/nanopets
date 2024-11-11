@@ -129,7 +129,7 @@ export default function WalletView({
   return (
     <>
       {isWatchingVideo ? (
-        <div className='fixed inset-0 z-50 bg-black flex justify-center items-center'>
+        <div className='fixed inset-0 z-50 bg-black flex justify-center items-center w-screen h-screen'>
           <YouTube
             videoId='Zxjxk9AQHmI' // Quiz 1
             opts={{
@@ -145,7 +145,7 @@ export default function WalletView({
             }}
             onEnd={handleVideoEnd}
             className='w-full h-full'
-            containerClassName='aspect-[9/16] w-full h-full'
+            containerClassName=' '
             ref={playerRef}
           />
         </div>
