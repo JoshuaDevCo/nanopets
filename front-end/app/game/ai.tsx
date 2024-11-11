@@ -25,12 +25,12 @@ export default function TamagotchiResponse({
           tamagotchiData: tamagotchi,
           lastAction,
           gameResult,
-          stateChanges,
+
           prevState,
         },
       });
 
-      const timer = setTimeout(() => setIsVisible(false), 10000);
+      const timer = setTimeout(() => setIsVisible(false), 30000);
       prevTamagotchiRef.current = { ...tamagotchi };
       return () => clearTimeout(timer);
     }
