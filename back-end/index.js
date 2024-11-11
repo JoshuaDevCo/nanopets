@@ -6,21 +6,17 @@ const firstMenu =
   "<b>Your virtual pet adventure awaits!</b>\n\nKeep your Kodomochi happy and healthy.Earn daily tokens, shop items, complete adventures, invite friends and more.";
 const firstMenuMarkup = new InlineKeyboard()
   .url("Play in 1 click", "https://t.me/KodoMochiBot/play")
+  .row()
   .text("How to play", "Tutorial")
+  .row()
   .url("Subscribe to our channel", "https://t.me/kodomochi");
 
 const Reply =
-  "<b>How to play KodoMochi</b>\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?.\nWait for your KodoMochi to poop in order to earn more coins\n\n/help to get this guide";
+  "<b>How to play KodoMochi</b>\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?\nWait for your KodoMochi to poop in order to earn more coins\n\n/help to get this guide";
 const play = new InlineKeyboard()
   .url("Play in 1 click", "https://t.me/KodoMochiBot/play")
+  .row()
   .url("Subscribe to our channel", "https://t.me/kodomochi");
-
-bot.on("message", async (ctx) => {
-  await ctx.reply(firstMenu, {
-    parse_mode: "HTML",
-    reply_markup: firstMenuMarkup,
-  });
-});
 
 bot.command("start", async (ctx) => {
   await ctx.reply(firstMenu, {
@@ -33,6 +29,13 @@ bot.command("help", async (ctx) => {
   await ctx.editMessageText(Reply, {
     reply_markup: play,
     parse_mode: "HTML",
+  });
+});
+
+bot.on("message", async (ctx) => {
+  await ctx.reply(firstMenu, {
+    parse_mode: "HTML",
+    reply_markup: firstMenuMarkup,
   });
 });
 
