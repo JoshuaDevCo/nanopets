@@ -3,14 +3,24 @@ const { Bot, InlineKeyboard } = require("grammy");
 const bot = new Bot(process.env.BOT_TOKEN);
 
 const firstMenu =
-  "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
-const firstMenuMarkup = new InlineKeyboard().text("Tutorial", "Tutorial");
+  "<b>Your virtual pet adventure awaits!</b>\n\nKeep your Kodomochi happy and healthy.Earn daily tokens, shop items, complete adventures, invite friends and more.";
+const firstMenuMarkup = new InlineKeyboard()
+  .url("Play in 1 click", "https://t.me/KodoMochiBot/play")
+  .text("Tutorial", "Tutorial");
 
-const Reply = "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
-const play = new InlineKeyboard().text(
-  "Play",
+const Reply =
+  "<b>How to play KodoMochi</b>\n\n\n\nKeep your KodoMochi alive.\n\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive";
+const play = new InlineKeyboard().url(
+  "Play in 1 click",
   "https://t.me/KodoMochiBot/play"
 );
+
+bot.on("message", async (ctx) => {
+  await ctx.reply(firstMenu, {
+    parse_mode: "HTML",
+    reply_markup: firstMenuMarkup,
+  });
+});
 
 bot.command("start", async (ctx) => {
   await ctx.reply(firstMenu, {
