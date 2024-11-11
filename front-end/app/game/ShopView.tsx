@@ -41,7 +41,7 @@ const shopItems: ShopItem[] = [
   {
     id: "pill",
     name: "Multivitamin",
-    description: "A health boost for your Tamagotchi",
+    description: "A health boost for your Kodomochi",
     price: 10,
     image: Pill,
     effect: "Prevents sickness for 24 hours",

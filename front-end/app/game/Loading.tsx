@@ -19,14 +19,14 @@ interface LoadingProps {
 }
 
 const hints = [
-  "Feed your Tamagotchi regularly to keep it healthy!",
-  "Don't forget to clean up after your Tamagotchi to avoid care mistakes.",
-  "Playing with your Tamagotchi increases its happiness.",
-  "Your Tamagotchi sleeps between 9 PM and 9 AM. Try not to disturb it!",
-  "If your Tamagotchi gets sick, give it medicine to help it recover.",
-  "Balancing your Tamagotchi's diet is key to maintaining a healthy weight.",
-  "Earn coins by cleaning up after your Tamagotchi.",
-  "Watch out for care mistakes! Too many, and your Tamagotchi might pass away.",
+  "Feed your Kodomochi regularly to keep it healthy!",
+  "Don't forget to clean up after your Kodomochi to avoid care mistakes.",
+  "Playing with your Kodomochi increases its happiness.",
+  "Your Kodomochi sleeps between 9 PM and 9 AM. Try not to disturb it!",
+  "If your Kodomochi gets sick, give it medicine to help it recover.",
+  "Balancing your Kodomochi's diet is key to maintaining a healthy weight.",
+  "Earn coins by cleaning up after your Kodomochi.",
+  "Watch out for care mistakes! Too many, and your Kodomochi might pass away.",
   "Toggle the light when it's bedtime",
 ];
 
@@ -58,7 +58,7 @@ export default function Loading({ icons }: LoadingProps) {
             className='animate-pulse'
           />
           <h2 className='text-2xl font-bold text-gray-800'>
-            Loading your Tamagotchi...
+            Loading your Kodomochi...
           </h2>
           <p className='text-gray-600 italic'>&quot;{hint}&quot;</p>
         </div>

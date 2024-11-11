@@ -45,15 +45,13 @@ export default function StatsView() {
   }
 
   return (
-    <div className='w-full max-w-2xl mx-auto'>
-      <div>
-        <div>Recent activity</div>
-      </div>
+    <div className='w-full max-w-2xl mx-auto p-4'>
+      <h2 className='text-6xl font-bold mb-2'>Recent Activities</h2>
       <div>
         {" "}
-        <ul className='space-y-2'>
+        <ul className=''>
           {activities.map((activity, index) => (
-            <li key={index} className='bg-muted p-2 rounded-md'>
+            <li key={index} className='bg-muted p-2 '>
               <span className='font-semibold'>
                 User {activity.userId.slice(0, 5)}
               </span>{" "}

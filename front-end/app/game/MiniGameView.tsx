@@ -45,8 +45,8 @@ export default function MinigameView({
           <h2 className='text-4xl font-bold mb-4'>{gameResult}</h2>
           <p className='text-xl'>
             {gameResult === "You won!"
-              ? "Great job! Your Tamagotchi is happier now."
-              : "Better luck next time! Your Tamagotchi still had fun."}
+              ? "Great job! Your Kodomochi is happier now."
+              : "Better luck next time! Your Kodomochi still had fun."}
           </p>
         </>
       )}

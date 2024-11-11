@@ -30,7 +30,7 @@ export default function TamagotchiResponse({
         },
       });
 
-      const timer = setTimeout(() => setIsVisible(false), 5000);
+      const timer = setTimeout(() => setIsVisible(false), 10000);
       prevTamagotchiRef.current = { ...tamagotchi };
       return () => clearTimeout(timer);
     }

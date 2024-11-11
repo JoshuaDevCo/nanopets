@@ -38,7 +38,7 @@ export default function ClockView({ setTime, icons, tamahue }: ClockViewProps) {
       </div>
 
       <div className=' border border-gray-600 flex flex-col items-center  relative h-[calc(100vh-150px)] overflow-y-scroll'>
-        <h2 className='text-2xl font-bold mb-4'>Hatch your Tama</h2>
+        <h2 className='text-2xl font-bold mb-4 mt-2'>Hatch your Kodomochi</h2>
         <div className='relative'>
           <Image
             src='/egg1.gif'
@@ -49,8 +49,8 @@ export default function ClockView({ setTime, icons, tamahue }: ClockViewProps) {
           />
         </div>
         <p className='mb-4 p-2 text-center text-sm font-bold'>
-          Tama&apos;s sleep between 9pm and 9am and do not require attention
-          during those times.*
+          Kodomochi&apos;s sleep between 9pm and 9am and do not require
+          attention during those times.*
         </p>
         <div className='flex gap-4 mb-4'>
           <label className='flex flex-col items-center'>
