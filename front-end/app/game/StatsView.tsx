@@ -45,7 +45,7 @@ export default function StatsView() {
   }
 
   return (
-    <div className='w-full max-w-2xl mx-auto p-4'>
+    <div className='w-full max-w-2xl mx-auto p-2'>
       <h2 className='text-6xl font-bold mb-2'>Recent Activities</h2>
       <div>
         {" "}

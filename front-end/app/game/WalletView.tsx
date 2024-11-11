@@ -129,20 +129,23 @@ export default function WalletView({
   return (
     <>
       {isWatchingVideo ? (
-        <div className='absolute w-screen h-screen bg-black flex justify-center items-center'>
+        <div className='fixed inset-0 z-50 bg-black flex justify-center items-center'>
           <YouTube
-            videoId='QNXvE1BZu8g' // Example: Rick Astley - Never Gonna Give You Up
+            videoId='Zxjxk9AQHmI' // Quiz 1
             opts={{
               playerVars: {
                 autoplay: 1,
                 controls: 0,
                 disablekb: 1,
-                fs: 1,
+                fs: 0,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
               },
             }}
             onEnd={handleVideoEnd}
-            ref={playerRef}
-            className='w-full'
+            className='w-full h-full'
+            containerClassName='aspect-[9/16] w-full h-full'
           />
         </div>
       ) : (
