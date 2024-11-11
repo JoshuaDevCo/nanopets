@@ -1,3 +1,36 @@
+// bot testing
+const { Bot, InlineKeyboard } = require("grammy");
+const bot = new Bot(process.env.BOT_TOKEN);
+
+const firstMenu =
+  "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
+const firstMenuMarkup = new InlineKeyboard().text("Tutorial", "Tutorial");
+
+const Reply = "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
+const play = new InlineKeyboard().text(
+  "Play",
+  "https://t.me/KodoMochiBot/play"
+);
+
+bot.command("start", async (ctx) => {
+  await ctx.reply(firstMenu, {
+    parse_mode: "HTML",
+    reply_markup: firstMenuMarkup,
+  });
+});
+
+//This handler processes next button on the menu
+bot.callbackQuery("Tutorial", async (ctx) => {
+  //Update message content with corresponding menu section
+  await ctx.editMessageText(Reply, {
+    reply_markup: play,
+    parse_mode: "HTML",
+  });
+});
+
+//Start the Bot
+bot.start();
+
 // server.js
 const express = require("express");
 const http = require("http");
@@ -198,7 +231,6 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
         }
         break;
       case "revive":
-        
         updates.careMistakes = 0;
         updates.coins = tamagotchi.coins;
         updates.age = 1;
