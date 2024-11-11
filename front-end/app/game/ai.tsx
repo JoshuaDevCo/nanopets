@@ -9,7 +9,7 @@ export default function TamagotchiResponse({
   gameResult,
 }: any) {
   const [isVisible, setIsVisible] = useState(false);
-  const { complete, completion } = useCompletion({
+  const { complete, completion, setCompletion } = useCompletion({
     api: "/api/chat",
   });
   const prevTamagotchiRef = useRef(null);
@@ -30,7 +30,11 @@ export default function TamagotchiResponse({
         },
       });
 
-      const timer = setTimeout(() => setIsVisible(false), 20000);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setCompletion(""); // Clear the completion when the timer runs out
+      }, 5000);
+
       prevTamagotchiRef.current = { ...tamagotchi };
       return () => clearTimeout(timer);
     }

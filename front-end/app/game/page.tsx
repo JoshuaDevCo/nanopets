@@ -293,7 +293,7 @@ export default function TamagotchiGame() {
                     ))}
                 </div>
 
-                {tamagotchi && lastAction && (
+                {tamagotchi && lastAction && currentView === "main" && (
                   <AIChat
                     tamagotchi={tamagotchi}
                     lastAction={lastAction}
