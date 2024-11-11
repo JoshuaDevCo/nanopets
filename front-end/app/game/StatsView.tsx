@@ -51,7 +51,7 @@ export default function StatsView() {
         {" "}
         <ul className=''>
           {activities.map((activity, index) => (
-            <li key={index} className='bg-muted p-2 '>
+            <li key={index} className='bg-muted '>
               <span className='font-semibold'>
                 User {activity.userId.slice(0, 5)}
               </span>{" "}

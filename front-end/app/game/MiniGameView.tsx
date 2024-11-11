@@ -14,7 +14,7 @@ export default function MinigameView({
   play,
 }: MinigameViewProps) {
   return (
-    <div className='p-4 w-full flex flex-col items-center justify-center'>
+    <div className='p-4 w-full flex flex-col items-center justify-center mt-20'>
       <Image
         src={PlayingCard}
         alt='Playing Card'

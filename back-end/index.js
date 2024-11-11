@@ -380,7 +380,7 @@ const updateTask = new AsyncTask(
 );
 
 const updateJob = new SimpleIntervalJob(
-  { minutes: 5, runImmediately: true },
+  { minutes: 10, runImmediately: true },
   updateTask
 );
 
