@@ -260,7 +260,7 @@ export default function TamagotchiGame() {
                     alt='pet'
                     width={300}
                     height={300}
-                    className={`hue-rotate-[${tamagotchi.tamahue}deg]`}
+                    className={`hue-rotate-[${tamagotchi.tamahue!}deg]`}
                   />
                   {tamagotchi.isSleeping && (
                     <Image
