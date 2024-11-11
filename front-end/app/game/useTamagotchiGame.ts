@@ -270,9 +270,7 @@ export function useTamagotchiGame() {
         triggerAnimation(Coin, -10);
         setCurrentView("main");
       }
-      if (action == "watchVideo") {
-        triggerAnimation(Coin, 10);
-      }
+
       setLastAction(action);
       setTimeout(() => setLastAction(null), 10000);
       setError(null);
