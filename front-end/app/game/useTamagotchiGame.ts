@@ -274,7 +274,7 @@ export function useTamagotchiGame() {
         triggerAnimation(Coin, 10);
       }
       setLastAction(action);
-      setTimeout(() => setLastAction(null), 5000);
+      setTimeout(() => setLastAction(null), 10000);
       setError(null);
       setIsBusyAction(false);
     } catch (error: any) {
@@ -296,7 +296,7 @@ export function useTamagotchiGame() {
       setTamagotchi(response.data);
       setClockTime(response.data.clockTime);
       setLastAction(`purchase_${itemId}`);
-      setTimeout(() => setLastAction(null), 5000);
+      setTimeout(() => setLastAction(null), 10000);
       setError(null);
       setIsBusyAction(false);
     } catch (error: any) {
