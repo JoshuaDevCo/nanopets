@@ -1,16 +1,27 @@
-import TelegramAuth from "@/components/TelegramAuth";
-import { getSession } from "@/utils/session";
+"use client";
 
-export default async function Home() {
-  const session = await getSession();
+import YouTube from "react-youtube";
 
+export default function Home() {
   return (
-    <main className='flex min-h-screen flex-col items-center justify-center p-24'>
-      <h1 className='text-4xl font-bold mb-8'>
-        Jwt Authentication for Telegram Mini Apps
-      </h1>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
-      <TelegramAuth />
-    </main>
+    <div className='fixed inset-0 z-50 bg-black flex justify-center items-center '>
+      <YouTube
+        videoId='Zxjxk9AQHmI' // Replace with your YouTube Short video ID
+        opts={{
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            modestbranding: 1,
+            rel: 0,
+            showinfo: 0,
+          },
+          height: window.innerHeight,
+          width: window.innerWidth,
+        }}
+        className='w-screen h-screen'
+      />
+    </div>
   );
 }
