@@ -44,7 +44,8 @@ Respond to the user's action in one short, cute sentence (max 15 words). Your st
     model: groq("llama3-groq-70b-8192-tool-use-preview"),
     system: systemPrompt,
     prompt: "What's your response to the user's action?",
-    temperature: Math.random() + 1,
+    temperature: Math.random() + 0.5,
+    maxTokens: 30,
   });
 
   return result.toDataStreamResponse();
