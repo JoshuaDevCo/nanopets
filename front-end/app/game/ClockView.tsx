@@ -45,7 +45,7 @@ export default function ClockView({ setTime, icons, tamahue }: ClockViewProps) {
             alt='pet'
             width={200}
             height={200}
-            className={`hue-rotate-[${tamahue}deg]`}
+            style={{ filter: `hue-rotate(${tamahue}deg)` }}
           />
         </div>
         <p className='mb-4 p-2 text-center text-sm font-bold'>

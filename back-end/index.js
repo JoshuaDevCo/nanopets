@@ -93,7 +93,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     return res.json({ userId, ...tamagotchi });
   }
 
-  const randhue = Math.floor(Math.random() * 721 - 360);
+  const randhue = Math.floor(Math.random() * 360 - 180);
 
   const newTamagotchi = {
     hunger: 3,
