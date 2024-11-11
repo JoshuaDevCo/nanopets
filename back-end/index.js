@@ -48,6 +48,15 @@ bot.callbackQuery("Tutorial", async (ctx) => {
   });
 });
 
+// Helper function to send Telegram notification
+async function sendTelegramNotification(userId, message) {
+  try {
+    await bot.api.sendMessage(userId, message);
+  } catch (error) {
+    console.error("Error sending Telegram notification:", error);
+  }
+}
+
 //Start the Bot
 bot.start();
 
@@ -387,9 +396,17 @@ const updateTask = new AsyncTask(
         // Care mistakes
         if (tamagotchi.hunger === 0 || tamagotchi.happiness === 0) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
+          if (tamagothi.hunger === 0) {
+            await sendTelegramNotification(
+              userId,
+              "Your KodoMochi is hungry..."
+            );
+          } else
+            await sendTelegramNotification(userId, "Your KodoMochi is sad...");
         }
         if (tamagotchi.isSick) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
+          await sendTelegramNotification(userId, "Your KodoMochi is sick!");
         }
         if (tamagotchi.poop >= POOP_LIMIT) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
