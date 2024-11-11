@@ -14,7 +14,9 @@ export default function StatsView() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch("/api/activity");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/activity`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch activity data");
         }
