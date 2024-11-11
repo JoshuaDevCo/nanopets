@@ -260,7 +260,13 @@ export default function TamagotchiGame() {
                     alt='pet'
                     width={300}
                     height={300}
-                    style={{ filter: `hue-rotate(${tamagotchi.tamahue}deg)` }}
+                    style={{
+                      filter: `${
+                        tamagotchi.isSick
+                          ? "hue-rotate(-120deg)"
+                          : `hue-rotate(${tamagotchi.tamahue}deg)`
+                      } `,
+                    }}
                   />
                   {tamagotchi.isSleeping && (
                     <Image

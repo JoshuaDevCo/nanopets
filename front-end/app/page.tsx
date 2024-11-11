@@ -29,8 +29,14 @@ export default function Home() {
         <button className='bg-black text-white p-2 px-4 text-4xl'>Deck</button>
       </header>
 
-      <main className='flex-grow flex flex-col items-center justify-center text-center px-4 py-32'>
-        <Image src='/egg1.gif' width={200} height={200} alt='kodomochi egg' />
+      <main className='flex-grow flex flex-col items-center justify-center text-center px-4 py-20 md:py-32'>
+        <Image
+          src='/egg1.gif'
+          width={200}
+          height={200}
+          alt='kodomochi egg'
+      
+        />
         <h1 className='text-6xl font-bold mt-6'>KODOMOCHI</h1>
         <h2 className='text-4xl font-bold '>
           Your virtual pet adventure awaits!
