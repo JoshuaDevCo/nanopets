@@ -105,7 +105,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     isSleeping: false,
     isSick: false,
     isLightOn: true,
-    coins: 0,
+    coins: 1,
     clockTime: 12,
     timeSet: false,
     lastUpdateTime: Date.now(),
@@ -350,7 +350,7 @@ const updateTask = new AsyncTask(
         // Random events
         if (Math.random() < 0.1) updates.isSick = true;
         if (tamagotchi.poop < POOP_LIMIT) {
-          if (Math.random() < 0.1) updates.poop = tamagotchi.poop + 1;
+          if (Math.random() < 0.2) updates.poop = tamagotchi.poop + 1;
         }
       }
 

@@ -42,6 +42,7 @@ import StatsView from "./StatsView";
 export default function TamagotchiGame() {
   const [isInTelegram, setIsInTelegram] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [localClockTime, setLocalClockTime] = useState(0);
 
   const {
     userId,
@@ -100,6 +101,18 @@ export default function TamagotchiGame() {
 
     checkTelegramEnvironment();
   }, []);
+
+  useEffect(() => {
+    setLocalClockTime(clockTime);
+    const timer = setInterval(() => {
+      setLocalClockTime((prevTime) => {
+        const newTime = (prevTime + 1 / 60) % 24; // Increment by 1 minute
+        return Number(newTime.toFixed(4)); // Round to 4 decimal places to avoid floating point issues
+      });
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, [clockTime]);
 
   if (isLoading) {
     return (
@@ -231,7 +244,7 @@ export default function TamagotchiGame() {
 
                   <div>
                     <p className='mt-1 mr-2 text-lg font-bold'>
-                      Time: {formatTime(clockTime)} <br />
+                      Time: {formatTime(localClockTime)}
                     </p>
                   </div>
                 </div>

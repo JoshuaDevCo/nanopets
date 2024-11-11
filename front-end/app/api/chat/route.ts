@@ -44,7 +44,7 @@ Respond to the user's action in one short, cute sentence (max 15 words). Be crea
     model: groq("llama-3.1-70b-versatile"),
     system: systemPrompt,
     prompt: "What's your response to the user's action?",
-    seed: Math.random() * 1000000,
+    seed: Math.random(),
   });
 
   return result.toDataStreamResponse();
