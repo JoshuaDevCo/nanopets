@@ -285,7 +285,12 @@ export function useTamagotchiGame() {
 
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
-    try {
+
+    displayError(
+      "Have not set this up on the backend yet. Implement token first. " +
+        itemId
+    );
+    /* try {
       setIsBusyAction(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/purchase`,
@@ -301,7 +306,7 @@ export function useTamagotchiGame() {
       console.error(`Error purchasing item ${itemId}:`, error);
       displayError(error.response?.data?.error || "An error occurred");
       setIsBusyAction(false);
-    }
+    } */
   };
 
   const triggerAnimation = (icon: StaticImageData, value: number) => {

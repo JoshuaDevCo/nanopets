@@ -287,7 +287,7 @@ export default function TamagotchiGame() {
                     <>
                       {tamagotchi.isLightOn ? (
                         <Image
-                          src='/zzz-black.gif'
+                          src='/zzz-black1.gif'
                           alt='zzz'
                           width={120}
                           height={120}
