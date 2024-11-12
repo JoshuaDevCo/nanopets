@@ -32,7 +32,7 @@ export default function TonConnectionMinter() {
 
   // Function to decode metadata Cell
   function decodeCell(cell: any): string {
-    let slice = cell.beginParse();
+    const slice = cell.beginParse();
     slice.loadUint(8); // Skip the first byte
     return slice.loadStringTail();
   }
