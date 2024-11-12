@@ -1,0 +1,9 @@
+;; String "meta.json"
+slice __gen_slice_string_7ca4179185a84c879806ec30a1f5fa692451a7fb8dfcf32a967a2cb475822481() asm """
+    B{b5ee9c7241010101000b0000126d6574612e6a736f6ebde57607} B>boc <s PUSHSLICE
+""";
+
+;; Comment "NFT Sale"
+cell __gen_cell_comment_048a60bd611ab7e8887a065af586ff202a0a1d264d348daae89d1f6daf8ccd74() asm """
+    B{b5ee9c7241010101000e000018000000004e46542053616c653d34d2cb} B>boc PUSHREF
+""";

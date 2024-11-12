@@ -1,12 +1,11 @@
 "use client";
 
-import { useTonConnectUI } from "@tonconnect/ui-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Address } from "@ton/core";
+import { useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
 import Image from "next/image";
 import Coin from "../svgs/coin.png";
 import InviteFriendTask from "./InviteFriendTask";
+import TonConnectionMinter from "./TonConnection";
 
 interface WalletViewProps {
   coins: number;
@@ -25,65 +24,12 @@ export default function WalletView({
   resetTamagotchi,
   watchVideo,
 }: WalletViewProps) {
-  const [tonConnectUI] = useTonConnectUI();
-  const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
 
   const [nextVideoAvailableTime, setNextVideoAvailableTime] = useState<
     number | null
   >(null);
   const playerRef = useRef<YouTube>(null);
-
-  const handleWalletConnection = useCallback((address: string) => {
-    setTonWalletAddress(address);
-    console.log("Wallet connected successfully!");
-    setIsLoading(false);
-  }, []);
-
-  const handleWalletDisconnection = useCallback(() => {
-    setTonWalletAddress(null);
-    console.log("Wallet disconnected successfully!");
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const checkWalletConnection = async () => {
-      if (tonConnectUI.account?.address) {
-        handleWalletConnection(tonConnectUI.account?.address);
-      } else {
-        handleWalletDisconnection();
-      }
-    };
-
-    checkWalletConnection();
-
-    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
-      if (wallet) {
-        handleWalletConnection(wallet.account.address);
-      } else {
-        handleWalletDisconnection();
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [tonConnectUI, handleWalletConnection, handleWalletDisconnection]);
-
-  const handleWalletAction = async () => {
-    if (tonConnectUI.connected) {
-      setIsLoading(true);
-      await tonConnectUI.disconnect();
-    } else {
-      await tonConnectUI.openModal();
-    }
-  };
-
-  const formatAddress = (address: string) => {
-    const tempAddress = Address.parse(address).toString();
-    return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
-  };
 
   useEffect(() => {
     const VIDEO_REWARD_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -177,35 +123,7 @@ export default function WalletView({
               </button>
             </div>
           </div>
-          {isLoading ? (
-            <>...Loading</>
-          ) : (
-            <>
-              {tonWalletAddress ? (
-                <div className='flex flex-col'>
-                  <button
-                    onClick={handleWalletAction}
-                    className='bg-red-500  text-white font-bold py-2 px-4 '
-                  >
-                    Disconnect {formatAddress(tonWalletAddress)}
-                  </button>
-                  <p className='text-green-500'>
-                    Your are currently eligible for $KODO Season 1.
-                  </p>
-                </div>
-              ) : (
-                <div className='flex flex-col'>
-                  <button
-                    onClick={handleWalletAction}
-                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
-                  >
-                    Connect TON Wallet For Airdrop Season 1
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-
+                <TonConnectionMinter />
           <div className='flex flex-col mb-4 mt-3'>
             <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
             <button

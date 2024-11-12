@@ -5,7 +5,7 @@ import { NetworkProvider } from "@ton/blueprint";
 export async function run(provider: NetworkProvider) {
   const OFFCHAIN_CONTENT_PREFIX = 0x01;
   const CONTENT_URL = "https://kodomochi.pet/metadata/"; // Change to your content URL
-  const NFT_PRICE = toNano("0.5");
+  const NFT_PRICE = toNano("1");
 
   const contentCell = beginCell()
     .storeInt(OFFCHAIN_CONTENT_PREFIX, 8)
