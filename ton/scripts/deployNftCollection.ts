@@ -1,48 +1,55 @@
-import { Address, beginCell, fromNano, toNano } from '@ton/core';
-import { NftCollection } from '../wrappers/NftCollection';
-import { NetworkProvider } from '@ton/blueprint';
+import { Address, beginCell, fromNano, toNano } from "@ton/core";
+import { NftCollection } from "../wrappers/NftCollection";
+import { NetworkProvider } from "@ton/blueprint";
 
 export async function run(provider: NetworkProvider) {
-    const OFFCHAIN_CONTENT_PREFIX = 0x01;
-    const CONTENT_URL = "https://violet-traditional-rabbit-103.mypinata.cloud/ipfs/QmRh1kHRC9FdVQvnvZVDKanXYWaSpdYoNC5pUkBB4s5TW2/"; // Change to your content URL
-    const NFT_PRICE = toNano('0.5');
-    
-    const contentCell = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(CONTENT_URL).endCell();
+  const OFFCHAIN_CONTENT_PREFIX = 0x01;
+  const CONTENT_URL = "https://kodomochi.pet/metadata/"; // Change to your content URL
+  const NFT_PRICE = toNano("0.5");
 
-    // Use the sender's address as the owner
-    const owner = provider.sender().address;
+  const contentCell = beginCell()
+    .storeInt(OFFCHAIN_CONTENT_PREFIX, 8)
+    .storeStringRefTail(CONTENT_URL)
+    .endCell();
 
-    if (!owner) {
-        console.log("Owner address is undefined");
-        return;
-    }
+  // Use the sender's address as the owner
+  const owner = provider.sender().address;
 
-    const nftCollection = provider.open(await NftCollection.fromInit(owner, contentCell, NFT_PRICE));
+  if (!owner) {
+    console.log("Owner address is undefined");
+    return;
+  }
 
-    console.log('NFT collection will be deployed at:', nftCollection.address);
+  const nftCollection = provider.open(
+    await NftCollection.fromInit(owner, contentCell, NFT_PRICE)
+  );
 
-    // Deploy the contract and mint the first NFT
-    await nftCollection.send(
-        provider.sender(),
-        {
-            value: toNano('0.3') + NFT_PRICE,
-        },
-        "Mint"
-    );
+  console.log("NFT collection will be deployed at:", nftCollection.address);
 
-    await provider.waitForDeploy(nftCollection.address);
+  // Deploy the contract and mint the first NFT
+  await nftCollection.send(
+    provider.sender(),
+    {
+      value: toNano("0.3") + NFT_PRICE,
+    },
+    "Mint"
+  );
 
-    console.log('NFT Collection deployed');
+  await provider.waitForDeploy(nftCollection.address);
 
-    // Get collection data
-    const collectionData = await nftCollection.getGetCollectionData();
-    console.log('Collection data:', collectionData);
+  console.log("NFT Collection deployed");
 
-    // Get the latest index ID
-    const latestIndexId = collectionData.next_item_index;
-    console.log("Latest indexID:", latestIndexId);
+  // Get collection data
+  const collectionData = await nftCollection.getGetCollectionData();
+  console.log("Collection data:", collectionData);
 
-    // Get NFT address by index
-    const itemAddress = await nftCollection.getGetNftAddressByIndex(latestIndexId - 1n);
-    console.log('Minted NFT Item address:', itemAddress);
+  // Get the latest index ID
+  const latestIndexId = collectionData.next_item_index;
+  console.log("Latest indexID:", latestIndexId);
+
+  // Get NFT address by index
+  const itemAddress = await nftCollection.getGetNftAddressByIndex(
+    latestIndexId - 1n
+  );
+  console.log("Minted NFT Item address:", itemAddress);
 }
