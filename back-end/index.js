@@ -12,7 +12,7 @@ const firstMenuMarkup = new InlineKeyboard()
   .url("Subscribe to our channel", "https://t.me/kodomochi");
 
 const Reply =
-  "<b>How to play KodoMochi</b>\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?\nWait for your KodoMochi to poop in order to earn more coins\n\n/help to get this guide";
+  "<b>How to play KodoMochi</b>\n\nHatch your KodoMochi.\nEvery night KodoMochi will sleep. Turn the lights off to avoid care mistakes\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?\nWait for your KodoMochi to poop in order to earn more coins\n\nConnect your wallet.\nClaim testnet $KODO daily and buy cool things for your KodoMochi\n\n/help to get this guide";
 const play = new InlineKeyboard()
   .url("Play in 1 click", "https://t.me/KodoMochiBot/play")
   .row()
@@ -281,10 +281,6 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
       case "play":
       case "clean":
         return res.status(400).json({ error: "KodoMochi is sleeping" });
-
-        break;
-      default:
-        return res.status(400).json({ error: "Invalid action" });
     }
   }
 
