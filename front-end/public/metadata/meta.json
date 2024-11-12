@@ -1,0 +1,11 @@
+{
+  "name": "KodoMochi Sould Bound Crown",
+  "description": "A KodoMochi Soul Bound Crown minted by supporters of the development of KodoMochi",
+  "image": "https://kodomochi.pet/crown.png",
+  "cover_image": "https://kodomochi.pet/crown.png",
+  "social_links": [
+    { "name": "Website", "url": "https://kodomochi.pet" },
+    { "name": "Telegram", "url": "https://t.me/kodomochi" },
+    { "name": "X", "url": "https://x.com/kodomochipet" }
+  ]
+}

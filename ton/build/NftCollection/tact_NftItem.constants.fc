@@ -1,0 +1,4 @@
+;; String "item.json"
+slice __gen_slice_string_17222a748a356c219aa61790a490e06d137728e19b513499b073e038c4c94ca5() asm """
+    B{b5ee9c7241010101000b0000126974656d2e6a736f6e1baa5832} B>boc <s PUSHSLICE
+""";

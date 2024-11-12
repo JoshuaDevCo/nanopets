@@ -7,7 +7,7 @@ export default function Home() {
       <header className='p-4 flex justify-between items-center '>
         <div className='flex gap-2'>
           <Link
-            href='https://twitter.com'
+            href='https://x.com/kodomochipet'
             target='_blank'
             rel='noopener noreferrer'
           >
@@ -16,7 +16,7 @@ export default function Home() {
             </button>
           </Link>
           <Link
-            href='https://github.com'
+            href='https://t.me/kodomochi'
             target='_blank'
             rel='noopener noreferrer'
           >
@@ -39,9 +39,12 @@ export default function Home() {
           Keep your Kodomochi happy and healthy. <br /> Earn daily tokens, shop
           items, complete adventures, invite friends and more.
         </p>
-        <button className='bg-black text-white p-2 px-4 text-4xl'>
-          Play Beta Now
-        </button>
+        <Link href='https://t.me/kodomochibot' rel='noopener noreferrer'>
+          <button className='bg-black text-white p-2 px-4 text-4xl'>
+            Play Beta Now
+          </button>
+        </Link>
+
         <p className='bg-red-500 px-2 text-xl mt-10'>
           TOKEN CURRENTLY ONLY ON THE TON TESTNET AND IS NOT TRADEABLE!!
         </p>
@@ -134,7 +137,7 @@ export default function Home() {
         <div className='max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center'>
           <div className='flex space-x-4'>
             <Link
-              href='https://twitter.com'
+              href='https://x.com/kodomochipet'
               target='_blank'
               rel='noopener noreferrer'
             >
@@ -143,7 +146,7 @@ export default function Home() {
               </button>
             </Link>
             <Link
-              href='https://github.com'
+              href='https://t.me/kodomochi'
               target='_blank'
               rel='noopener noreferrer'
             >
