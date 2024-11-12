@@ -271,7 +271,20 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
         updates.timeSet = false;
         break;
       default:
-        return res.status(400).json({ error: "Tamagotchi has passed away" });
+        return res.status(400).json({ error: "KodoMochi has passed away" });
+    }
+  }
+
+  if (tamagotchi.isSleeping) {
+    switch (action) {
+      case "feed":
+      case "play":
+      case "clean":
+        return res.status(400).json({ error: "KodoMochi is sleeping" });
+
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid action" });
     }
   }
 

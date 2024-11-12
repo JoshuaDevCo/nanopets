@@ -180,18 +180,33 @@ export default function TamagotchiGame() {
             <Button
               onClick={() => feed("rice")}
               icon={Rice}
-              disabled={isDisabled || isBusyAction || tamagotchi.coins == 0}
+              disabled={
+                isDisabled ||
+                isBusyAction ||
+                tamagotchi.coins == 0 ||
+                tamagotchi.isSleeping
+              }
             />
             <Button
               onClick={() => feed("candy")}
               icon={Candy}
-              disabled={isDisabled || isBusyAction || tamagotchi.coins < 2}
+              disabled={
+                isDisabled ||
+                isBusyAction ||
+                tamagotchi.coins < 2 ||
+                tamagotchi.isSleeping
+              }
             />
 
             <Button
               onClick={play}
               icon={Console}
-              disabled={isDisabled || isBusyAction || tamagotchi.weight == 1}
+              disabled={
+                isDisabled ||
+                isBusyAction ||
+                tamagotchi.weight == 1 ||
+                tamagotchi.isSleeping
+              }
             />
             <Button
               onClick={giveMedicine}
@@ -269,13 +284,25 @@ export default function TamagotchiGame() {
                     }}
                   />
                   {tamagotchi.isSleeping && (
-                    <Image
-                      src='/zzz.gif'
-                      alt='zzz'
-                      width={120}
-                      height={120}
-                      className='absolute -right-5 -top-10'
-                    />
+                    <>
+                      {tamagotchi.isLightOn ? (
+                        <Image
+                          src='/zzz-black.gif'
+                          alt='zzz'
+                          width={120}
+                          height={120}
+                          className='absolute -right-5 -top-10'
+                        />
+                      ) : (
+                        <Image
+                          src='/zzz.gif'
+                          alt='zzz'
+                          width={120}
+                          height={120}
+                          className='absolute -right-5 -top-10'
+                        />
+                      )}
+                    </>
                   )}
                   {tamagotchi.isSick && (
                     <Image
