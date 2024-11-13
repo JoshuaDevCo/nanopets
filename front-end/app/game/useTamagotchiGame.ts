@@ -14,6 +14,7 @@ import Happy from "../svgs/happy.png";
 import Scale from "../svgs/scale1.png";
 import Hungry from "../svgs/hungry.png";
 import Coin from "../svgs/coin.png";
+import Crown from "../svgs/crown.png";
 
 import { WebApp } from "@twa-dev/types";
 
@@ -43,6 +44,7 @@ interface Tamagotchi {
   lastVideoWatchTime: number;
   referralCount: number;
   tamahue: number;
+  crowns: number;
 }
 
 interface AnimationInfo {
@@ -283,13 +285,36 @@ export function useTamagotchiGame() {
     }
   };
 
+  const verifyAndUpdateCrown = async (
+    walletAddress: string,
+    userId: string
+  ) => {
+    try {
+      const response = await fetch(`/api/tamagotchi/${userId}/verify-crown`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ walletAddress }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        triggerAnimation(Crown, +1);
+        triggerAnimation2(Coin, 50);
+      } else {
+        console.log("Crown verification message:", result.message);
+      }
+    } catch (error) {
+      console.error("Error verifying crown:", error);
+    }
+  };
+
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
 
-    displayError(
-      "Have not set this up on the backend yet. Implement token first. " +
-        itemId
-    );
+    displayError("Have not set this up on the backend yet. " + itemId);
     /* try {
       setIsBusyAction(true);
       const response = await axios.post(
@@ -388,5 +413,6 @@ export function useTamagotchiGame() {
     purchaseItem,
     watchVideo,
     revive,
+    verifyAndUpdateCrown,
   };
 }

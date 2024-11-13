@@ -10,6 +10,7 @@ import TonConnectionMinter from "./TonConnection";
 
 interface WalletViewProps {
   coins: number;
+  crowns: number;
   userId: any;
   lastVideoWatchTime: number;
   referralCount: number;
@@ -19,6 +20,7 @@ interface WalletViewProps {
 
 export default function WalletView({
   coins,
+  crowns,
   userId,
   lastVideoWatchTime,
   referralCount,
@@ -109,7 +111,7 @@ export default function WalletView({
                 alt='coin'
                 src={Coin}
               />
-              <p className='text-2xl'>Coins: {coins}</p>
+              <p className='text-2xl'>{coins}</p>
             </div>
             <div className='flex gap-2 items-start'>
               <Image
@@ -119,7 +121,7 @@ export default function WalletView({
                 alt='crown'
                 src={Crown}
               />
-              <p className='text-2xl'>1</p>
+              <p className='text-2xl'>{crowns ? crowns : 0}</p>
             </div>
             <div>
               <button
@@ -175,7 +177,6 @@ export default function WalletView({
             >
               Reset Kodomochi
             </button>
-            <p className=' mb-4'>RESETTING KODOMOCHI COSTS 10 COINS</p>
           </div>
         </div>
       )}

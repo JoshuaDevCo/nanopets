@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { Address, beginCell, toNano } from "@ton/core";
 import { Account } from "@tonconnect/sdk";
-
+import { useTamagotchiGame } from "./useTamagotchiGame";
 
 const SBT_CONTRACT_ADDRESS = "EQABJOutwO97Aj6-xod1sJ9Kg1uf9l8AA9nXpABxxJjS-5MH";
 
@@ -24,6 +24,8 @@ export default function TonConnectionMinter() {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const nftPrice = toNano("1");
+
+  const { userId, verifyAndUpdateCrown } = useTamagotchiGame();
 
   const metadata = {
     name: "KodoMochi Soul Bound Crown",
@@ -48,6 +50,9 @@ export default function TonConnectionMinter() {
     const checkWalletConnection = async () => {
       if (tonConnectUI.account?.address) {
         handleWalletConnection(tonConnectUI.account?.address);
+        if (userId) {
+          await verifyAndUpdateCrown(tonConnectUI.account.address, userId); // You'll need to pass userId to the component
+        }
       } else {
         handleWalletDisconnection();
       }
@@ -133,9 +138,9 @@ export default function TonConnectionMinter() {
       const result = await tonConnectUI.sendTransaction(transaction);
       console.log("Transaction result:", result);
 
-      alert(
-        "Minting transaction sent successfully! Please wait for confirmation."
-      );
+      if (userId && result) {
+        await verifyAndUpdateCrown(tonConnectUI.account.address, userId); // You'll need to pass userId to the component
+      }
     } catch (error) {
       console.error("Error minting:", error);
       alert(
@@ -170,7 +175,7 @@ export default function TonConnectionMinter() {
             <div className='flex flex-col'>
               <button
                 onClick={handleWalletAction}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
+                className='bg-blue-500  text-white font-bold py-2 px-4 '
               >
                 Connect TON Wallet For Airdrop Season 1
               </button>
@@ -203,8 +208,8 @@ export default function TonConnectionMinter() {
       <button
         onClick={handleMint}
         disabled={isLoading || !isConnected}
-        className={`w-full py-3 px-6 font-semibold   text-white
-              ${isConnected ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600"} 
+        className={`w-full py-2 px-6 font-semibold   text-white
+              ${isConnected ? "bg-blue-600 " : "bg-gray-600"} 
               transition-colors disabled:opacity-50`}
       >
         {isLoading

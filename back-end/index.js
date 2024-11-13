@@ -12,7 +12,7 @@ const firstMenuMarkup = new InlineKeyboard()
   .url("Subscribe to our channel", "https://t.me/kodomochi");
 
 const Reply =
-  "<b>How to play KodoMochi</b>\n\nHatch your KodoMochi.\nEvery night KodoMochi will sleep. Turn the lights off to avoid care mistakes\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?\nWait for your KodoMochi to poop in order to earn more coins\n\nConnect your wallet.\nClaim testnet $KODO daily and buy cool things for your KodoMochi\n\n/help to get this guide";
+  "<b>How to play KodoMochi</b>\n\nHatch your KodoMochi.\nEvery night KodoMochi will sleep. Turn the lights off to avoid care mistakes\n\nKeep your KodoMochi alive.\nFeed, Play, Clean and give Medicine to your Kodomochi to keep it alive\n\nNo coins left?\nWait for your KodoMochi to poop in order to earn more coins\n\nConnect your wallet.\nMint a KodoMochi Soul Bound Crown to support the development and gain future percs.\n\n/help to get this guide";
 const play = new InlineKeyboard()
   .url("Play in 1 click", "https://t.me/KodoMochiBot/play")
   .row()
@@ -26,9 +26,9 @@ bot.command("start", async (ctx) => {
 });
 
 bot.command("help", async (ctx) => {
-  await ctx.editMessageText(Reply, {
-    reply_markup: play,
+  await ctx.reply(Reply, {
     parse_mode: "HTML",
+    reply_markup: play,
   });
 });
 
@@ -60,7 +60,7 @@ async function sendTelegramNotification(userId, message) {
 //Start the Bot
 bot.start();
 
-// server.js
+// game server part:
 const express = require("express");
 const http = require("http");
 require("dotenv").config();
@@ -117,6 +117,7 @@ async function getTamagotchi(userId) {
     lastVideoWatchTime: parseInt(tamagotchi.lastVideoWatchTime),
     referralCount: parseInt(tamagotchi.referralCount) || 0,
     tamahue: parseInt(tamagotchi.tamahue) || 0,
+    crowns: parseInt(tamagotchi.crowns) || 0,
   };
 }
 
@@ -141,6 +142,72 @@ app.get("/api/activity", async (req, res) => {
   } catch (error) {
     console.error("Error fetching activities:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// endpoint to
+// check crown NFT part:
+const { TonClient } = require("@ton/ton");
+const { Address } = require("@ton/core");
+
+const tonClient = new TonClient({
+  endpoint: "https://toncenter.com/api/v2/jsonRPC", // or your preferred endpoint
+});
+
+app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
+  const { userId } = req.params;
+  const { walletAddress } = req.body;
+
+  try {
+    // Verify the wallet address format
+    const address = Address.parse(walletAddress);
+
+    // Query the SBT contract to check if this wallet owns a crown
+    const { result } = await tonClient.callGetMethod(
+      Address.parse(process.env.SBT_CONTRACT_ADDRESS),
+      "get_nft_owner",
+      [{ type: "address", value: address.toString() }]
+    );
+
+    const hasCrown = result.length > 0;
+
+    console.log(result);
+
+    if (hasCrown) {
+      // Update the tamagotchi's crown count
+      const tamagotchi = await getTamagotchi(userId);
+
+      // Only update if they don't already have a crown
+      await updateTamagotchi(userId, {
+        crowns: tamagotchi.crowns + 1,
+        coins: tamagotchi.coins + 50, // Bonus coins for crown holders
+      });
+
+      await logActivity(userId, "Verified Crown NFT");
+
+      // Get updated tamagotchi data
+      const updatedTamagotchi = await getTamagotchi(userId);
+
+      // Notify connected clients
+      io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+
+      res.json({
+        success: true,
+        message: "Crown verified and benefits applied",
+        tamagotchi: updatedTamagotchi,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No crown found for this wallet",
+      });
+    }
+  } catch (error) {
+    console.error("Error verifying crown:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error verifying crown ownership",
+    });
   }
 });
 
@@ -174,6 +241,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     lastVideoWatchTime: 0,
     referralCount: 0,
     tamahue: randhue,
+    crowns: 0,
   };
 
   if (referralCode && referralCode !== userId) {
