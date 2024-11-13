@@ -158,6 +158,8 @@ app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
   const { userId } = req.params;
   const { walletAddress } = req.body;
 
+  console.log("trying to verify crown");
+
   try {
     // Verify the wallet address format
     const address = Address.parse(walletAddress);

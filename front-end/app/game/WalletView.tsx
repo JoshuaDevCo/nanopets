@@ -16,6 +16,7 @@ interface WalletViewProps {
   referralCount: number;
   resetTamagotchi: () => void;
   watchVideo: () => void;
+  verifyAndUpdateCrown: () => void;
 }
 
 export default function WalletView({
@@ -26,6 +27,7 @@ export default function WalletView({
   referralCount,
   resetTamagotchi,
   watchVideo,
+  verifyAndUpdateCrown,
 }: WalletViewProps) {
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
 
@@ -136,7 +138,10 @@ export default function WalletView({
               </button>
             </div>
           </div>
-          <TonConnectionMinter />
+          <TonConnectionMinter
+            userId={userId}
+            verifyAndUpdateCrown={verifyAndUpdateCrown}
+          />
           <div className='flex flex-col mb-4 mt-3'>
             <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
             <button

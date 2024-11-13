@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { Address, beginCell, toNano } from "@ton/core";
 import { Account } from "@tonconnect/sdk";
-import { useTamagotchiGame } from "./useTamagotchiGame";
+
 
 const SBT_CONTRACT_ADDRESS = "EQABJOutwO97Aj6-xod1sJ9Kg1uf9l8AA9nXpABxxJjS-5MH";
 
@@ -18,14 +18,14 @@ function isConnectedAccount(account: Account | null): account is Account {
   return account !== null;
 }
 
-export default function TonConnectionMinter() {
+export default function TonConnectionMinter(userId:any, verifyAndUpdateCrown:any) {
   const [tonConnectUI] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const nftPrice = toNano("1");
 
-  const { userId, verifyAndUpdateCrown } = useTamagotchiGame();
+  
 
   const metadata = {
     name: "KodoMochi Soul Bound Crown",
