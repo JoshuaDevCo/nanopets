@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
 import Image from "next/image";
 import Coin from "../svgs/coin.png";
+import Crown from "../svgs/crown.png";
 import InviteFriendTask from "./InviteFriendTask";
 import TonConnectionMinter from "./TonConnection";
 
@@ -108,7 +109,7 @@ export default function WalletView({
                 alt='coin'
                 src={Coin}
               />
-              <p className='text-2xl'>5</p>
+              <p className='text-2xl'>Coins: {coins}</p>
             </div>
             <div className='flex gap-2 items-start'>
               <Image
