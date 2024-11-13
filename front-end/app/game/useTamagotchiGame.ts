@@ -285,21 +285,18 @@ export function useTamagotchiGame() {
     }
   };
 
-  const verifyAndUpdateCrown = async (walletAddress: string) => {
+  const BuyCrown = async () => {
     if (!userId) return;
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/verify-crown`,
-        { walletAddress }
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/verify-crown`
       );
-
       setTamagotchi(response.data);
-
       triggerAnimation(Crown, +1);
       triggerAnimation2(Coin, 50);
     } catch (error) {
-      console.error("Error verifying crown:", error);
+      console.error("Error buying crown:", error);
     }
   };
 
@@ -405,6 +402,6 @@ export function useTamagotchiGame() {
     purchaseItem,
     watchVideo,
     revive,
-    verifyAndUpdateCrown,
+    BuyCrown,
   };
 }

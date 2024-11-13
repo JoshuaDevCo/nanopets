@@ -145,73 +145,17 @@ app.get("/api/activity", async (req, res) => {
   }
 });
 
-// endpoint to
-// check crown NFT part:
-const { TonClient } = require("@ton/ton");
-const { Address } = require("@ton/core");
-
-const tonClient = new TonClient({
-  endpoint: "https://toncenter.com/api/v2/jsonRPC", // or your preferred endpoint
-});
-
-app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
+// endpoint to buy crown (Need to add validation here later)
+app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
   const { userId } = req.params;
-  const { walletAddress } = req.body;
+  const updates = {
+    crowns: crowns + 1,
+  };
 
-  console.log("trying to verify crown");
-
-  try {
-    // Verify the wallet address format
-    const address = Address.parse(walletAddress);
-    console.log(address +  "user:" + userId)
-
-    // Query the SBT contract to check if this wallet owns a crown
-    const { result } = await tonClient.callGetMethod(
-      Address.parse(process.env.SBT_CONTRACT_ADDRESS),
-      "get_nft_owner",
-      [{ type: "address", value: address.toString() }]
-    );
-
-    // const hasCrown = result.length > 0;
-
-    console.log(result);
-
-   /*  if (hasCrown) {
-      // Update the tamagotchi's crown count
-      const tamagotchi = await getTamagotchi(userId);
-
-      // Only update if they don't already have a crown
-      await updateTamagotchi(userId, {
-        crowns: tamagotchi.crowns + 1,
-        coins: tamagotchi.coins + 50, // Bonus coins for crown holders
-      });
-
-      await logActivity(userId, "Verified Crown NFT");
-
-      // Get updated tamagotchi data
-      const updatedTamagotchi = await getTamagotchi(userId);
-
-      // Notify connected clients
-      io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
-
-      res.json({
-        success: true,
-        message: "Crown verified and benefits applied",
-        tamagotchi: updatedTamagotchi,
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: "No crown found for this wallet",
-      });
-    } */
-  } catch (error) {
-    console.error("Error verifying crown:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error verifying crown ownership",
-    });
-  }
+  await updateTamagotchi(userId, updates);
+  const updatedTamagotchi = await getTamagotchi(userId);
+  res.json(updatedTamagotchi);
+  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
 });
 
 // New Tamagotchi

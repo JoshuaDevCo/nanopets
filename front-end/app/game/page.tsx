@@ -68,7 +68,7 @@ export default function TamagotchiGame() {
     isAuthenticated,
     revive,
     watchVideo,
-    verifyAndUpdateCrown
+    BuyCrown,
   } = useTamagotchiGame();
 
   const icons = {
@@ -362,7 +362,7 @@ export default function TamagotchiGame() {
                 lastVideoWatchTime={tamagotchi.lastVideoWatchTime}
                 resetTamagotchi={revive}
                 watchVideo={watchVideo}
-                verifyAndUpdateCrown={verifyAndUpdateCrown}
+                BuyCrown={BuyCrown}
                 userId={userId}
                 referralCount={tamagotchi.referralCount}
               />

@@ -18,12 +18,10 @@ function isConnectedAccount(account: Account | null): account is Account {
 }
 
 interface ConnectionProps {
-  verifyAndUpdateCrown: (walletAddress: string) => void;
+  BuyCrown: () => void;
 }
 
-export default function TonConnectionMinter({
-  verifyAndUpdateCrown,
-}: ConnectionProps) {
+export default function TonConnectionMinter({ BuyCrown }: ConnectionProps) {
   const [tonConnectUI] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -53,7 +51,7 @@ export default function TonConnectionMinter({
     const checkWalletConnection = async () => {
       if (tonConnectUI.account?.address) {
         handleWalletConnection(tonConnectUI.account?.address);
-        verifyAndUpdateCrown(tonConnectUI.account?.address);
+        BuyCrown();
       } else {
         handleWalletDisconnection();
       }
@@ -139,9 +137,7 @@ export default function TonConnectionMinter({
       const result = await tonConnectUI.sendTransaction(transaction);
       console.log("Transaction result:", result);
 
-      if (result) {
-        await verifyAndUpdateCrown(tonConnectUI.account.address);
-      }
+      BuyCrown();
     } catch (error) {
       console.error("Error minting:", error);
       alert(
