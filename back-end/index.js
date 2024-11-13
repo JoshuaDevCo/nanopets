@@ -426,14 +426,27 @@ const updateTask = new AsyncTask(
           if (tamagothi.hunger === 0) {
             await sendTelegramNotification(
               userId,
-              "Your KodoMochi is hungry..."
+              "Your KodoMochi is hungry. Feed it now to avoid a care mistake.."
             );
           } else
-            await sendTelegramNotification(userId, "Your KodoMochi is sad...");
+            await sendTelegramNotification(
+              userId,
+              "Your KodoMochi is sad. Play with it to make it happy"
+            );
         }
         if (tamagotchi.isSick) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
-          await sendTelegramNotification(userId, "Your KodoMochi is sick!");
+          await sendTelegramNotification(
+            userId,
+            "Your KodoMochi is sick, time for a potion."
+          );
+        }
+
+        if (tamagotchi.poop == 2) {
+          await sendTelegramNotification(
+            userId,
+            "Your KodoMochi pooped, you should clean it up."
+          );
         }
         if (tamagotchi.poop >= POOP_LIMIT) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
@@ -462,9 +475,14 @@ const updateTask = new AsyncTask(
 
       if (isSleepTime && !tamagotchi.isSleeping) {
         updates.isSleeping = true;
+        await sendTelegramNotification(
+          userId,
+          "Your KodoMochi is sleeping, turn the light off to give it a good night rest."
+        );
       } else if (!isSleepTime && tamagotchi.isSleeping) {
         updates.isSleeping = false;
         updates.isLightOn = true; // Turn light on when waking up
+        await sendTelegramNotification(userId, "Your KodoMochi is awake. :)");
         updates.careMistakes = 0; // Reset care mistakes
         // Age increase
         updates.age = tamagotchi.age + 1;
