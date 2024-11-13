@@ -290,11 +290,10 @@ export function useTamagotchiGame() {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/verify-crown`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/buy-crown`
       );
       setTamagotchi(response.data);
       triggerAnimation(Crown, +1);
-      triggerAnimation2(Coin, 50);
     } catch (error) {
       console.error("Error buying crown:", error);
     }
