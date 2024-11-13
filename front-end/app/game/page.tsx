@@ -284,15 +284,7 @@ export default function TamagotchiGame() {
                       } `,
                     }}
                   />
-                  {tamagotchi.crowns > 0 && (
-                    <Image
-                      src='/crown.png'
-                      width={50}
-                      height={50}
-                      alt='crown'
-                      className='absolute top-20 mr-44 -rotate-[25deg]'
-                    />
-                  )}
+
                   {tamagotchi.isSleeping && (
                     <>
                       {tamagotchi.isLightOn ? (
