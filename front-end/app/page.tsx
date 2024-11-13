@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className='min-h-screen flex flex-col bg-gray-100 text-black'>
+    <div className='min-h-screen flex flex-col w-full text-black'>
       <header className='p-4 flex justify-between items-center '>
         <div className='flex gap-2'>
           <Link
@@ -29,8 +29,9 @@ export default function Home() {
         <button className='bg-black text-white p-2 px-4 text-4xl'>Deck</button>
       </header>
 
-      <main className='flex-grow flex flex-col items-center justify-center text-center px-4 py-2 md:py-32'>
-        <Image src='/egg1.gif' width={200} height={200} alt='kodomochi egg' />
+      <main className='flex-grow flex flex-col items-center justify-center text-center px-4 py-2 md:py-32 relative'>
+        <Image src='/egg1.gif' width={300} height={300} alt='kodomochi egg' />
+
         <h1 className='text-6xl font-bold mt-6'>KODOMOCHI</h1>
         <h2 className='text-4xl font-bold '>
           Your virtual pet adventure awaits!
@@ -44,10 +45,6 @@ export default function Home() {
             Play Beta Now
           </button>
         </Link>
-
-        <p className='bg-red-500 px-2 text-xl mt-10'>
-          TOKEN CURRENTLY ONLY ON THE TON TESTNET AND IS NOT TRADEABLE!!
-        </p>
       </main>
 
       <section className='py-16 px-4 mt-20 bg-white relative'>
