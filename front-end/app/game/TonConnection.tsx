@@ -7,7 +7,6 @@ import { useTonConnectUI } from "@tonconnect/ui-react";
 import { Address, beginCell, toNano } from "@ton/core";
 import { Account } from "@tonconnect/sdk";
 
-
 const SBT_CONTRACT_ADDRESS = "EQABJOutwO97Aj6-xod1sJ9Kg1uf9l8AA9nXpABxxJjS-5MH";
 
 // Constants matching the contract
@@ -18,14 +17,15 @@ function isConnectedAccount(account: Account | null): account is Account {
   return account !== null;
 }
 
-export default function TonConnectionMinter(userId:any, verifyAndUpdateCrown:any) {
+export default function TonConnectionMinter(
+  userId: any,
+  verifyAndUpdateCrown: any
+) {
   const [tonConnectUI] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const nftPrice = toNano("1");
-
-  
 
   const metadata = {
     name: "KodoMochi Soul Bound Crown",
@@ -50,9 +50,6 @@ export default function TonConnectionMinter(userId:any, verifyAndUpdateCrown:any
     const checkWalletConnection = async () => {
       if (tonConnectUI.account?.address) {
         handleWalletConnection(tonConnectUI.account?.address);
-        if (userId) {
-          await verifyAndUpdateCrown(tonConnectUI.account.address, userId); // You'll need to pass userId to the component
-        }
       } else {
         handleWalletDisconnection();
       }
