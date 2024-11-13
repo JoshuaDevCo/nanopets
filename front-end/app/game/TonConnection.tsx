@@ -18,12 +18,10 @@ function isConnectedAccount(account: Account | null): account is Account {
 }
 
 interface ConnectionProps {
-  userId: string;
   verifyAndUpdateCrown: (walletAddress: string) => void;
 }
 
 export default function TonConnectionMinter({
-  userId,
   verifyAndUpdateCrown,
 }: ConnectionProps) {
   const [tonConnectUI] = useTonConnectUI();
@@ -55,7 +53,7 @@ export default function TonConnectionMinter({
     const checkWalletConnection = async () => {
       if (tonConnectUI.account?.address) {
         handleWalletConnection(tonConnectUI.account?.address);
-        await verifyAndUpdateCrown(tonConnectUI.account.address);
+        verifyAndUpdateCrown(tonConnectUI.account?.address);
       } else {
         handleWalletDisconnection();
       }
