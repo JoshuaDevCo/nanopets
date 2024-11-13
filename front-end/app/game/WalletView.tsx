@@ -11,12 +11,12 @@ import TonConnectionMinter from "./TonConnection";
 interface WalletViewProps {
   coins: number;
   crowns: number;
-  userId: any;
+  userId: string;
   lastVideoWatchTime: number;
   referralCount: number;
   resetTamagotchi: () => void;
   watchVideo: () => void;
-  verifyAndUpdateCrown: () => void;
+  verifyAndUpdateCrown: (walletAddress: string) => void;
 }
 
 export default function WalletView({
