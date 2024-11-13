@@ -163,6 +163,7 @@ app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
   try {
     // Verify the wallet address format
     const address = Address.parse(walletAddress);
+    console.log(address +  "user:" + userId)
 
     // Query the SBT contract to check if this wallet owns a crown
     const { result } = await tonClient.callGetMethod(
@@ -171,11 +172,11 @@ app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
       [{ type: "address", value: address.toString() }]
     );
 
-    const hasCrown = result.length > 0;
+    // const hasCrown = result.length > 0;
 
     console.log(result);
 
-    if (hasCrown) {
+   /*  if (hasCrown) {
       // Update the tamagotchi's crown count
       const tamagotchi = await getTamagotchi(userId);
 
@@ -203,7 +204,7 @@ app.post("/api/tamagotchi/:userId/verify-crown", async (req, res) => {
         success: false,
         message: "No crown found for this wallet",
       });
-    }
+    } */
   } catch (error) {
     console.error("Error verifying crown:", error);
     res.status(500).json({
