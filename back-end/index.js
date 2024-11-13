@@ -148,8 +148,11 @@ app.get("/api/activity", async (req, res) => {
 // endpoint to buy crown (Need to add validation here later)
 app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
   const { userId } = req.params;
+
+  const tamagotchi = await getTamagotchi(userId);
+
   const updates = {
-    crowns: crowns + 1,
+    crowns: tamagotchi.crowns + 1,
   };
 
   await updateTamagotchi(userId, updates);
