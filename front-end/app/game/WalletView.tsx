@@ -108,7 +108,17 @@ export default function WalletView({
                 alt='coin'
                 src={Coin}
               />
-              <p className='text-2xl'>Coins: {coins}</p>
+              <p className='text-2xl'>5</p>
+            </div>
+            <div className='flex gap-2 items-start'>
+              <Image
+                className='mr-2 aspect-square'
+                width={30}
+                height={25}
+                alt='crown'
+                src={Crown}
+              />
+              <p className='text-2xl'>1</p>
             </div>
             <div>
               <button
@@ -123,7 +133,7 @@ export default function WalletView({
               </button>
             </div>
           </div>
-                <TonConnectionMinter />
+          <TonConnectionMinter />
           <div className='flex flex-col mb-4 mt-3'>
             <h2 className='text-4xl font-bold mb-2'>Tasks</h2>
             <button

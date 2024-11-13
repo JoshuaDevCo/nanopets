@@ -2,22 +2,17 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
+import { useState, useEffect, useCallback } from "react";
+import { useTonConnectUI } from "@tonconnect/ui-react";
 import { Address, beginCell, toNano } from "@ton/core";
-import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { TonClient } from "@ton/ton";
-import { NftCollection } from "@/utils/NftCollection/tact_NftCollection";
 import { Account } from "@tonconnect/sdk";
 
-// This is your SBT collection address
+
 const SBT_CONTRACT_ADDRESS = "EQABJOutwO97Aj6-xod1sJ9Kg1uf9l8AA9nXpABxxJjS-5MH";
 
-interface CollectionMetadata {
-  name: string;
-  description: string;
-  image: string;
-}
+// Constants matching the contract
+const MIN_TONS_FOR_STORAGE = toNano("0.05");
+const GAS_CONSUMPTION = toNano("0.05");
 
 function isConnectedAccount(account: Account | null): account is Account {
   return account !== null;
@@ -25,87 +20,82 @@ function isConnectedAccount(account: Account | null): account is Account {
 
 export default function TonConnectionMinter() {
   const [tonConnectUI] = useTonConnectUI();
+  const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [metadata, setMetadata] = useState<CollectionMetadata | null>(null);
-  const [mintPrice, setMintPrice] = useState<string>("0");
+  const [isLoading, setIsLoading] = useState(false);
+  const nftPrice = toNano("1");
 
-  // Function to decode metadata Cell
-  function decodeCell(cell: any): string {
-    const slice = cell.beginParse();
-    slice.loadUint(8); // Skip the first byte
-    return slice.loadStringTail();
-  }
+  const metadata = {
+    name: "KodoMochi Soul Bound Crown",
+    description:
+      "Support the development of KodoMochi by minting a Soul Bound Crown.",
+    image: "https://kodomochi.pet/crown.png",
+  };
 
-  // Add connection status tracking
+  const handleWalletConnection = useCallback((address: string) => {
+    setTonWalletAddress(address);
+    console.log("Wallet connected successfully!");
+    setIsLoading(false);
+  }, []);
+
+  const handleWalletDisconnection = useCallback(() => {
+    setTonWalletAddress(null);
+    console.log("Wallet disconnected successfully!");
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (tonConnectUI.account?.address) {
+        handleWalletConnection(tonConnectUI.account?.address);
+      } else {
+        handleWalletDisconnection();
+      }
+    };
+
+    checkWalletConnection();
+
+    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
+      if (wallet) {
+        handleWalletConnection(wallet.account.address);
+      } else {
+        handleWalletDisconnection();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [tonConnectUI, handleWalletConnection, handleWalletDisconnection]);
+
+  const handleWalletAction = async () => {
+    if (tonConnectUI.connected) {
+      setIsLoading(true);
+      await tonConnectUI.disconnect();
+    } else {
+      await tonConnectUI.openModal();
+    }
+  };
+
+  const formatAddress = (address: string) => {
+    const tempAddress = Address.parse(address).toString();
+    return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
+  };
+
   useEffect(() => {
     if (!tonConnectUI) return;
 
-    // Subscribe to connection status changes
     const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
-      console.log("Connection status changed:", !!wallet);
       setIsConnected(!!wallet);
     });
 
-    // Initial status check
     setIsConnected(!!tonConnectUI.account);
 
-    // Cleanup on unmount
     return () => {
       unsubscribe();
     };
   }, [tonConnectUI]);
 
-  // Fetch metadata from IPFS
-  async function fetchMetadata(url: string) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Network response was not ok");
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching metadata:", error);
-      return null;
-    }
-  }
-
-  // Load collection data
-  useEffect(() => {
-    async function loadCollectionData() {
-      try {
-        setIsLoading(true);
-
-        // Initialize TON client
-        const endpoint = await getHttpEndpoint({ network: "mainnet" });
-        const client = new TonClient({ endpoint });
-
-        // Create contract instance
-        const address = Address.parse(SBT_CONTRACT_ADDRESS);
-        const contract = NftCollection.fromAddress(address);
-        const openedContract = client.open(contract);
-
-        // Get collection data and price
-        const [collectionData, price] = await Promise.all([
-          openedContract.getGetCollectionData(),
-          1,
-        ]);
-
-        // Get metadata URL and fetch metadata
-        const metadataUrl = decodeCell(collectionData.collection_content);
-        const collectionMetadata = await fetchMetadata(metadataUrl);
-
-        setMetadata(collectionMetadata);
-        setMintPrice(price.toString());
-      } catch (error) {
-        console.error("Error loading collection data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadCollectionData();
-  }, []);
-
-  // Handle minting process
   const handleMint = async () => {
     if (!isConnected || !isConnectedAccount(tonConnectUI.account)) {
       alert("Please connect your wallet first");
@@ -115,94 +105,114 @@ export default function TonConnectionMinter() {
     try {
       setIsLoading(true);
 
-      const nftCollectionAddress = Address.parse(SBT_CONTRACT_ADDRESS);
-      const mintCost = BigInt(mintPrice) + BigInt(toNano("0.05")); // Adding gas fees
+      // Calculate total cost according to contract
+      const totalCost =
+        BigInt(MIN_TONS_FOR_STORAGE) +
+        BigInt(GAS_CONSUMPTION) +
+        BigInt(nftPrice);
 
-      await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 60,
+      // Create simple "Mint" message as expected by the contract
+      const payload = beginCell()
+        .storeUint(0, 32) // Simple comment message
+        .storeStringTail("Mint")
+        .endCell();
+
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 360, // 6 minutes expiration
         messages: [
           {
-            address: nftCollectionAddress.toString(),
-            amount: mintCost.toString(),
-            payload: beginCell()
-              .storeUint(0, 32)
-              .storeStringTail("Mint")
-              .endCell()
-              .toBoc()
-              .toString("base64"),
+            address: SBT_CONTRACT_ADDRESS,
+            amount: totalCost.toString(),
+            payload: payload.toBoc().toString("base64"),
           },
         ],
-      });
+      };
 
-      alert("Minting transaction sent successfully!");
+      console.log("Sending transaction:", transaction);
+
+      const result = await tonConnectUI.sendTransaction(transaction);
+      console.log("Transaction result:", result);
+
+      alert(
+        "Minting transaction sent successfully! Please wait for confirmation."
+      );
     } catch (error) {
       console.error("Error minting:", error);
-      alert("Error minting. Please try again.");
+      alert(
+        `Error minting: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading && !metadata) {
-    return (
-      <div className='min-h-screen bg-gray-900 flex items-center justify-center'>
-        <div className='animate-spin  h-12 w-12 border-t-2 border-b-2 border-blue-500'></div>
-      </div>
-    );
-  }
-
-  if (!metadata) {
-    return (
-      <div className='min-h-screen bg-gray-900 flex items-center justify-center'>
-        <p className='text-white'>Error loading collection data</p>
-      </div>
-    );
-  }
-
   return (
-    <div className='min-h-screen bg-gray-900 flex items-center justify-center p-4'>
-      <div className='bg-gray-800  p-8 max-w-md w-full'>
-        <div className='mb-6'>
-          <TonConnectButton />
-        </div>
-        <div className='flex flex-col items-center'>
+    <>
+      {isLoading ? (
+        <>...Loading</>
+      ) : (
+        <>
+          {tonWalletAddress ? (
+            <div className='flex flex-col'>
+              <button
+                onClick={handleWalletAction}
+                className='bg-red-500  text-white font-bold py-2 px-4 '
+              >
+                Disconnect {formatAddress(tonWalletAddress)}
+              </button>
+              <p className='text-green-500'>
+                Your are currently eligible for $KODO Season 1.
+              </p>
+            </div>
+          ) : (
+            <div className='flex flex-col'>
+              <button
+                onClick={handleWalletAction}
+                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 '
+              >
+                Connect TON Wallet For Airdrop Season 1
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      <div className='flex mt-2'>
+        <div className=' mr-4 w-32'>
           <img
             src={metadata.image}
             alt={metadata.name}
-            className='w-32 h-32  mb-6 object-cover'
+            className='w-16 h-16 '
           />
 
-          <h1 className='text-2xl font-bold text-white mb-2'>
-            {metadata.name}
-          </h1>
-
-          <p className='text-gray-400 text-center mb-6'>
-            {metadata.description}
+          <p className=' '>
+            {(
+              Number(MIN_TONS_FOR_STORAGE + GAS_CONSUMPTION + nftPrice) / 1e9
+            ).toFixed(2)}{" "}
+            TON
           </p>
+        </div>
 
-          <p className='text-white mb-6'>
-            Price: {(Number(mintPrice) / 1e9).toFixed(2)} TON
-          </p>
-
-          <button
-            onClick={handleMint}
-            disabled={isLoading || !isConnected}
-            className={`w-full py-3 px-6  font-semibold text-white 
-                            ${
-                              isConnected
-                                ? "bg-blue-600 hover:bg-blue-700"
-                                : "bg-gray-600"
-                            } 
-                            transition-colors disabled:opacity-50`}
-          >
-            {isLoading
-              ? "Minting..."
-              : isConnected
-              ? "Mint SBT"
-              : "Connect Wallet First"}
-          </button>
+        <div>
+          <h1 className='text-xl font-bold'>{metadata.name}</h1>
+          <p className='text-gray-400  '>{metadata.description}</p>
         </div>
       </div>
-    </div>
+      <button
+        onClick={handleMint}
+        disabled={isLoading || !isConnected}
+        className={`w-full py-3 px-6 font-semibold   text-white
+              ${isConnected ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600"} 
+              transition-colors disabled:opacity-50`}
+      >
+        {isLoading
+          ? "Minting..."
+          : isConnected
+          ? "Mint Soul Bound Crown"
+          : "Connect Wallet First"}
+      </button>
+    </>
   );
 }
