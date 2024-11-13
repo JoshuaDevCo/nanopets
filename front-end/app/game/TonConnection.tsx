@@ -51,7 +51,6 @@ export default function TonConnectionMinter({ BuyCrown }: ConnectionProps) {
     const checkWalletConnection = async () => {
       if (tonConnectUI.account?.address) {
         handleWalletConnection(tonConnectUI.account?.address);
-        BuyCrown();
       } else {
         handleWalletDisconnection();
       }
