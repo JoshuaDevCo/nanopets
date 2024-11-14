@@ -402,15 +402,19 @@ const updateTask = new AsyncTask(
   "update-tamagotchis",
   async () => {
     const userIds = await redis.smembers("tamagotchi:users");
+    console.log(userIds);
     const currentTime = Date.now();
     for (const userId of userIds) {
       const tamagotchi = await getTamagotchi(userId);
 
       console.log(userId);
+
       if (!tamagotchi) {
         console.log("Couldn't find ID:" + userId);
         continue;
       }
+
+      console.log(tamagotchi);
 
       if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
         continue; // Skip this Tamagotchi and move to the next one
