@@ -63,7 +63,7 @@ export default function ShopView({ coins, onPurchase }: ShopViewProps) {
     <div className=''>
       <div className='flex justify-between p-2'>
         <div className='absolute top-2 flex items-center text-2xl'>
-          <span className='font-bold'>Shop</span>{" "}
+          <p className='font-bold'>Shop</p> <p>Coming soon...</p>
         </div>
         <div className='absolute top-2 right-2 flex items-center text-2xl'>
           <Image
@@ -76,7 +76,7 @@ export default function ShopView({ coins, onPurchase }: ShopViewProps) {
           <span className='font-bold'>{coins}</span>
         </div>
       </div>
-      <div className='grid grid-cols-2 md:grid-cols-2 gap-4 p-2'>
+      <div className='grid grid-cols-2 md:grid-cols-2 gap-4 p-2 mt-10'>
         {shopItems.map((item) => (
           <div
             key={item.id}
@@ -113,7 +113,7 @@ export default function ShopView({ coins, onPurchase }: ShopViewProps) {
                   e.stopPropagation();
                   onPurchase(item.id);
                 }}
-                disabled={coins < item.price}
+                disabled={true}
                 className={`bg-green-500 text-xl text-white p-1 px-4 ${
                   coins < item.price ? "opacity-50 cursor-not-allowed" : ""
                 }`}

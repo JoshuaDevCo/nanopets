@@ -289,20 +289,24 @@ export function useTamagotchiGame() {
     if (!userId) return;
 
     try {
+      setIsBusyAction(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/buy-crown`
       );
       setTamagotchi(response.data);
       triggerAnimation(Crown, +1);
+      setIsBusyAction(false);
     } catch (error) {
       console.error("Error buying crown:", error);
+      setIsBusyAction(false);
     }
   };
 
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
 
-    displayError("Have not set this up on the backend yet. " + itemId);
+    console.log(itemId)
+
     /* try {
       setIsBusyAction(true);
       const response = await axios.post(
@@ -311,9 +315,7 @@ export function useTamagotchiGame() {
       );
       setTamagotchi(response.data);
       setClockTime(response.data.clockTime);
-      setLastAction(`purchase_${itemId}`);
-      setTimeout(() => setLastAction(null), 10000);
-      setError(null);
+    triggerAnimation(Coin, -10);
       setIsBusyAction(false);
     } catch (error: any) {
       console.error(`Error purchasing item ${itemId}:`, error);
