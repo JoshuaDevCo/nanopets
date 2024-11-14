@@ -406,6 +406,12 @@ const updateTask = new AsyncTask(
     for (const userId of userIds) {
       const tamagotchi = await getTamagotchi(userId);
 
+      console.log(userId);
+      if (!tamagotchi) {
+        console.log("Couldn't find ID:" + userId);
+        continue;
+      }
+
       if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
         continue; // Skip this Tamagotchi and move to the next one
       }
