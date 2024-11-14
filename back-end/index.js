@@ -273,6 +273,7 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
             error: "Video reward not available yet",
           });
         } else {
+          await logActivity(userId, action);
           updates.coins = tamagotchi.coins + 10;
           updates.lastVideoWatchTime = now;
         }
@@ -287,6 +288,7 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
         updates.hunger = START_STATS;
         updates.happiness = START_STATS;
         updates.timeSet = false;
+        await logActivity(userId, action);
         break;
       default:
         return res.status(400).json({ error: "KodoMochi has passed away" });
@@ -337,6 +339,7 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
       updates.weight = Math.max(tamagotchi.weight - 1, MIN_WEIGHT);
       await updateTamagotchi(userId, updates);
       const updatedTamagotchi = await getTamagotchi(userId);
+      await logActivity(userId, action);
       res.json({ ...updatedTamagotchi, won });
       io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
       return;
