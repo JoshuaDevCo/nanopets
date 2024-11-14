@@ -25,8 +25,15 @@ export default function Home() {
             </button>
           </Link>
         </div>
-
-        <button className='bg-black text-white p-2 px-4 text-4xl'>Deck</button>
+        <Link
+          href='https://kodomochi.pet/kodomochi-deck.pdf'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          <button className='bg-black text-white p-2 px-4 text-4xl'>
+            Deck
+          </button>
+        </Link>
       </header>
 
       <main className='flex-grow flex flex-col items-center justify-center text-center px-4 py-2 md:py-32 relative'>
