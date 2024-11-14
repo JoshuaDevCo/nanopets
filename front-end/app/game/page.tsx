@@ -31,7 +31,7 @@ import WaterDrop from "../svgs/waterdrop.png";
 import GiftBox from "../svgs/gift-box.png";
 import Speaker from "../svgs/speaker.png";
 import MoneyBag from "../svgs/money-bag.png";
-import Trophy from "../svgs/trophy.png";
+import Thunder from "../svgs/thunder.png";
 import BackArrow from "../svgs/backarrow.png";
 import Scale from "../svgs/scale1.png";
 import Moon from "../svgs/moon.png";
@@ -81,7 +81,7 @@ export default function TamagotchiGame() {
     GiftBox,
     Speaker,
     MoneyBag,
-    Trophy,
+    Thunder,
     BackArrow,
   };
 
@@ -187,6 +187,7 @@ export default function TamagotchiGame() {
                 tamagotchi.coins == 0 ||
                 tamagotchi.isSleeping
               }
+              animate={tamagotchi.hunger == 0 || tamagotchi.weight == 0}
             />
             <Button
               onClick={() => feed("candy")}
@@ -197,6 +198,7 @@ export default function TamagotchiGame() {
                 tamagotchi.coins < 2 ||
                 tamagotchi.isSleeping
               }
+              animate={tamagotchi.weight == 0}
             />
 
             <Button
@@ -208,16 +210,19 @@ export default function TamagotchiGame() {
                 tamagotchi.weight == 1 ||
                 tamagotchi.isSleeping
               }
+              animate={tamagotchi.happiness == 0 || tamagotchi.weight >= 9}
             />
             <Button
               onClick={giveMedicine}
               icon={Flask}
               disabled={isDisabled || isBusyAction || !tamagotchi.isSick}
+              animate={tamagotchi.isSick}
             />
             <Button
               onClick={clean}
               icon={WaterDrop}
               disabled={isDisabled || isBusyAction || tamagotchi.poop == 0}
+              animate={tamagotchi.poop > 0}
             />
           </div>
 
@@ -335,6 +340,16 @@ export default function TamagotchiGame() {
                     gameResult={gameResult}
                   />
                 )}
+                {tamagotchi.careMistakes >= 10 && (
+                  <div className='flex flex-col my-2 '>
+                    <button
+                      onClick={revive}
+                      className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 '
+                    >
+                      Revive KodoMochi
+                    </button>
+                  </div>
+                )}
                 <div className='absolute bottom-2 left-2 flex items-center'>
                   {" "}
                   <StatIcons
@@ -419,23 +434,27 @@ export default function TamagotchiGame() {
               onClick={toggleLight}
               icon={Sun}
               disabled={isDisabled || isBusyAction || !tamagotchi.isSleeping}
+              animate={tamagotchi.isSleeping}
             />
             {currentView === "main" || currentView === "minigame" ? (
               <>
                 <Button
                   onClick={() => setCurrentView("stats")}
-                  icon={Trophy}
+                  icon={Thunder}
                   disabled={isBusyAction}
+                  animate={false}
                 />
                 <Button
                   onClick={() => setCurrentView("shop")}
                   icon={GiftBox}
                   disabled={isBusyAction}
+                  animate={false}
                 />
                 <Button
                   onClick={() => setCurrentView("wallet")}
                   icon={MoneyBag}
                   disabled={isBusyAction}
+                  animate={false}
                 />
               </>
             ) : (
@@ -444,13 +463,15 @@ export default function TamagotchiGame() {
                   <>
                     <Button
                       onClick={() => setCurrentView("stats")}
-                      icon={Trophy}
+                      icon={Thunder}
                       disabled={true}
+                      animate={false}
                     />
                     <Button
                       onClick={() => setCurrentView("shop")}
                       icon={GiftBox}
                       disabled={true}
+                      animate={false}
                     />
                   </>
                 )}
@@ -458,8 +479,9 @@ export default function TamagotchiGame() {
                   <>
                     <Button
                       onClick={() => setCurrentView("stats")}
-                      icon={Trophy}
+                      icon={Thunder}
                       disabled={true}
+                      animate={false}
                     />
                   </>
                 )}
@@ -467,6 +489,7 @@ export default function TamagotchiGame() {
                   onClick={() => setCurrentView("main")}
                   icon={BackArrow}
                   disabled={false}
+                  animate={false}
                 />
                 {currentView === "shop" && (
                   <>
@@ -474,6 +497,7 @@ export default function TamagotchiGame() {
                       onClick={() => setCurrentView("wallet")}
                       icon={MoneyBag}
                       disabled={true}
+                      animate={false}
                     />
                   </>
                 )}
@@ -483,11 +507,13 @@ export default function TamagotchiGame() {
                       onClick={() => setCurrentView("shop")}
                       icon={GiftBox}
                       disabled={true}
+                      animate={false}
                     />
                     <Button
                       onClick={() => setCurrentView("wallet")}
                       icon={MoneyBag}
                       disabled={true}
+                      animate={false}
                     />
                   </>
                 )}

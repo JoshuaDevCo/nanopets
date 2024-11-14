@@ -35,6 +35,22 @@
   }
 }
 
+@keyframes grow {
+  0% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.15;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.animate-grow {
+  animation: grow 2s ease-in-out infinite;
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in forwards;
 }

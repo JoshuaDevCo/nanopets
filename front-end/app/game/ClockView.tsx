@@ -13,7 +13,8 @@ interface ClockViewProps {
     WaterDrop: StaticImageData;
     Speaker: StaticImageData;
     MoneyBag: StaticImageData;
-    Trophy: StaticImageData;
+    Thunder: StaticImageData;
+    GiftBox: StaticImageData;
   };
   tamahue: number;
 }
@@ -29,12 +30,37 @@ export default function ClockView({ setTime, icons, tamahue }: ClockViewProps) {
   return (
     <>
       <div className='grid grid-cols-5 gap-4 p-2'>
-        <Button onClick={() => {}} icon={icons.Rice} disabled={true} />
-        <Button onClick={() => {}} icon={icons.Candy} disabled={true} />
+        <Button
+          onClick={() => {}}
+          icon={icons.Rice}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.Candy}
+          disabled={true}
+          animate={false}
+        />
 
-        <Button onClick={() => {}} icon={icons.Console} disabled={true} />
-        <Button onClick={() => {}} icon={icons.Flask} disabled={true} />
-        <Button onClick={() => {}} icon={icons.WaterDrop} disabled={true} />
+        <Button
+          onClick={() => {}}
+          icon={icons.Console}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.Flask}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.WaterDrop}
+          disabled={true}
+          animate={false}
+        />
       </div>
 
       <div className=' border border-gray-600 flex flex-col items-center  relative h-[calc(100vh-150px)] overflow-y-scroll'>
@@ -85,11 +111,30 @@ export default function ClockView({ setTime, icons, tamahue }: ClockViewProps) {
       </div>
 
       <div className='grid grid-cols-4 gap-4 p-2'>
-        <Button onClick={() => {}} icon={icons.Sun} disabled={true} />
-
-        <Button onClick={() => {}} icon={icons.Speaker} disabled={true} />
-        <Button onClick={() => {}} icon={icons.MoneyBag} disabled={true} />
-        <Button onClick={() => {}} icon={icons.Trophy} disabled={true} />
+        <Button
+          onClick={() => {}}
+          icon={icons.Sun}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.Thunder}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.GiftBox}
+          disabled={true}
+          animate={false}
+        />
+        <Button
+          onClick={() => {}}
+          icon={icons.MoneyBag}
+          disabled={true}
+          animate={false}
+        />
       </div>
     </>
   );
