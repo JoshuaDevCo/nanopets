@@ -436,7 +436,7 @@ const updateTask = new AsyncTask(
         // Care mistakes
         if (tamagotchi.hunger === 0 || tamagotchi.happiness === 0) {
           updates.careMistakes = tamagotchi.careMistakes + 1;
-          if (tamagothi.hunger === 0) {
+          if (tamagotchi.hunger === 0) {
             await sendTelegramNotification(
               userId,
               "Your KodoMochi is hungry. Feed it now to avoid a care mistake.."
