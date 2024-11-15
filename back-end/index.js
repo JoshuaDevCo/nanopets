@@ -440,6 +440,7 @@ const sendOrder = async (userID) => {
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
     userId: userID,
+    callbackUrl: `https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook`,
   });
 };
 
@@ -469,6 +470,52 @@ const createAeonOrdersWithTma = async (params) => {
     return aeonResponse;
   } catch (error) {
     console.error("Error:", error);
+  }
+};
+
+// Webhook to process payments
+app.post("/api/tamagotchi/aeon-webhook", async (req, res) => {
+  try {
+    const webhookData = req.body;
+
+    // Validate the webhook signature
+    const isValidSignature = validateAeonWebhookSignature(webhookData);
+    if (!isValidSignature) {
+      console.error("Invalid AEON webhook signature");
+      return res.status(401).send("Invalid signature");
+    }
+
+    // Process the webhook data
+    await handleAeonWebhookData(webhookData);
+
+    // Send a successful response to AEON
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error("Error processing AEON webhook:", error);
+    res.status(500).send("Error processing webhook");
+  }
+});
+
+const validateAeonWebhookSignature = (data) => {
+  // Implement signature validation logic here
+  // Using the secret key shared with AEON
+  const { sign, ...dataToVerify } = data;
+  const expectedSignature = generateSignature(dataToVerify);
+  return sign === expectedSignature;
+};
+
+const handleAeonWebhookData = async (data) => {
+  // Process the webhook data here
+  // Update your game server's state based on the payment status
+  const { orderStatus, merchantOrderNo, orderAmount, settlementAmount } = data;
+
+  if (orderStatus === "COMPLETED") {
+    // Update the user's coins or any other relevant data
+    await console.log(merchantOrderNo, orderAmount, settlementAmount);
+  } else if (orderStatus === "CLOSE") {
+    // Handle order cancellation or failure
+
+    await console.log(merchantOrderNo, data.failReason);
   }
 };
 
