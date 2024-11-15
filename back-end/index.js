@@ -409,10 +409,10 @@ const appID = process.env.APP_ID;
 const secretKey = process.env.SECRET_KEY;
 let orderNo = 1;
 
-app.post("/api/tamagotchi/:userId/order-coins", async (req, res) => {
+app.post("/api/tamagotchi/order-coins", async (req, res) => {
   console.log("hit the endpoint at least...");
   try {
-    const { userId } = req.params;
+    const userId = "5380815277";
 
     const tamagotchi = await getTamagotchi(userId);
 

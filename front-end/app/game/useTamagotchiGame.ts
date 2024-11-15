@@ -308,7 +308,7 @@ export function useTamagotchiGame() {
       setIsBusyAction(true);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/5380815277/order-coins`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/order-coins`
       );
 
       console.log("Profile updated successfully", response.data);
