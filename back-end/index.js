@@ -411,32 +411,23 @@ const secretKey = process.env.SECRET_KEY;
 let orderNo = 1;
 
 app.post("/api/tamagotchi/order-coins", async (req, res) => {
-  console.log("hit the endpoint at least...");
   try {
     const userId = "5380815277";
-
-    // const tamagotchi = await getTamagotchi(userId);
-
-    // const updates = {};
-
     const response = await sendOrder(userId);
+
     if (!response) {
       res.status(400).send({ error: "Invalid response from Aeon" });
       return;
     }
-    console.log("sending order", response);
 
-    /*  if (response.msg === "success") {
-      updates.coins = tamagotchi.coins + 100;
-    }
-
-    await logActivity(userId, "Bought 100 Coins");
-    await updateTamagotchi(userId, updates);
-    const updatedTamagotchi = await getTamagotchi(userId);
-    res.json(updatedTamagotchi);
-    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi); */
+    // Return the entire response data including webUrl
+    res.status(200).json({
+      webUrl: response.model.webUrl,
+      orderNo: response.model.orderNo,
+    });
   } catch (error) {
     console.log("Error creating Aeon order", error);
+    res.status(500).json({ error: "Failed to create order" });
   }
 });
 
