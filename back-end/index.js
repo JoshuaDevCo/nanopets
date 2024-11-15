@@ -432,7 +432,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
 });
 
 const sendOrder = async (userID) => {
-  orderNo += 4;
+  orderNo += 5;
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
     orderAmount: "10",
@@ -512,11 +512,11 @@ const handleAeonWebhookData = async (data) => {
 
   if (orderStatus === "COMPLETED") {
     // Update the user's coins or any other relevant data
-    await console.log(merchantOrderNo, orderAmount, settlementAmount);
+    console.log(merchantOrderNo, orderAmount, settlementAmount);
   } else if (orderStatus === "CLOSE") {
     // Handle order cancellation or failure
 
-    await console.log(merchantOrderNo, data.failReason);
+    console.log(merchantOrderNo, data.failReason);
   }
 };
 
