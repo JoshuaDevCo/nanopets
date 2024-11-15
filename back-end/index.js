@@ -432,7 +432,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
 });
 
 const sendOrder = async (userID) => {
-  orderNo += 11;
+  orderNo += 13;
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
     orderAmount: "10",
@@ -450,7 +450,7 @@ const createAeonOrdersWithTma = async (params) => {
   const requestParams = params;
   requestParams.appId = appID;
   requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
-
+  requestParams.redirectURL = "https://kodomochi.pet/test";
   // requestParams.tgModel = "MINIAPP";
   console.log(requestParams);
 

@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import AnimatedIcon from "../game/AnimatedIcons";
-import PaymentModal from "../game/PaymentModal";
+
 import { useTamagotchiGame } from "../game/useTamagotchiGame";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 export default function TestPage() {
   const { animation } = useTamagotchiGame();
   const [isLoading, setIsLoading] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState("");
+
+  const router = useRouter();
 
   const createOrder = async () => {
     console.log("creating order test");
@@ -22,8 +23,7 @@ export default function TestPage() {
       );
 
       if (response.data?.webUrl) {
-        setPaymentUrl(response.data.webUrl);
-        setShowPaymentModal(true);
+        router.push(response.data.webUrl);
       }
     } catch (err) {
       console.error("unable to hit api.", err);
@@ -44,12 +44,6 @@ export default function TestPage() {
           <p className='text-xl'>Buy Coins</p>
         </div>
       </button>
-      {showPaymentModal && (
-        <PaymentModal
-          paymentUrl={paymentUrl}
-          setShowPaymentModal={setShowPaymentModal}
-        />
-      )}
 
       {animation && (
         <AnimatedIcon
