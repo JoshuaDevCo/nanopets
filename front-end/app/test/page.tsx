@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AnimatedIcon from "../game/AnimatedIcons";
 import PaymentModal from "../game/PaymentModal";
 import { useTamagotchiGame } from "../game/useTamagotchiGame";
