@@ -405,6 +405,7 @@ app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
 
 // Order coins via AEON.xyz
 const crypto = require("crypto");
+const axios = require("axios");
 const appID = process.env.APP_ID;
 const secretKey = process.env.SECRET_KEY;
 let orderNo = 1;
