@@ -421,6 +421,7 @@ async function getNextOrderNo() {
 app.post("/api/tamagotchi/order-coins", async (req, res) => {
   try {
     const userId = "5380815277";
+
     const response = await sendOrder(userId);
 
     if (!response) {
@@ -512,6 +513,15 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
     if (response.msg === "success") {
       if (response.model.orderStatus === "COMPLETED") {
         console.log("payment completed");
+
+        const updates = {
+          orderNo: 0,
+          coins: tamagotchi.coins + 100,
+        };
+
+        await updateTamagotchi(userId, updates);
+        const updatedTamagotchi = await getTamagotchi(userId);
+        io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
 
         res.send(response);
         return;

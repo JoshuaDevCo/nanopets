@@ -24,23 +24,33 @@ export default function TestPage() {
       }
     } catch (err) {
       console.error("unable to hit api.", err);
+      alert("Unable to purchase now.");
+      setIsLoading(false);
     }
   };
 
   const orderStatus = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         process.env.NEXT_PUBLIC_SERVER_URL + "/api/aeonOrderStatus"
       );
       console.log("getting response", response);
       if (response.status === 200) {
         console.log("Order status updated successfully", response.data);
+        if (response.data.model.orderStatus !== "COMPLETED") {
+          alert("Payment not completed. Please try again.");
+        }
+        setIsLoading(false);
         return response.data;
       } else {
+        setIsLoading(false);
+        alert("Unable to get purchase info.");
         console.error("Error updating order status.");
       }
     } catch (err) {
       console.error("unable to hit api.", err);
+      alert("Unable to check info.");
     }
   };
 

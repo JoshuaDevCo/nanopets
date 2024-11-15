@@ -45,6 +45,7 @@ interface Tamagotchi {
   referralCount: number;
   tamahue: number;
   crowns: number;
+  orderNo?: number;
 }
 
 interface AnimationInfo {
@@ -312,11 +313,13 @@ export function useTamagotchiGame() {
       );
 
       console.log("Profile updated successfully", response);
-      // setTamagotchi(response.data);
-      // triggerAnimation(Coin, 100);
+      if (response.data.model.orderStatus !== "COMPLETED") {
+        alert("Payment not completed. Please try again.")
+      }
       setIsBusyAction(false);
     } catch (err) {
       console.error("unable to hit api.", err);
+      setIsBusyAction(false);
     }
   };
 
