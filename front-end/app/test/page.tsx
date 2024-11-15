@@ -44,8 +44,7 @@ export default function TestPage() {
           <p className='text-xl'>Buy Coins</p>
         </div>
       </button>
-
-      <PaymentModal paymentUrl={paymentUrl} />
+      {showPaymentModal && <PaymentModal paymentUrl={paymentUrl} />}
 
       {animation && (
         <AnimatedIcon
