@@ -450,8 +450,7 @@ const createAeonOrdersWithTma = async (params) => {
   const requestParams = params;
   requestParams.appId = appID;
   requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
-  requestParams.callbackUrl =
-    "https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook";
+  requestParams.redirectURL = "https://sbx-crypto-payment-api.aeon.xyz/null";
   // requestParams.tgModel = "MINIAPP";
   console.log(requestParams);
 
