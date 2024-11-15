@@ -448,7 +448,6 @@ const sendOrder = async (userID) => {
 
   await updateTamagotchi(userID, updates);
   const updatedTamagotchi = await getTamagotchi(userID);
-  res.json(updatedTamagotchi);
   io.to(userID).emit("tamagotchiUpdate", updatedTamagotchi);
 
   return await createAeonOrdersWithTma({
