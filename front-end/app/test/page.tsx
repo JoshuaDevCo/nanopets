@@ -32,14 +32,6 @@ export default function TestPage() {
     }
   };
 
-  useEffect(() => {
-    // Check if the payment URL has changed to 'null'
-    if (paymentUrl === "https://sbx-crypto-payment.alchemypay.org/null") {
-      setShowPaymentModal(false);
-      setPaymentUrl("");
-    }
-  }, [paymentUrl]);
-
   return (
     <div>
       <button
