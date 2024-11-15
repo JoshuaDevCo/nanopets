@@ -311,9 +311,9 @@ export function useTamagotchiGame() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/order-coins`
       );
 
-      console.log("Profile updated successfully", response.data);
-      setTamagotchi(response.data);
-      triggerAnimation(Coin, 100);
+      console.log("Profile updated successfully", response);
+      // setTamagotchi(response.data);
+      // triggerAnimation(Coin, 100);
       setIsBusyAction(false);
     } catch (err) {
       console.error("unable to hit api.", err);
