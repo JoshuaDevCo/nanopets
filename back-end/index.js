@@ -493,49 +493,64 @@ const createAeonOrdersWithTma = async (params) => {
   }
 };
 
-// Webhook to process payments
-app.post("/api/tamagotchi/aeon-webhook", async (req, res) => {
+// Fetch payment stuff
+
+// get order status
+app.post("/api/aeonOrderStatus", async (req, res) => {
+  console.log("aeon order status");
   try {
-    const webhookData = req.body;
+    const userId = "5380815277";
 
-    // Validate the webhook signature
-    const isValidSignature = validateAeonWebhookSignature(webhookData);
-    if (!isValidSignature) {
-      console.error("Invalid AEON webhook signature");
-      return res.status(401).send("Invalid signature");
+    const tamagotchi = await getTamagotchi(userId);
+    // const response = await fetchAeonOrder({merchantOrderNo: "12"});
+    const response = await fetchAeonOrder({
+      merchantOrderNo: tamagotchi.orderNo,
+    });
+    if (!response) {
+      res.status(400).send({ error: "Invalid response from Aeon" });
+      return;
     }
+    console.log("aeon order status response", response);
+    if (response.msg === "success") {
+      if (response.model.orderStatus === "COMPLETED") {
+        console.log("payment completed");
+        if (!updatedProfileResponse) {
+          res
+            .status(400)
+            .send({ error: "Error updating profile after order number" });
+          return;
+        }
 
-    // Process the webhook data
-    await handleAeonWebhookData(webhookData);
-
-    // Send a successful response to AEON
-    res.status(200).send("OK");
+        res.send(response);
+        return;
+      } else {
+        res.send(response);
+      }
+    }
   } catch (error) {
-    console.error("Error processing AEON webhook:", error);
-    res.status(500).send("Error processing webhook");
+    console.error("Error fetching Aeon order:", error);
+    res.status(500).send({ error: "Internal server error" });
   }
 });
 
-const validateAeonWebhookSignature = (data) => {
-  // Implement signature validation logic here
-  // Using the secret key shared with AEON
-  const { sign, ...dataToVerify } = data;
-  const expectedSignature = generateSignature(dataToVerify);
-  return sign === expectedSignature;
-};
-
-const handleAeonWebhookData = async (data) => {
-  // Process the webhook data here
-  // Update your game server's state based on the payment status
-  const { orderStatus, merchantOrderNo, orderAmount, settlementAmount } = data;
-
-  if (orderStatus === "COMPLETED") {
-    // Update the user's coins or any other relevant data
-    console.log(merchantOrderNo, orderAmount, settlementAmount);
-  } else if (orderStatus === "CLOSE") {
-    // Handle order cancellation or failure
-
-    console.log(merchantOrderNo, data.failReason);
+const fetchAeonOrder = async (params) => {
+  const requestParams = params;
+  requestParams.appId = appID;
+  requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
+  try {
+    const response = await axios.post(
+      `${URL}/open/api/payment/query`,
+      requestParams,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const aeonResponse = response.data;
+    return aeonResponse;
+  } catch (error) {
+    console.error("Error:", error);
   }
 };
 
