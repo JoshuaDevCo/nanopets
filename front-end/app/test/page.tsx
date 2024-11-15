@@ -24,8 +24,6 @@ export default function TestPage() {
       }
     } catch (err) {
       console.error("unable to hit api.", err);
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -124,6 +124,7 @@ async function getTamagotchi(userId) {
     referralCount: parseInt(tamagotchi.referralCount) || 0,
     tamahue: parseInt(tamagotchi.tamahue) || 0,
     crowns: parseInt(tamagotchi.crowns) || 0,
+    orderNo: parseInt(tamagotchi.orderNo) || 0,
   };
 }
 
@@ -182,6 +183,7 @@ app.post("/api/tamagotchi", async (req, res) => {
     referralCount: 0,
     tamahue: randhue,
     crowns: 0,
+    orderNo: 0,
   };
 
   if (referralCode && referralCode !== userId) {
@@ -408,7 +410,16 @@ const crypto = require("crypto");
 const axios = require("axios");
 const appID = process.env.APP_ID;
 const secretKey = process.env.SECRET_KEY;
-let orderNo = 1;
+
+// Helper function to store and increment an orderNo
+async function getNextOrderNo() {
+  redis.setnx("orderNo", 20).then(() => {
+    console.log("orderNo initialized in Redis");
+  });
+  const orderNo = await redis.incr("orderNo");
+  console.log(`Next order number: ${orderNo}`);
+  return orderNo;
+}
 
 app.post("/api/tamagotchi/order-coins", async (req, res) => {
   try {
@@ -425,6 +436,15 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
       webUrl: response.model.webUrl,
       orderNo: response.model.orderNo,
     });
+
+    const updates = {
+      orderNo: response.model.orderNo,
+    };
+
+    await updateTamagotchi(userId, updates);
+    const updatedTamagotchi = await getTamagotchi(userId);
+    res.json(updatedTamagotchi);
+    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
   } catch (error) {
     console.log("Error creating Aeon order", error);
     res.status(500).json({ error: "Failed to create order" });
@@ -432,7 +452,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
 });
 
 const sendOrder = async (userID) => {
-  orderNo += 14;
+  const orderNo = await getNextOrderNo();
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
     orderAmount: "10",
