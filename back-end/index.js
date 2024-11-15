@@ -440,8 +440,6 @@ const sendOrder = async (userID) => {
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
     userId: userID,
-    callbackUrl:
-      "https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook",
   });
 };
 
@@ -452,7 +450,8 @@ const createAeonOrdersWithTma = async (params) => {
   const requestParams = params;
   requestParams.appId = appID;
   requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
-
+  requestParams.callbackUrl =
+    "https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook";
   // requestParams.tgModel = "MINIAPP";
   console.log(requestParams);
 
