@@ -432,7 +432,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
 });
 
 const sendOrder = async (userID) => {
-  orderNo += 5;
+  orderNo += 6;
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
     orderAmount: "10",
