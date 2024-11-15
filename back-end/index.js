@@ -415,9 +415,9 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
   try {
     const userId = "5380815277";
 
-    const tamagotchi = await getTamagotchi(userId);
+    // const tamagotchi = await getTamagotchi(userId);
 
-    const updates = {};
+    // const updates = {};
 
     const response = await sendOrder(userId);
     if (!response) {
@@ -426,7 +426,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
     }
     console.log("sending order", response);
 
-    if (response.msg === "success") {
+    /*  if (response.msg === "success") {
       updates.coins = tamagotchi.coins + 100;
     }
 
@@ -434,7 +434,7 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
     await updateTamagotchi(userId, updates);
     const updatedTamagotchi = await getTamagotchi(userId);
     res.json(updatedTamagotchi);
-    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi); */
   } catch (error) {
     console.log("Error creating Aeon order", error);
   }
@@ -444,7 +444,7 @@ const sendOrder = async (userID) => {
   orderNo += 1;
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
-    orderAmount: "1",
+    orderAmount: "10",
     payCurrency: "USD",
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
@@ -473,7 +473,7 @@ const createAeonOrdersWithTma = async (params) => {
         },
       }
     );
-    console.log(response);
+    console.log(response.data);
     const aeonResponse = response.data;
     return aeonResponse;
   } catch (error) {
