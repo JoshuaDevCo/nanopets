@@ -413,9 +413,6 @@ const secretKey = process.env.SECRET_KEY;
 
 // Helper function to store and increment an orderNo
 async function getNextOrderNo() {
-  redis.setnx("orderNo", 20).then(() => {
-    console.log("orderNo initialized in Redis");
-  });
   const orderNo = await redis.incr("orderNo");
   console.log(`Next order number: ${orderNo}`);
   return orderNo;
@@ -436,15 +433,6 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
       webUrl: response.model.webUrl,
       orderNo: response.model.orderNo,
     });
-
-    const updates = {
-      orderNo: response.model.orderNo,
-    };
-
-    await updateTamagotchi(userId, updates);
-    const updatedTamagotchi = await getTamagotchi(userId);
-    res.json(updatedTamagotchi);
-    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
   } catch (error) {
     console.log("Error creating Aeon order", error);
     res.status(500).json({ error: "Failed to create order" });
@@ -453,6 +441,16 @@ app.post("/api/tamagotchi/order-coins", async (req, res) => {
 
 const sendOrder = async (userID) => {
   const orderNo = await getNextOrderNo();
+
+  const updates = {
+    orderNo: orderNo,
+  };
+
+  await updateTamagotchi(userId, updates);
+  const updatedTamagotchi = await getTamagotchi(userId);
+  res.json(updatedTamagotchi);
+  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
     orderAmount: "10",
@@ -493,7 +491,7 @@ const createAeonOrdersWithTma = async (params) => {
   }
 };
 
-// Fetch payment stuff
+// Fetch payment stuff 300217316848803450000
 
 // get order status
 app.post("/api/aeonOrderStatus", async (req, res) => {
@@ -506,7 +504,7 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
     const response = await fetchAeonOrder({
       merchantOrderNo: Number(tamagotchi.orderNo),
     });
-    console.log(Number(tamagotchi.orderNo));
+    console.log(tamagotchi);
     if (!response) {
       res.status(400).send({ error: "Invalid response from Aeon" });
       return;
