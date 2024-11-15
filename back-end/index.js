@@ -440,7 +440,8 @@ const sendOrder = async (userID) => {
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
     userId: userID,
-    callbackUrl: `https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook`,
+    callbackUrl:
+      "https://nanopets-production.up.railway.app/api/tamagotchi/aeon-webhook",
   });
 };
 
@@ -459,6 +460,7 @@ const createAeonOrdersWithTma = async (params) => {
     const response = await axios.post(
       `${URL}/open/api/payment`,
       requestParams,
+
       {
         headers: {
           "Content-Type": "application/json",
