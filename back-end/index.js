@@ -446,10 +446,10 @@ const sendOrder = async (userID) => {
     orderNo: orderNo,
   };
 
-  await updateTamagotchi(userId, updates);
-  const updatedTamagotchi = await getTamagotchi(userId);
+  await updateTamagotchi(userID, updates);
+  const updatedTamagotchi = await getTamagotchi(userID);
   res.json(updatedTamagotchi);
-  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+  io.to(userID).emit("tamagotchiUpdate", updatedTamagotchi);
 
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
