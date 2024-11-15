@@ -504,8 +504,9 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
     const tamagotchi = await getTamagotchi(userId);
     // const response = await fetchAeonOrder({merchantOrderNo: "12"});
     const response = await fetchAeonOrder({
-      merchantOrderNo: tamagotchi.orderNo,
+      merchantOrderNo: Number(tamagotchi.orderNo),
     });
+    console.log(Number(tamagotchi.orderNo));
     if (!response) {
       res.status(400).send({ error: "Invalid response from Aeon" });
       return;
@@ -514,12 +515,6 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
     if (response.msg === "success") {
       if (response.model.orderStatus === "COMPLETED") {
         console.log("payment completed");
-        if (!updatedProfileResponse) {
-          res
-            .status(400)
-            .send({ error: "Error updating profile after order number" });
-          return;
-        }
 
         res.send(response);
         return;
