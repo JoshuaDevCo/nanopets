@@ -77,7 +77,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["*, localhost:3000"],
+    origin: ["*"],
     methods: ["GET", "POST", "OPTIONS"],
   },
 });
@@ -85,7 +85,13 @@ const io = new Server(server, {
 const redis = new Redis(process.env.REDIS_URL);
 const scheduler = new ToadScheduler();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 const START_STATS = 2;
