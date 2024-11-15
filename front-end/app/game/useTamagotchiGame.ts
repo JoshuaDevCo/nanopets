@@ -302,6 +302,24 @@ export function useTamagotchiGame() {
     }
   };
 
+  const createOrder = async () => {
+    console.log("creating order test");
+    try {
+      setIsBusyAction(true);
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/5380815277/aeonOrder`
+      );
+
+      console.log("Profile updated successfully", response.data);
+      setTamagotchi(response.data);
+      triggerAnimation(Coin, 100);
+      setIsBusyAction(false);
+    } catch (err) {
+      console.error("unable to hit api.", err);
+    }
+  };
+
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
 
@@ -378,35 +396,6 @@ export function useTamagotchiGame() {
   const giveMedicine = () => performAction("medicine", Flask, 1);
   const watchVideo = () => performAction("watchVideo", Coin, 0);
   const revive = () => performAction("revive", Trophy, 0);
-
-  const createOrder = async () => {
-   console.log("creating order test")
-    try {
-       setIsBusyAction(true);
-       
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/aeonOrder`,
-        {
-          userID: "5380815277",
-        }
-      );
-      if (response.status === 200) {
-        console.log("Profile updated successfully", response.data);
-        setTamagotchi(response.data)
-        triggerAnimation(Coin, 100);
-        setIsBusyAction(false);
-        
-      } else {
-        console.error("Error updating profile.");
-         setIsBusyAction(false);
-      }
-    } catch (err) {
-      console.error("unable to hit api.", err);
-    }
-  };
-
-
-
 
   return {
     userId,

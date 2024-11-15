@@ -145,22 +145,6 @@ app.get("/api/activity", async (req, res) => {
   }
 });
 
-// endpoint to buy crown (Need to add validation here later)
-app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
-  const { userId } = req.params;
-
-  const tamagotchi = await getTamagotchi(userId);
-
-  const updates = {
-    crowns: tamagotchi.crowns + 1,
-  };
-
-  await updateTamagotchi(userId, updates);
-  const updatedTamagotchi = await getTamagotchi(userId);
-  res.json(updatedTamagotchi);
-  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
-});
-
 // New Tamagotchi
 app.post("/api/tamagotchi", async (req, res) => {
   const { userId, referralCode } = req.body;
@@ -397,16 +381,34 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
 });
 
+// endpoint to buy crown (Need to add validation here later)
+app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
+  const { userId } = req.params;
+
+  const tamagotchi = await getTamagotchi(userId);
+
+  const updates = {
+    crowns: tamagotchi.crowns + 1,
+  };
+
+  await updateTamagotchi(userId, updates);
+  const updatedTamagotchi = await getTamagotchi(userId);
+  res.json(updatedTamagotchi);
+  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+});
+
 // Order coins via AEON.xyz
 const crypto = require("crypto");
 const appID = process.env.APP_ID;
 const secretKey = process.env.SECRET_KEY;
 let orderNo = 1;
 
-app.post("/api/aeonOrder", async (req, res) => {
+app.post("/api/tamagotchi/:userId/aeonOrder", async (req, res) => {
   try {
     const { userId } = req.params;
+
     const tamagotchi = await getTamagotchi(userId);
+
     const updates = {};
 
     const response = await sendOrder(userId);
