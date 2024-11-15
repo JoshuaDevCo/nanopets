@@ -6,8 +6,14 @@ export default function PaymentModal({ paymentUrl, setShowPaymentModal }: any) {
   useEffect(() => {
     if (iframeRef.current) {
       const handleIframeUrlChange = () => {
-        if (iframeRef.current?.contentWindow?.location.href.includes("/null")) {
-          setShowPaymentModal(false);
+        try {
+          const iframeDocument = iframeRef.current?.contentDocument;
+          if (iframeDocument?.location.href.includes("/null")) {
+            console.log("nulled...");
+            setShowPaymentModal(false);
+          }
+        } catch (error) {
+          console.error("Error accessing iframe document:", error);
         }
       };
 
@@ -29,6 +35,7 @@ export default function PaymentModal({ paymentUrl, setShowPaymentModal }: any) {
         </div>
         {paymentUrl ? (
           <iframe
+            ref={iframeRef}
             src={paymentUrl}
             className='w-full h-full border-0'
             allow='payment'
