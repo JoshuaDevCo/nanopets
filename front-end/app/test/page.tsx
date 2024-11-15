@@ -5,13 +5,10 @@ import AnimatedIcon from "../game/AnimatedIcons";
 
 import { useTamagotchiGame } from "../game/useTamagotchiGame";
 import axios from "axios";
-import { useRouter } from "next/router";
 
 export default function TestPage() {
   const { animation } = useTamagotchiGame();
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
 
   const createOrder = async () => {
     console.log("creating order test");
@@ -23,7 +20,7 @@ export default function TestPage() {
       );
 
       if (response.data?.webUrl) {
-        router.push(response.data.webUrl);
+        window.location.href = response.data.webUrl;
       }
     } catch (err) {
       console.error("unable to hit api.", err);
