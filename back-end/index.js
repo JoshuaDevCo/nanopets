@@ -397,24 +397,123 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
   io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
 });
 
+// Order coins via AEON.xyz
+const crypto = require("crypto");
+const appID = process.env.APP_ID;
+const secretKey = process.env.SECRET_KEY;
+let orderNo = 1;
+
+app.post("/api/aeonOrder", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const tamagotchi = await getTamagotchi(userId);
+    const updates = {};
+
+    const response = await sendOrder(userId);
+    if (!response) {
+      res.status(400).send({ error: "Invalid response from Aeon" });
+      return;
+    }
+    console.log("sending order", response);
+
+    if (response.msg === "success") {
+      updates.coins = tamagotchi.coins + 100;
+    }
+
+    await logActivity(userId, "Bought 100 Coins");
+    await updateTamagotchi(userId, updates);
+    const updatedTamagotchi = await getTamagotchi(userId);
+    res.json(updatedTamagotchi);
+    io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+  } catch (error) {
+    console.log("Error creating Aeon order", error);
+  }
+});
+
+const sendOrder = async (userID) => {
+  orderNo += 1;
+  return await createAeonOrdersWithTma({
+    merchantOrderNo: orderNo,
+    orderAmount: "1",
+    payCurrency: "USD",
+    paymentTokens: "USDT",
+    paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
+    userId: userID,
+  });
+};
+
+const URL = "https://sbx-crypto-payment-api.aeon.xyz";
+
+// Define the API request function
+const createAeonOrdersWithTma = async (params) => {
+  const requestParams = params;
+  requestParams.appId = appID;
+  requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
+
+  // requestParams.tgModel = "MINIAPP";
+  console.log(requestParams);
+
+  try {
+    const response = await axios.post(
+      `${URL}/open/api/payment`,
+      requestParams,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response);
+    const aeonResponse = response.data;
+    return aeonResponse;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+const generateSignature = (params) => {
+  // Remove the 'sign' parameter from the object if it exists
+  const filteredParams = Object.keys(params)
+    .filter((key) => key !== "sign")
+    .reduce((obj, key) => {
+      obj[key] = params[key];
+      return obj;
+    }, {}); // Ensure the initial value is of type RequestParams
+
+  // Sort the parameters alphabetically by their keys (ASCII order)
+  const sortedKeys = Object.keys(filteredParams).sort();
+
+  // Prepare the string for concatenation in 'key=value' format joined by '&'
+  const paramString = sortedKeys
+    .map((key) => `${key}=${filteredParams[key]}`)
+    .join("&");
+
+  // Append the secret key to the final string
+  const stringToSign = `${paramString}&key=${secretKey}`;
+  // Generate SHA-512 hash using CryptoJS and convert it to uppercase
+  const signature = crypto
+    .createHash("sha512")
+    .update(stringToSign)
+    .digest("hex")
+    .toUpperCase();
+
+  return signature;
+};
+
 // Periodic updates
 const updateTask = new AsyncTask(
   "update-tamagotchis",
   async () => {
     const userIds = await redis.smembers("tamagotchi:users");
-    console.log(userIds);
+
     const currentTime = Date.now();
     for (const userId of userIds) {
       const tamagotchi = await getTamagotchi(userId);
-
-      console.log(userId);
 
       if (!tamagotchi) {
         console.log("Couldn't find ID:" + userId);
         continue;
       }
-
-      console.log(tamagotchi);
 
       if (tamagotchi.careMistakes >= CARE_MISTAKE_LIMIT) {
         continue; // Skip this Tamagotchi and move to the next one

@@ -305,7 +305,7 @@ export function useTamagotchiGame() {
   const purchaseItem = async (itemId: string) => {
     if (!userId) return;
 
-    console.log(itemId)
+    console.log(itemId);
 
     /* try {
       setIsBusyAction(true);
@@ -379,6 +379,27 @@ export function useTamagotchiGame() {
   const watchVideo = () => performAction("watchVideo", Coin, 0);
   const revive = () => performAction("revive", Trophy, 0);
 
+  const createOrder = async () => {
+    if (!userId) return;
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/aeonOrder`,
+        {
+          userID: userId,
+        }
+      );
+      if (response.status === 200) {
+        console.log("Profile updated successfully", response.data);
+        triggerAnimation(Coin, 100);
+        return response.data;
+      } else {
+        console.error("Error updating profile.");
+      }
+    } catch (err) {
+      console.error("unable to hit api.", err);
+    }
+  };
+
   return {
     userId,
     tamagotchi,
@@ -404,5 +425,6 @@ export function useTamagotchiGame() {
     watchVideo,
     revive,
     BuyCrown,
+    createOrder,
   };
 }
