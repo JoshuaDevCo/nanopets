@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimatedIcon from "../game/AnimatedIcons";
 import PaymentModal from "../game/PaymentModal";
 import { useTamagotchiGame } from "../game/useTamagotchiGame";
@@ -31,6 +31,14 @@ export default function TestPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Check if the payment URL has changed to 'null'
+    if (paymentUrl === "https://sbx-crypto-payment.alchemypay.org/null") {
+      setShowPaymentModal(false);
+      setPaymentUrl("");
+    }
+  }, [paymentUrl]);
 
   return (
     <div>
