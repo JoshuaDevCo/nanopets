@@ -75,6 +75,8 @@ export function useTamagotchiGame() {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  const [paymentUrl, setPaymentUrl] = useState<string>("");
+
   const checkAuth = async () => {
     const response = await fetch("/api/session");
     if (response.ok) {
@@ -304,22 +306,50 @@ export function useTamagotchiGame() {
   };
 
   const createOrder = async () => {
+    if (!userId) return;
+
     console.log("creating order test");
     try {
       setIsBusyAction(true);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/order-coins`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/order-coins`
       );
 
-      console.log("Profile updated successfully", response);
-      if (response.data.model.orderStatus !== "COMPLETED") {
-        alert("Payment not completed. Please try again.")
+      if (response.data?.webUrl) {
+        window.location.href = response.data.webUrl;
       }
-      setIsBusyAction(false);
     } catch (err) {
       console.error("unable to hit api.", err);
+      alert("Unable to purchase now.");
       setIsBusyAction(false);
+    }
+  };
+
+  const orderStatus = async () => {
+    try {
+      setIsBusyAction(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/aeonOrderStatus`
+      );
+      console.log("getting response", response);
+      if (response.status === 200) {
+        console.log("Order status updated successfully", response.data);
+        if (response.data.model.orderStatus !== "COMPLETED") {
+          alert(
+            `Payment not completed. Please try again at https://sbx-crypto-payment.alchemypay.org/${response.data.model.orderNo}.`
+          );
+        }
+        setIsBusyAction(false);
+        return response.data;
+      } else {
+        setIsBusyAction(false);
+        alert("Unable to get purchase info.");
+        console.error("Error updating order status.");
+      }
+    } catch (err) {
+      console.error("unable to hit api.", err);
+      alert("Unable to check info.");
     }
   };
 
@@ -426,5 +456,6 @@ export function useTamagotchiGame() {
     revive,
     BuyCrown,
     createOrder,
+    orderStatus,
   };
 }

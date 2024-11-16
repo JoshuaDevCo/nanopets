@@ -17,6 +17,9 @@ interface WalletViewProps {
   resetTamagotchi: () => void;
   watchVideo: () => void;
   BuyCrown: () => void;
+  createOrder: () => void;
+  orderStatus: () => void;
+  tamagotchi: any;
 }
 
 export default function WalletView({
@@ -28,6 +31,9 @@ export default function WalletView({
   resetTamagotchi,
   watchVideo,
   BuyCrown,
+  createOrder,
+  orderStatus,
+  tamagotchi,
 }: WalletViewProps) {
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
 
@@ -126,16 +132,25 @@ export default function WalletView({
               <p className='text-2xl'>{crowns ? crowns : 0}</p>
             </div>
             <div>
-              <button
-                onClick={() =>
-                  alert("NEED AEON API KEY TO INTEGRATE THIS HERE")
-                }
-                className='bg-green-500  text-white font-bold py-2 px-4 '
-              >
-                <div className='flex gap-2'>
-                  <p className='text-xl'>Buy Coins</p>
-                </div>
-              </button>
+              {tamagotchi.orderNo === 0 ? (
+                <button
+                  onClick={createOrder}
+                  className='bg-green-500  text-white font-bold py-2 px-4 '
+                >
+                  <div className='flex gap-2'>
+                    <p className='text-xl'>Buy Coins</p>
+                  </div>
+                </button>
+              ) : (
+                <button
+                  onClick={orderStatus}
+                  className='bg-green-500  text-white font-bold py-2 px-4 '
+                >
+                  <div className='flex gap-2'>
+                    <p className='text-xl'>Check Order</p>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
           <TonConnectionMinter BuyCrown={BuyCrown} />

@@ -418,9 +418,9 @@ async function getNextOrderNo() {
   return orderNo;
 }
 
-app.post("/api/tamagotchi/order-coins", async (req, res) => {
+app.post("/api/tamagotchi/:userId/order-coins", async (req, res) => {
   try {
-    const userId = "5380815277";
+    const { userId } = req.params;
 
     const response = await sendOrder(userId);
 
@@ -468,7 +468,7 @@ const createAeonOrdersWithTma = async (params) => {
   const requestParams = params;
   requestParams.appId = appID;
   requestParams.sign = generateSignature(JSON.parse(JSON.stringify(params)));
-  requestParams.redirectURL = "https://kodomochi.pet/test";
+  requestParams.redirectURL = "https://t.me/kodomochibot/play";
   // requestParams.tgModel = "MINIAPP";
   console.log(requestParams);
 
@@ -491,13 +491,11 @@ const createAeonOrdersWithTma = async (params) => {
   }
 };
 
-// Fetch payment stuff 300217316848803450000
-
 // get order status
-app.post("/api/aeonOrderStatus", async (req, res) => {
+app.post("/api/tamagotchi/:userId/aeonOrderStatus", async (req, res) => {
   console.log("aeon order status");
   try {
-    const userId = "5380815277";
+    const { userId } = req.params;
 
     const tamagotchi = await getTamagotchi(userId);
     // const response = await fetchAeonOrder({merchantOrderNo: "12"});
@@ -511,7 +509,10 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
     }
     console.log("aeon order status response", response);
     if (response.msg === "success") {
-      if (response.model.orderStatus === "COMPLETED") {
+      if (
+        response.model.orderStatus === "COMPLETED" ||
+        response.model.orderStatus === "DELAY_SUCCESS"
+      ) {
         console.log("payment completed");
 
         const updates = {
@@ -526,6 +527,19 @@ app.post("/api/aeonOrderStatus", async (req, res) => {
         res.send(response);
         return;
       } else {
+        if (
+          response.model.orderStatus === "INIT" ||
+          response.model.orderStatus === "PROCESSING"
+        ) {
+        } else {
+          const updates = {
+            orderNo: 0,
+          };
+
+          await updateTamagotchi(userId, updates);
+          const updatedTamagotchi = await getTamagotchi(userId);
+          io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+        }
         res.send(response);
       }
     }

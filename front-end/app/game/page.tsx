@@ -69,6 +69,8 @@ export default function TamagotchiGame() {
     revive,
     watchVideo,
     BuyCrown,
+    createOrder,
+    orderStatus,
   } = useTamagotchiGame();
 
   const icons = {
@@ -381,6 +383,9 @@ export default function TamagotchiGame() {
                 BuyCrown={BuyCrown}
                 userId={userId}
                 referralCount={tamagotchi.referralCount}
+                createOrder={createOrder}
+                orderStatus={orderStatus}
+                tamagotchi={tamagotchi}
               />
             )}
             {currentView === "stats" && (
