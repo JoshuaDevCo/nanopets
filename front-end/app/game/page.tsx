@@ -440,7 +440,7 @@ export default function TamagotchiGame() {
               onClick={toggleLight}
               icon={Sun}
               disabled={isDisabled || isBusyAction || !tamagotchi.isSleeping}
-              animate={tamagotchi.isSleeping}
+              animate={tamagotchi.isSleeping && tamagotchi.isLightOn}
             />
             {currentView === "main" || currentView === "minigame" ? (
               <>
