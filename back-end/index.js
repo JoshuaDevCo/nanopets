@@ -420,26 +420,22 @@ async function getNextOrderNo() {
 
 app.post("/api/tamagotchi/:userId/ordercoins", async (req, res) => {
   console.log("trying to order ");
-  try {
-    const { userId } = req.params;
-    console.log(userId);
 
-    const response = await sendOrder(userId);
+  const { userId } = req.params;
+  console.log(userId);
 
-    if (!response) {
-      res.status(400).send({ error: "Invalid response from Aeon" });
-      return;
-    }
+  const response = await sendOrder(userId);
 
-    // Return the entire response data including webUrl
-    res.status(200).json({
-      webUrl: response.model.webUrl,
-      orderNo: response.model.orderNo,
-    });
-  } catch (error) {
-    console.log("Error creating Aeon order", error);
-    res.status(500).json({ error: "Failed to create order" });
+  if (!response) {
+    res.status(400).send({ error: "Invalid response from Aeon" });
+    return;
   }
+
+  // Return the entire response data including webUrl
+  res.status(200).json({
+    webUrl: response.model.webUrl,
+    orderNo: response.model.orderNo,
+  });
 });
 
 const sendOrder = async (userId) => {
