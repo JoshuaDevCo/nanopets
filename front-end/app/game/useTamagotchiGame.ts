@@ -17,7 +17,6 @@ import Coin from "../svgs/coin.png";
 import Crown from "../svgs/crown.png";
 
 import { WebApp } from "@twa-dev/types";
-import { AnyFn } from "@telegram-apps/sdk";
 
 declare global {
   interface Window {
