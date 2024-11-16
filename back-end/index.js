@@ -418,7 +418,7 @@ async function getNextOrderNo() {
   return orderNo;
 }
 
-app.post("/api/tamagotchi/:userId/order-coins", async (req, res) => {
+app.post("/api/tamagotchi/order-coins/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -492,9 +492,9 @@ const createAeonOrdersWithTma = async (params) => {
 };
 
 // get order status
-app.post("/api/tamagotchi/:userId/aeonOrderStatus", async (req, res) => {
+app.post("/api/tamagotchi/order-status/:userId", async (req, res) => {
   const { userId } = req.params;
-  console.log("aeon order status");
+  console.log("Checking aeon order status for user:", userId);
   try {
     console.log(userId);
     const tamagotchi = await getTamagotchi(userId);
