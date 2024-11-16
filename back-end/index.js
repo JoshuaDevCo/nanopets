@@ -390,8 +390,8 @@ app.post("/api/tamagotchi/:userId/:action", async (req, res) => {
 });
 
 // endpoint to buy crown (Need to add validation here later)
-app.post("/api/tamagotchi/:userId/buy-crown", async (req, res) => {
-  const { userId } = req.params;
+app.post("/api/tamagotchi/buycrown", async (req, res) => {
+  const { userId } = req.body;
 
   const tamagotchi = await getTamagotchi(userId);
 

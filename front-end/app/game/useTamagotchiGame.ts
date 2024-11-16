@@ -292,7 +292,7 @@ export function useTamagotchiGame() {
     try {
       setIsBusyAction(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/buy-crown`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/buycrown`, { userId: userId}
       );
       setTamagotchi(response.data);
       triggerAnimation(Crown, +1);
