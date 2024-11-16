@@ -464,7 +464,7 @@ const sendOrder = async (userID) => {
 
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
-    orderAmount: "10",
+    orderAmount: "100",
     payCurrency: "USD",
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",

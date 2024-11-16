@@ -141,7 +141,7 @@ export default function WalletView({
                   disabled={isBusyAction}
                 >
                   <div className='flex gap-2'>
-                    <p className='text-xl'>Buy Coins</p>
+                    <p className='text-xl'>Buy 100 Coins</p>
                   </div>
                 </button>
               ) : (
