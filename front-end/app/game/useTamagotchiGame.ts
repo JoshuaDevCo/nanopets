@@ -352,9 +352,7 @@ export function useTamagotchiGame() {
         if (response.data.model.orderStatus === "COMPLETED") {
           triggerAnimation(Coin, 100);
         } else {
-          alert(
-            `Payment not completed. Please try again at https://sbx-crypto-payment.alchemypay.org/${response.data.model.orderNo}.`
-          );
+          window.location.href = `https://sbx-crypto-payment.alchemypay.org?orderNo=${response.data.model.orderNo}`;
         }
         setIsBusyAction(false);
         return response.data;
