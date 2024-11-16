@@ -14,6 +14,7 @@ interface WalletViewProps {
   userId: string;
   lastVideoWatchTime: number;
   referralCount: number;
+  isBusyAction: boolean;
   resetTamagotchi: () => void;
   watchVideo: () => void;
   BuyCrown: () => void;
@@ -34,6 +35,7 @@ export default function WalletView({
   createOrder,
   orderStatus,
   tamagotchi,
+  isBusyAction,
 }: WalletViewProps) {
   const [isWatchingVideo, setIsWatchingVideo] = useState(false);
 
@@ -136,6 +138,7 @@ export default function WalletView({
                 <button
                   onClick={createOrder}
                   className='bg-green-500  text-white font-bold py-2 px-4 '
+                  disabled={isBusyAction}
                 >
                   <div className='flex gap-2'>
                     <p className='text-xl'>Buy Coins</p>
@@ -145,6 +148,7 @@ export default function WalletView({
                 <button
                   onClick={orderStatus}
                   className='bg-green-500  text-white font-bold py-2 px-4 '
+                  disabled={isBusyAction}
                 >
                   <div className='flex gap-2'>
                     <p className='text-xl'>Check Order</p>

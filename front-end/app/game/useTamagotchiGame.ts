@@ -331,7 +331,9 @@ export function useTamagotchiGame() {
       console.error("API error:", err.response?.data || err);
       alert(`Error: ${err.response?.data?.error || err.message}`);
     } finally {
-      setIsBusyAction(false);
+      setTimeout(() => {
+        setIsBusyAction(false);
+      }, 1000);
     }
   };
 
@@ -341,7 +343,8 @@ export function useTamagotchiGame() {
     try {
       setIsBusyAction(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/order-status/${userId}`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/orderstatus`,
+        { userId: userId }
       );
       console.log("getting response", response);
       if (response.status === 200) {

@@ -386,6 +386,7 @@ export default function TamagotchiGame() {
                 createOrder={createOrder}
                 orderStatus={orderStatus}
                 tamagotchi={tamagotchi}
+                isBusyAction={isBusyAction}
               />
             )}
             {currentView === "stats" && (
