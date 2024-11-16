@@ -311,7 +311,7 @@ export function useTamagotchiGame() {
       setIsBusyAction(true);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/order-coins`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/ordercoins`
       );
 
       if (response.data?.webUrl) {
