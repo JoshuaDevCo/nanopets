@@ -419,9 +419,9 @@ async function getNextOrderNo() {
 }
 
 app.post("/api/tamagotchi/:userId/ordercoins", async (req, res) => {
-  console.log("trying to order for userId:", userId);
+  console.log("trying to order for userId:");
 
-  const { userId } = req.params;
+  const userId = "5380815277";
 
   try {
     const response = await sendOrder(userId);
@@ -726,7 +726,7 @@ const updateTask = new AsyncTask(
 );
 
 const updateJob = new SimpleIntervalJob(
-  { minutes: 10, runImmediately: true },
+  { minutes: 10, runImmediately: false },
   updateTask
 );
 
