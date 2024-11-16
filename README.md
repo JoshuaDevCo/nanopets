@@ -1,5 +1,15 @@
 # code name nanopets
 
-## Actual name: Kodomochi.
+## Actual name: Kodomochi.pet
 
-Soul Bound Crown CA: EQABJOutwO97Aj6-xod1sJ9Kg1uf9l8AA9nXpABxxJjS-5MH
+Built for the Hack on Ton hackathon.
+
+### Features:
+
+- Telegram mini app
+- Telegram bot
+- Fun and nostalgic gameplay
+- Aeon payments
+- Ton connect and Mint SBT
+- Social functions
+- Rewards
