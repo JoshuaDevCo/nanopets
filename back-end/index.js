@@ -451,16 +451,16 @@ app.post("/api/tamagotchi/:userId/ordercoins", async (req, res) => {
   }
 });
 
-const sendOrder = async (userId) => {
+const sendOrder = async (userID) => {
   const orderNo = await getNextOrderNo();
 
   const updates = {
     orderNo: orderNo,
   };
 
-  await updateTamagotchi(userId, updates);
-  const updatedTamagotchi = await getTamagotchi(userId);
-  io.to(userId).emit("tamagotchiUpdate", updatedTamagotchi);
+  await updateTamagotchi(userID, updates);
+  const updatedTamagotchi = await getTamagotchi(userID);
+  io.to(userID).emit("tamagotchiUpdate", updatedTamagotchi);
 
   return await createAeonOrdersWithTma({
     merchantOrderNo: orderNo,
@@ -468,7 +468,7 @@ const sendOrder = async (userId) => {
     payCurrency: "USD",
     paymentTokens: "USDT",
     paymentExchange: "16f021b0-f220-4bbb-aa3b-82d423301957",
-    userId: userId,
+    userId: userID,
   });
 };
 
