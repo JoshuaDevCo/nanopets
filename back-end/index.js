@@ -493,9 +493,9 @@ const createAeonOrdersWithTma = async (params) => {
 
 // get order status
 app.post("/api/tamagotchi/:userId/aeonOrderStatus", async (req, res) => {
+  const { userId } = req.params;
   console.log("aeon order status");
   try {
-    const { userId } = req.params;
     console.log(userId);
     const tamagotchi = await getTamagotchi(userId);
     // const response = await fetchAeonOrder({merchantOrderNo: "12"});
