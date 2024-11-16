@@ -419,9 +419,10 @@ async function getNextOrderNo() {
 }
 
 app.post("/api/tamagotchi/ordercoins", async (req, res) => {
+  const { userId } = req.body;
+
   console.log("trying to order for userId:");
 
-  const userId = "5380815277";
 
   try {
     const response = await sendOrder(userId);
