@@ -325,6 +325,8 @@ export function useTamagotchiGame() {
   };
 
   const orderStatus = async () => {
+    if (!userId) return;
+
     try {
       setIsBusyAction(true);
       const response = await axios.post(

@@ -496,7 +496,7 @@ app.post("/api/tamagotchi/:userId/aeonOrderStatus", async (req, res) => {
   console.log("aeon order status");
   try {
     const { userId } = req.params;
-
+    console.log(userId);
     const tamagotchi = await getTamagotchi(userId);
     // const response = await fetchAeonOrder({merchantOrderNo: "12"});
     const response = await fetchAeonOrder({
