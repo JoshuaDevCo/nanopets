@@ -17,6 +17,7 @@ import Coin from "../svgs/coin.png";
 import Crown from "../svgs/crown.png";
 
 import { WebApp } from "@twa-dev/types";
+import { AnyFn } from "@telegram-apps/sdk";
 
 declare global {
   interface Window {
@@ -304,9 +305,13 @@ export function useTamagotchiGame() {
   };
 
   const createOrder = async () => {
-    if (!userId) return;
+    if (!userId) {
+      console.log("No userId provided");
+      alert("No user");
+      return;
+    }
 
-    console.log("creating order test");
+    console.log("creating order for userId:", userId);
     try {
       setIsBusyAction(true);
 
@@ -314,12 +319,18 @@ export function useTamagotchiGame() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/${userId}/ordercoins`
       );
 
+      console.log("Response received:", response);
+
       if (response.data?.webUrl) {
         window.location.href = response.data.webUrl;
+      } else {
+        console.error("No webUrl in response:", response);
+        alert("Invalid response format received.");
       }
-    } catch (err) {
-      console.error("unable to hit api.", err);
-      alert("Unable to purchase now.");
+    } catch (err: any) {
+      console.error("API error:", err.response?.data || err);
+      alert(`Error: ${err.response?.data?.error || err.message}`);
+    } finally {
       setIsBusyAction(false);
     }
   };

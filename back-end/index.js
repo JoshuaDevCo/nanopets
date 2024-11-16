@@ -419,23 +419,36 @@ async function getNextOrderNo() {
 }
 
 app.post("/api/tamagotchi/:userId/ordercoins", async (req, res) => {
-  console.log("trying to order ");
+  console.log("trying to order for userId:", userId);
 
   const { userId } = req.params;
-  console.log(userId);
 
-  const response = await sendOrder(userId);
+  try {
+    const response = await sendOrder(userId);
+    console.log("sendOrder response:", response); // Log the response
 
-  if (!response) {
-    res.status(400).send({ error: "Invalid response from Aeon" });
-    return;
+    if (!response) {
+      console.log("No response received from sendOrder");
+      res.status(400).send({ error: "Invalid response from Aeon" });
+      return;
+    }
+
+    if (!response.model?.webUrl) {
+      console.log("Missing webUrl in response:", response);
+      res.status(400).send({ error: "Missing webUrl in response" });
+      return;
+    }
+
+    res.status(200).json({
+      webUrl: response.model.webUrl,
+      orderNo: response.model.orderNo,
+    });
+  } catch (error) {
+    console.error("Error in ordercoins endpoint:", error);
+    res
+      .status(500)
+      .send({ error: "Internal server error", details: error.message });
   }
-
-  // Return the entire response data including webUrl
-  res.status(200).json({
-    webUrl: response.model.webUrl,
-    orderNo: response.model.orderNo,
-  });
 });
 
 const sendOrder = async (userId) => {
