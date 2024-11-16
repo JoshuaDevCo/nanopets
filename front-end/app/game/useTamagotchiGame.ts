@@ -330,7 +330,7 @@ export function useTamagotchiGame() {
     try {
       setIsBusyAction(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/aeonOrderStatus/${userId}`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/order-status/${userId}`
       );
       console.log("getting response", response);
       if (response.status === 200) {
