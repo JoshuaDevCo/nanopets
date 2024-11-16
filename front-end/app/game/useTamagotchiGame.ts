@@ -270,7 +270,6 @@ export function useTamagotchiGame() {
         triggerAnimation(Coin, 10);
       }
       if (action == "revive") {
-        triggerAnimation(Coin, -10);
         setCurrentView("main");
       }
 
@@ -292,7 +291,8 @@ export function useTamagotchiGame() {
     try {
       setIsBusyAction(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/buycrown`, { userId: userId}
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/buycrown`,
+        { userId: userId }
       );
       setTamagotchi(response.data);
       triggerAnimation(Crown, +1);
