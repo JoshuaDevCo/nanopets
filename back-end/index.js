@@ -418,12 +418,12 @@ async function getNextOrderNo() {
   return orderNo;
 }
 
-app.post("/api/tamagotchi/order-coins/:userId", async (req, res) => {
+app.post("/api/tamagotchi/:userId/ordercoins", async (req, res) => {
   console.log("trying to order ");
   try {
     const { userId } = req.params;
     console.log(userId);
-    
+
     const response = await sendOrder(userId);
 
     if (!response) {
