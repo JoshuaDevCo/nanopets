@@ -137,7 +137,7 @@ export default function WalletView({
               {tamagotchi.orderNo === 0 ? (
                 <button
                   onClick={createOrder}
-                  className='bg-green-500  text-white font-bold py-2 px-4 '
+                  className='bg-green-500  text-white font-bold  disabled:opacity-50 py-2 px-4 '
                   disabled={isBusyAction}
                 >
                   <div className='flex gap-2'>
@@ -147,7 +147,7 @@ export default function WalletView({
               ) : (
                 <button
                   onClick={orderStatus}
-                  className='bg-green-500  text-white font-bold py-2 px-4 '
+                  className='bg-green-500  text-white font-bold  disabled:opacity-50 py-2 px-4 '
                   disabled={isBusyAction}
                 >
                   <div className='flex gap-2'>

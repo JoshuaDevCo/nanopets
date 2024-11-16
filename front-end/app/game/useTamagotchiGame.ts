@@ -349,7 +349,9 @@ export function useTamagotchiGame() {
       console.log("getting response", response);
       if (response.status === 200) {
         console.log("Order status updated successfully", response.data);
-        if (response.data.model.orderStatus !== "COMPLETED") {
+        if (response.data.model.orderStatus === "COMPLETED") {
+          triggerAnimation(Coin, 100);
+        } else {
           alert(
             `Payment not completed. Please try again at https://sbx-crypto-payment.alchemypay.org/${response.data.model.orderNo}.`
           );
