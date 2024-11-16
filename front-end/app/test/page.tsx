@@ -16,7 +16,7 @@ export default function TestPage() {
       setIsLoading(true);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/53808/ordercoins`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/tamagotchi/ordercoins`
       );
 
       if (response.data?.webUrl) {
