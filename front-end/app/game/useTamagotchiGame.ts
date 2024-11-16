@@ -75,8 +75,6 @@ export function useTamagotchiGame() {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const [paymentUrl, setPaymentUrl] = useState<string>("");
-
   const checkAuth = async () => {
     const response = await fetch("/api/session");
     if (response.ok) {
